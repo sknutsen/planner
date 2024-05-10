@@ -2,3 +2,12 @@
 @import "styles/loader.css";
 @import "styles/task.css";
 @import "styles/week.css";
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.hidden {
+  display: none;
+}

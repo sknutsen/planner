@@ -10,7 +10,6 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/sknutsen/planner/lib"
 import "github.com/sknutsen/planner/models"
 import "fmt"
 
@@ -148,11 +147,11 @@ func weekSelector(week models.Week) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"week-selector\"><a id=\"week-selector__prev\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"week-selector\" class=\"nav-selector\"><a id=\"week-selector__prev\" class=\"nav-selector__prev\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%s", lib.PrevISOWeek(week.ISOWeek)))
+		var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%s", week.Prev()))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -166,11 +165,11 @@ func weekSelector(week models.Week) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a> <a id=\"week-selector__next\" href=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</a> <a id=\"week-selector__next\" class=\"nav-selector__next\" href=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var7 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%s", lib.NextISOWeek(week.ISOWeek)))
+		var templ_7745c5c3_Var7 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%s", week.Next()))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var7)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

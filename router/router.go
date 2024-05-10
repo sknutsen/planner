@@ -11,4 +11,6 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 
 	e.GET(routes.Index, h.Index)
 	e.GET(routes.IndexWeek, h.Index)
+	e.GET(routes.Day, h.Day)
+	e.GET(routes.Daytasks, h.DayTasks)
 }

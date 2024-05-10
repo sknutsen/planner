@@ -1,6 +1,5 @@
 package view
 
-import "github.com/sknutsen/planner/lib"
 import "github.com/sknutsen/planner/models"
 import "fmt"
 
@@ -33,11 +32,11 @@ templ planSelector(state models.ClientState) {
 }
 
 templ weekSelector(week models.Week) {
-    <div id="week-selector">
-        <a id="week-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%s", lib.PrevISOWeek(week.ISOWeek)))}>
+    <div id="week-selector" class="nav-selector">
+        <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%s", week.Prev()))}>
             Prev
         </a>
-        <a id="week-selector__next" href={templ.SafeURL(fmt.Sprintf("/%s", lib.NextISOWeek(week.ISOWeek)))}>
+        <a id="week-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%s", week.Next()))}>
             Next
         </a>
         <span>

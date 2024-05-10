@@ -1,11 +1,12 @@
 package view
 
-import "github.com/sknutsen/planner/models"
 import "fmt"
+import "github.com/sknutsen/planner/models"
 
 templ Task(state models.ClientState, task models.Task) {
     <div id="selected-task" class="task">
         <input type="text" placeholder="Title" />
+        <input type="date" />
         <input type="text" placeholder="Subtitle" />
         <input type="text" placeholder="Description" />
     </div>
@@ -13,10 +14,26 @@ templ Task(state models.ClientState, task models.Task) {
 
 templ TaskPreview(task models.Task) {
     <div id={fmt.Sprintf("task-%d", task.Id)} class="task-preview">
-        <h3 class="task-preview__title">{task.Title}</h3>
-        <h4 class="task-preview__subtitle">{task.Subtitle}</h4>
-        <p class="task-preview__description">
+        <div class="task-preview__header">
+            <div class="task-preview__identifier">
+                <h3 class="task-preview__title">{task.Title}</h3>
+                <h4 class="task-preview__subtitle">{task.Subtitle}</h4>
+            </div>
+            <button type="button" onclick={toggleDescription(task.Id)}>^</button>
+        </div>
+        <p id={fmt.Sprintf("task-%d__description", task.Id)} class="task-preview__description hidden">
             {task.Description}
         </p>
     </div>
+}
+
+script toggleDescription(id int) {
+    const desc = document.getElementById("task-" + id + "__description");
+    const isHidden = desc.classList.contains("hidden");
+
+    if (isHidden) {
+        mod.show(desc.id);
+    } else {
+        mod.hide(desc.id);
+    }
 }

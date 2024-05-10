@@ -20,7 +20,9 @@
 }
 
 .loader {
-  transform-origin: center;
-  animation: spin2 1.5s ease-in-out infinite, spin 2s linear infinite;
-  animation-direction: alternate;
+  .loader__animation {
+    transform-origin: center;
+    animation: spin2 1.5s ease-in-out infinite, spin 2s linear infinite;
+    animation-direction: alternate;
+  }
 }

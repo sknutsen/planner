@@ -49,7 +49,7 @@ func loader(theme string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg viewBox=\"0 0 800 800\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"loader\" cx=\"400\" cy=\"400\" fill=\"none\" r=\"200\" stroke-width=\"44\" stroke=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg class=\"loader\" viewBox=\"0 0 800 800\" xmlns=\"http://www.w3.org/2000/svg\"><circle class=\"loader__animation\" cx=\"400\" cy=\"400\" fill=\"none\" r=\"200\" stroke-width=\"44\" stroke=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

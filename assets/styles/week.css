@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 20px);
   width: calc(100vw - 50px);
   margin: 0 auto;
   padding: 10px;
@@ -27,7 +27,7 @@
   }
 }
 
-#week-selector {
+.nav-selector {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -40,13 +40,13 @@
     text-decoration: none;
   }
 
-  #week-selector__prev {
+  .nav-selector__prev {
     border-right-width: 1px;
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
   }
 
-  #week-selector__next {
+  .nav-selector__next {
     border-left-width: 1px;
     border-bottom-left-radius: 0;
     border-top-left-radius: 0;

@@ -1,26 +1,66 @@
 package view
 
-import "github.com/sknutsen/planner/models"
 import "fmt"
+import "github.com/sknutsen/planner/lib"
+import "github.com/sknutsen/planner/models"
+import "time"
 
 templ Day(state models.ClientState, day models.Day) {
-
+    @MainLayout(state.UserInfo) {
+        <div id="day">
+            <div id="day__header">
+                <span>
+                    {fmt.Sprint(day.Date.Weekday())}
+                </span>
+                @daySelector(day)
+            </div>
+            <div id="day__body" hx-get={fmt.Sprintf("/day/%s/tasks", lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load">
+                @defaultLoader()
+            </div>
+            <div id="day__footer">
+                
+            </div>
+        </div>
+    }
 }
 
 templ DayPreview(day models.Day) {
-    <div id={fmt.Sprint(day.Date.Weekday())} class="day-preview">
-        <h2>
+    <div id={fmt.Sprint(day.Date.Weekday())} class={ "day-preview", templ.KV("day-preview--today", lib.DateToString(day.Date) == lib.DateToString(time.Now())) }>
+        <a href={templ.SafeURL(fmt.Sprintf("/day/%s", lib.DateToString(day.Date)))}>
             <span>
                 {fmt.Sprint(day.Date.Weekday())}
             </span>
             <span>
-                {fmt.Sprintf("%d.%d", day.Date.Day(), day.Date.Month())}
+                {day.StringShort()}
             </span>
-        </h2>
-        <div class="day-preview__tasks">
-            for _, t := range day.Tasks {
-                @TaskPreview(t)
-            }
+        </a>
+        <div class="day-preview__tasks" hx-get={fmt.Sprintf("/day/%s/tasks", lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load">
+                @defaultLoader()
         </div>
+    </div>
+}
+
+templ DayTasks(tasks []models.Task) {
+    // <div id="day__body">
+        for _, t := range tasks {
+            @TaskPreview(t)
+        }
+    // </div>
+}
+
+templ daySelector(day models.Day) {
+    <div id="day-selector" class="nav-selector">
+        <a id="day-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("/%s", day.Week()))}>
+            Back to week
+        </a>
+        <a id="day-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/day/%s", day.Prev()))}>
+            Prev
+        </a>
+        <a id="day-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/day/%s", day.Next()))}>
+            Next
+        </a>
+        <span>
+            {day.String()}
+        </span>
     </div>
 }

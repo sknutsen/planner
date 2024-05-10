@@ -10,8 +10,8 @@ import "context"
 import "io"
 import "bytes"
 
-import "github.com/sknutsen/planner/models"
 import "fmt"
+import "github.com/sknutsen/planner/models"
 
 func Task(state models.ClientState, task models.Task) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
@@ -26,7 +26,7 @@ func Task(state models.ClientState, task models.Task) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"selected-task\" class=\"task\"><input type=\"text\" placeholder=\"Title\"> <input type=\"text\" placeholder=\"Subtitle\"> <input type=\"text\" placeholder=\"Description\"></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"selected-task\" class=\"task\"><input type=\"text\" placeholder=\"Title\"> <input type=\"date\"> <input type=\"text\" placeholder=\"Subtitle\"> <input type=\"text\" placeholder=\"Description\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func TaskPreview(task models.Task) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"task-preview\"><h3 class=\"task-preview__title\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"task-preview\"><div class=\"task-preview__header\"><div class=\"task-preview__identifier\"><h3 class=\"task-preview__title\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -76,12 +76,46 @@ func TaskPreview(task models.Task) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4><p class=\"task-preview__description\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h4></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var5 string = task.Description
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, toggleDescription(task.Id))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button type=\"button\" onclick=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var5 templ.ComponentScript = toggleDescription(task.Id)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5.Call)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var6 := `^`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button></div><p id=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("task-%d__description", task.Id)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"task-preview__description hidden\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string = task.Description
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -94,4 +128,20 @@ func TaskPreview(task models.Task) templ.Component {
 		}
 		return templ_7745c5c3_Err
 	})
+}
+
+func toggleDescription(id int) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_toggleDescription_0a39`,
+		Function: `function __templ_toggleDescription_0a39(id){const desc = document.getElementById("task-" + id + "__description");
+    const isHidden = desc.classList.contains("hidden");
+
+    if (isHidden) {
+        mod.show(desc.id);
+    } else {
+        mod.hide(desc.id);
+    }}`,
+		Call:       templ.SafeScript(`__templ_toggleDescription_0a39`, id),
+		CallInline: templ.SafeScriptInline(`__templ_toggleDescription_0a39`, id),
+	}
 }

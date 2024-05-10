@@ -65,6 +65,14 @@ func NextISOWeek(w string) string {
 	return ISOWeek(WeekStart(year, week+1))
 }
 
+func PrevDateString(d time.Time) string {
+	return DateToString(d.AddDate(0, 0, -1))
+}
+
+func NextDateString(d time.Time) string {
+	return DateToString(d.AddDate(0, 0, 1))
+}
+
 func ISOWeek(d time.Time) string {
 	y, w := d.ISOWeek()
 
