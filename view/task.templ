@@ -1,0 +1,22 @@
+package view
+
+import "github.com/sknutsen/planner/models"
+import "fmt"
+
+templ Task(state models.ClientState, task models.Task) {
+    <div id="selected-task" class="task">
+        <input type="text" placeholder="Title" />
+        <input type="text" placeholder="Subtitle" />
+        <input type="text" placeholder="Description" />
+    </div>
+}
+
+templ TaskPreview(task models.Task) {
+    <div id={fmt.Sprintf("task-%d", task.Id)} class="task-preview">
+        <h3 class="task-preview__title">{task.Title}</h3>
+        <h4 class="task-preview__subtitle">{task.Subtitle}</h4>
+        <p class="task-preview__description">
+            {task.Description}
+        </p>
+    </div>
+}

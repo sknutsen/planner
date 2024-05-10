@@ -1,0 +1,9 @@
+package view
+
+import "github.com/sknutsen/planner/models"
+
+templ Index(state models.ClientState) {
+    @MainLayout(state.UserInfo) {
+        @Week(state)
+    }
+}

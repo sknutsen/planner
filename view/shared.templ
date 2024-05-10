@@ -1,0 +1,40 @@
+package view
+
+import "github.com/sknutsen/planner/models"
+// import "github.com/sknutsen/planner/routes"
+
+templ Nav(userInfo models.UserInfo) {
+	<div class="navbar">
+        <div class="navbar__left">
+            <span></span>
+            // <span>ZDK</span>
+        </div>
+
+        <div class="navbar__center">
+            // <a href={templ.SafeURL(routes.Index)}>Home</a>
+            // <a href="/details">Details</a>
+        </div>
+        
+        <div class="navbar__right">
+            <span>{ userInfo.Email }</span>
+        </div>
+	</div>
+}
+
+templ MainLayout(userInfo models.UserInfo) {
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Planner</title>
+            <meta charset="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <link href="/assets/index.css?ver=1" rel="stylesheet" />
+            <script src="https://unpkg.com/htmx.org/dist/htmx.min.js" />
+        </head>
+        <body>
+            @Nav(userInfo)
+            { children... }
+            <script type="text/javascript" src="/assets/bundle.js" />
+        </body>
+    </html>
+}

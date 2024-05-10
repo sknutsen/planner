@@ -1,0 +1,47 @@
+package view
+
+import "github.com/sknutsen/planner/lib"
+import "github.com/sknutsen/planner/models"
+import "fmt"
+
+templ Week(state models.ClientState) {
+    <div id="week">
+        <div id="week__header">
+            @planSelector(state)
+            @weekSelector(state.Week)
+        </div>
+        <div id="week__body">
+            @DayPreview(state.Week.Monday)
+            @DayPreview(state.Week.Tuesday)
+            @DayPreview(state.Week.Wednesday)
+            @DayPreview(state.Week.Thursday)
+            @DayPreview(state.Week.Friday)
+            @DayPreview(state.Week.Saturday)
+            @DayPreview(state.Week.Sunday)
+        </div>
+    </div>
+}
+
+templ planSelector(state models.ClientState) {
+    <div id="plan-selector">
+        <select>
+            for _, p := range state.Plans {
+                <option selected?={p.Id == state.SelectedPlanId}>{p.Name}</option>
+            }
+        </select>
+    </div>
+}
+
+templ weekSelector(week models.Week) {
+    <div id="week-selector">
+        <a id="week-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%s", lib.PrevISOWeek(week.ISOWeek)))}>
+            Prev
+        </a>
+        <a id="week-selector__next" href={templ.SafeURL(fmt.Sprintf("/%s", lib.NextISOWeek(week.ISOWeek)))}>
+            Next
+        </a>
+        <span>
+            {week.ISOWeek}
+        </span>
+    </div>
+}

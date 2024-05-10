@@ -1,0 +1,16 @@
+package view
+
+import "github.com/sknutsen/planner/style"
+
+templ defaultLoader() {
+    @loader(style.Primary)
+}
+
+templ loader(theme string) {
+    <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+        <circle class="loader" cx="400" cy="400" fill="none"
+                r="200" stroke-width="44" stroke={theme}
+                stroke-dasharray="946 1400"
+                stroke-linecap="round" />
+    </svg>
+}

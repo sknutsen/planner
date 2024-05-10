@@ -1,0 +1,26 @@
+package view
+
+import "github.com/sknutsen/planner/models"
+import "fmt"
+
+templ Day(state models.ClientState, day models.Day) {
+
+}
+
+templ DayPreview(day models.Day) {
+    <div id={fmt.Sprint(day.Date.Weekday())} class="day-preview">
+        <h2>
+            <span>
+                {fmt.Sprint(day.Date.Weekday())}
+            </span>
+            <span>
+                {fmt.Sprintf("%d.%d", day.Date.Day(), day.Date.Month())}
+            </span>
+        </h2>
+        <div class="day-preview__tasks">
+            for _, t := range day.Tasks {
+                @TaskPreview(t)
+            }
+        </div>
+    </div>
+}
