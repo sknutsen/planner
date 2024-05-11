@@ -27,6 +27,10 @@
   }
 }
 
+#week-selector__back {
+  margin-right: 5px;
+}
+
 .nav-selector {
   display: flex;
   flex-direction: row;

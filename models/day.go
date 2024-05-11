@@ -72,3 +72,8 @@ func (d *Day) StringShort() string {
 
 	return dateAsString
 }
+
+type DayTasksResponse struct {
+	Date  string
+	Tasks []Task
+}

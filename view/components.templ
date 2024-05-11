@@ -14,3 +14,9 @@ templ loader(theme string) {
                 stroke-linecap="round" />
     </svg>
 }
+
+templ Modal(class string) {
+    <div id="modal" class={class}>
+        { children... }
+    </div>
+}

@@ -69,7 +69,11 @@ func MainLayout(userInfo models.UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link href=\"/assets/index.css?ver=1\" rel=\"stylesheet\"><script src=\"https://unpkg.com/htmx.org/dist/htmx.min.js\"></script></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css\"><link href=\"/assets/index.css\" rel=\"stylesheet\"><script src=\"https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js\"></script><script src=\"https://unpkg.com/htmx.org/dist/htmx.min.js\"></script></head><body>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = Modal("hidden").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,6 +91,7 @@ func MainLayout(userInfo models.UserInfo) templ.Component {
 		}
 		templ_7745c5c3_Var5 := `
                 var mod = {};
+                var simplemde = {};
             `
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 		if templ_7745c5c3_Err != nil {

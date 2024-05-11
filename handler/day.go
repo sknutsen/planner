@@ -66,91 +66,21 @@ func (h *Handler) DayTasks(c echo.Context) error {
 
 	d, _ := lib.StringToDate(date)
 
-	component := view.DayTasks([]models.Task{
-		{
-			Id:          0,
+	tasks := []models.Task{}
+
+	for i := d.Day() * 100; i < (d.Day()*100)+20; i++ {
+		tasks = append(tasks, models.Task{
+			Id:          i,
 			Date:        d,
 			Title:       date,
 			Subtitle:    "subtitle",
 			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
-		{
-			Id:          0,
-			Date:        d,
-			Title:       date,
-			Subtitle:    "subtitle",
-			Description: "description",
-		},
+		})
+	}
+
+	component := view.DayTasks(models.DayTasksResponse{
+		Date:  date,
+		Tasks: tasks,
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
