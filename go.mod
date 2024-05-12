@@ -4,7 +4,6 @@ go 1.21
 
 require (
 	github.com/a-h/templ v0.2.663
-	github.com/auth0/go-jwt-middleware/v2 v2.2.1
 	github.com/coreos/go-oidc/v3 v3.10.0
 	github.com/gorilla/sessions v1.2.2
 	github.com/joho/godotenv v1.5.1
@@ -30,12 +29,10 @@ require (
 	golang.org/x/crypto v0.23.0 // indirect
 	golang.org/x/exp v0.0.0-20240325151524-a685a6edb6d8 // indirect
 	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
-	gopkg.in/go-jose/go-jose.v2 v2.6.2 // indirect
 	nhooyr.io/websocket v1.8.10 // indirect
 )
