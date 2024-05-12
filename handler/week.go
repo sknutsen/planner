@@ -2,8 +2,10 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
@@ -21,6 +23,14 @@ func (h *Handler) Index(c echo.Context) error {
 		println(err)
 	}
 
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
+	fmt.Printf("week: %s\n", week)
 	dates := lib.DatesInWeek(lib.ISOWeekFromString(week))
 	state.Week.ISOWeek = week
 
@@ -43,6 +53,12 @@ func (h *Handler) Index(c echo.Context) error {
 		case time.Sunday:
 			state.Week.Sunday.Date = date
 		}
+	}
+
+	state.Plans = h.ListPlans(state.UserProfile.UserId)
+
+	if len(state.Plans) > 0 {
+		state.SelectedPlanId = int(state.Plans[0].ID)
 	}
 
 	component := view.Index(state)

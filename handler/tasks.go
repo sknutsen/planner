@@ -7,7 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
+	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/view"
@@ -33,17 +35,96 @@ func (h *Handler) EditTask(c echo.Context) error {
 		println(err)
 	}
 
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
+	db := h.openDB()
+	defer db.Close()
+
+	ctx := context.Background()
+	dq := database.New(db)
+
+	task, err := dq.GetTask(ctx, database.GetTaskParams{
+		ID:     int64(taskId),
+		User:   state.UserProfile.UserId,
+		User_2: state.UserProfile.UserId,
+	})
+
 	component := view.Task(state, models.Task{
-		Id:          taskId,
-		Date:        time.Now(),
-		Title:       "Title",
-		Subtitle:    "Subtitle",
-		Description: "Description",
+		Id:          int(task.ID),
+		Date:        task.Date,
+		Title:       task.Title,
+		Subtitle:    task.Subtitle.(string),
+		Description: task.Description.(string),
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
 func (h *Handler) UpdateTask(c echo.Context) error {
+	var request models.UpdateTaskRequest
+
+	err := c.Bind(&request)
+	if err != nil {
+		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
+	}
+
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
+	db := h.openDB()
+	defer db.Close()
+
+	ctx := context.Background()
+	dq := database.New(db)
+
+	if request.Id == "0" {
+		planId, err := strconv.Atoi(request.PlanId)
+		if err != nil {
+			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
+		}
+
+		err = dq.CreateTask(ctx, database.CreateTaskParams{
+			PlanID:      int64(planId),
+			Title:       request.Title,
+			Subtitle:    request.Subtitle,
+			Description: request.Description,
+			Date:        request.Date,
+		})
+
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed creating task. err: %s", err))
+		}
+	} else {
+		id, err := strconv.Atoi(request.Id)
+		if err != nil {
+			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
+		}
+
+		err = dq.UpdateTask(ctx, database.UpdateTaskParams{
+			ID:          int64(id),
+			Title:       request.Title,
+			Subtitle:    request.Subtitle,
+			Description: request.Description,
+			Date:        request.Date,
+			User:        user.UserId,
+			User_2:      user.UserId,
+		})
+
+		if err != nil {
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed updating task. err: %s", err))
+		}
+	}
+
+	c.Response().Header().Add("HX-Trigger", "updatedTask")
+
 	return h.Modal(c)
 }
 
@@ -57,16 +138,21 @@ func (h *Handler) CreateTask(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	d, _ := lib.StringToDate(date)
-
 	state, err := models.GetClientState()
 	if err != nil {
 		println(err)
 	}
 
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
 	component := view.Task(state, models.Task{
 		Id:          0,
-		Date:        d,
+		Date:        date,
 		Title:       "",
 		Subtitle:    "",
 		Description: "hello world",

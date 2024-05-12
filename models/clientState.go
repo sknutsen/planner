@@ -3,21 +3,22 @@ package models
 import (
 	"time"
 
+	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
 )
 
 type ClientState struct {
-	Plans          []Plan
+	Plans          []database.Plan
 	SelectedPlanId int
-	UserInfo       UserInfo
+	UserProfile    UserProfile
 	Week           Week
 }
 
 func GetClientState() (ClientState, error) {
 	state := ClientState{
-		Plans: []Plan{
+		Plans: []database.Plan{
 			{
-				Id:   1,
+				ID:   1,
 				Name: "Plan",
 			},
 		},

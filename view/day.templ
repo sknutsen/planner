@@ -6,7 +6,7 @@ import "github.com/sknutsen/planner/models"
 import "time"
 
 templ Day(state models.ClientState, day models.Day) {
-    @MainLayout(state.UserInfo) {
+    @MainLayout(state.UserProfile) {
         <div id="day">
             <div id="day__header">
                 <span>
@@ -34,7 +34,7 @@ templ DayPreview(day models.Day) {
                 {day.StringShort()}
             </span>
         </a>
-        <div class="day-preview__tasks" hx-get={fmt.Sprintf("/day/%s/tasks", lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load">
+        <div class="day-preview__tasks" hx-get={fmt.Sprintf("/day/%s/tasks", lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load, updatedTask from:body">
             @defaultLoader()
         </div>
         @newTaskButton(lib.DateToString(day.Date), true)

@@ -6,11 +6,22 @@ const (
 
 	Assets string = "/assets"
 
-	Day      string = "/day/:date"
-	Daytasks string = Day + "/tasks"
+	Callback string = "/callback"
 
 	Components      string = "/components"
 	ComponentsModal string = Components + "/modal"
+
+	Day      string = "/day/:date"
+	Daytasks string = Day + "/tasks"
+
+	Login  string = "/login"
+	Logout string = "/logout"
+
+	Plan       string = "/plan/:id"
+	PlanCreate string = "/plan/create"
+	PlanDelete string = Plan + "/delete"
+	PlanEdit   string = Plan + "/edit"
+	PlanUpdate string = "/plan/update"
 
 	Task       string = "/task/:id"
 	TaskCreate string = Day + "/create"

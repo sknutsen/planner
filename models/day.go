@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
 )
 
@@ -75,5 +76,5 @@ func (d *Day) StringShort() string {
 
 type DayTasksResponse struct {
 	Date  string
-	Tasks []Task
+	Tasks []database.Task
 }

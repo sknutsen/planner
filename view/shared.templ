@@ -3,7 +3,7 @@ package view
 import "github.com/sknutsen/planner/models"
 // import "github.com/sknutsen/planner/routes"
 
-templ Nav(userInfo models.UserInfo) {
+templ Nav(userInfo models.UserProfile) {
 	<div class="navbar">
         <div class="navbar__left">
             <span></span>
@@ -16,12 +16,13 @@ templ Nav(userInfo models.UserInfo) {
         </div>
         
         <div class="navbar__right">
-            <span>{ userInfo.Email }</span>
+            <img class="avatar" src={ userInfo.Picture } />
+            <span>{ userInfo.Name }</span>
         </div>
 	</div>
 }
 
-templ MainLayout(userInfo models.UserInfo) {
+templ MainLayout(userInfo models.UserProfile) {
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -33,6 +34,7 @@ templ MainLayout(userInfo models.UserInfo) {
             <link href="/assets/index.css" rel="stylesheet" />
             <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js" />
             <script src="https://unpkg.com/htmx.org/dist/htmx.min.js" />
+            <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
             // <script type="module" src="/assets/bundle.js" />
         </head>
         <body>

@@ -1,11 +1,18 @@
 package models
 
-import "time"
-
 type Task struct {
 	Id          int
-	Date        time.Time
+	Date        string
 	Title       string
 	Subtitle    string
 	Description string
+}
+
+type UpdateTaskRequest struct {
+	Id          string `json:"id"`
+	PlanId      string `json:"plan_id"`
+	Date        string `json:"date"`
+	Title       string `json:"title"`
+	Subtitle    string `json:"subtitle"`
+	Description string `json:"description"`
 }

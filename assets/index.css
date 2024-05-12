@@ -1,6 +1,8 @@
 @import "styles/day.css";
 @import "styles/loader.css";
 @import "styles/modal.css";
+@import "styles/navbar.css";
+@import "styles/plan.css";
 @import "styles/task.css";
 @import "styles/week.css";
 
@@ -15,4 +17,10 @@ body {
 
 .hidden {
   display: none;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
