@@ -75,6 +75,7 @@ func (d *Day) StringShort() string {
 }
 
 type DayTasksResponse struct {
-	Date  string
-	Tasks []database.Task
+	Date            string
+	Tasks           []database.Task
+	HideDescription bool
 }

@@ -21,7 +21,9 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	// e.Use(mw.IsAuthenticated)
 
 	e.GET(routes.Index, h.Index, mw.IsAuthenticated)
-	e.GET(routes.IndexWeek, h.Index, mw.IsAuthenticated)
+	e.GET(routes.IndexPlan, h.Index, mw.IsAuthenticated)
+	e.GET(routes.IndexPlanWeek, h.Index, mw.IsAuthenticated)
+	// e.GET(routes.IndexWeek, h.Index, mw.IsAuthenticated)
 
 	e.GET(routes.Callback, h.Callback)
 

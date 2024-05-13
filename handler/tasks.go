@@ -133,6 +133,13 @@ func (h *Handler) DeleteTask(c echo.Context) error {
 }
 
 func (h *Handler) CreateTask(c echo.Context) error {
+	var planId int
+	id := c.Param("planId")
+	planId, err := strconv.Atoi(id)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+
 	date := c.Param("date")
 	if date == "" {
 		return echo.ErrBadRequest
@@ -148,6 +155,7 @@ func (h *Handler) CreateTask(c echo.Context) error {
 		println(err)
 	}
 
+	state.SelectedPlanId = planId
 	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	component := view.Task(state, models.Task{
@@ -155,7 +163,7 @@ func (h *Handler) CreateTask(c echo.Context) error {
 		Date:        date,
 		Title:       "",
 		Subtitle:    "",
-		Description: "hello world",
+		Description: "",
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }

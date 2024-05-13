@@ -18,6 +18,7 @@ templ Nav(userInfo models.UserProfile) {
         <div class="navbar__right">
             <img class="avatar" src={ userInfo.Picture } />
             <span>{ userInfo.Name }</span>
+            <span>ID: { userInfo.UserId }</span>
         </div>
 	</div>
 }

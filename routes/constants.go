@@ -1,8 +1,10 @@
 package routes
 
 const (
-	Index     string = "/"
-	IndexWeek string = "/:week"
+	Index         string = "/"
+	IndexPlan     string = Index + ":id"
+	IndexPlanWeek string = IndexPlan + "/:week"
+	// IndexWeek     string = Index + ":week"
 
 	Assets string = "/assets"
 
@@ -11,7 +13,7 @@ const (
 	Components      string = "/components"
 	ComponentsModal string = Components + "/modal"
 
-	Day      string = "/day/:date"
+	Day      string = "/:planId/day/:date"
 	Daytasks string = Day + "/tasks"
 
 	Login  string = "/login"

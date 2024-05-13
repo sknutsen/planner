@@ -16,13 +16,8 @@ type ClientState struct {
 
 func GetClientState() (ClientState, error) {
 	state := ClientState{
-		Plans: []database.Plan{
-			{
-				ID:   1,
-				Name: "Plan",
-			},
-		},
-		SelectedPlanId: 1,
+		Plans:          []database.Plan{},
+		SelectedPlanId: 0,
 		Week: Week{
 			ISOWeek: lib.ISOWeek(time.Now()),
 			Monday: Day{

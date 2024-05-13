@@ -12,7 +12,7 @@ t.*
 FROM tasks as t
 INNER JOIN plans as p ON t.plan_id = p.id
 LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE t.date = ? AND (p.user = ? OR pa.user = ?);
+WHERE t.date = ? AND t.plan_id = ? AND (p.user = ? OR pa.user = ?);
 
 /* name: CreateTask :exec */
 INSERT INTO tasks (

@@ -4,6 +4,7 @@ import "fmt"
 import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
 import "github.com/sknutsen/planner/database"
+import "github.com/sknutsen/planner/lib"
 
 templ Task(state models.ClientState, task models.Task) {
     @Modal("") {
@@ -34,20 +35,20 @@ templ Task(state models.ClientState, task models.Task) {
     }
 }
 
-templ TaskPreview(task database.Task) {
+templ TaskPreview(task database.Task, hideDescription bool) {
     <div id={fmt.Sprintf("task-%d", task.ID)} class="task-preview">
         <div class="task-preview__header">
             <div class="task-preview__identifier" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/task/%d", task.ID)}>
                 <h3 class="task-preview__title">{task.Title}</h3>
                 <h4 class="task-preview__subtitle">{fmt.Sprint(task.Subtitle)}</h4>
             </div>
-            <button type="button" onclick={toggleDescription(task.ID)}>
+            <button class={ templ.KV("hidden", lib.IsNullOrEmpty(task.Description)) } type="button" onclick={toggleDescription(task.ID)}>
                 <span id={fmt.Sprintf("task-%d__expand-icon", task.ID)} class="material-symbols-outlined">
                     expand_more
                 </span>
             </button>
         </div>
-        <p id={fmt.Sprintf("task-%d__description", task.ID)} class="task-preview__description hidden">
+        <p id={fmt.Sprintf("task-%d__description", task.ID)} class={ "task-preview__description", templ.KV("hidden", hideDescription) }>
             {fmt.Sprint(task.Description)}
         </p>
     </div>

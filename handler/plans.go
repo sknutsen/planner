@@ -63,7 +63,7 @@ func (h *Handler) UpdatePlan(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	if request.Id == "0" {
+	if request.Id == "" {
 		err = dq.CreatePlan(ctx, database.CreatePlanParams{
 			Name: request.Name,
 			User: user.UserId,
@@ -98,7 +98,7 @@ func (h *Handler) EditPlan(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	taskId, err := strconv.Atoi(id)
+	planId, err := strconv.Atoi(id)
 	if err != nil {
 		return err
 	}
@@ -115,9 +115,21 @@ func (h *Handler) EditPlan(c echo.Context) error {
 
 	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
+	db := h.openDB()
+	defer db.Close()
+
+	ctx := context.Background()
+	dq := database.New(db)
+
+	plan, err := dq.GetPlan(ctx, database.GetPlanParams{
+		ID:     int64(planId),
+		User:   state.UserProfile.UserId,
+		User_2: state.UserProfile.UserId,
+	})
+
 	component := view.Plan(state, models.Plan{
-		Id:   taskId,
-		Name: "",
+		Id:   int(plan.ID),
+		Name: plan.Name,
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }

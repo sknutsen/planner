@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo-contrib/session"
@@ -15,6 +16,13 @@ import (
 )
 
 func (h *Handler) Day(c echo.Context) error {
+	var planId int
+	id := c.Param("planId")
+	planId, err := strconv.Atoi(id)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+
 	date := c.Param("date")
 	if date == "" {
 		return echo.ErrBadRequest
@@ -37,6 +45,7 @@ func (h *Handler) Day(c echo.Context) error {
 		println(err)
 	}
 
+	state.SelectedPlanId = planId
 	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	for _, d := range dates {
@@ -70,6 +79,13 @@ func (h *Handler) Day(c echo.Context) error {
 }
 
 func (h *Handler) DayTasks(c echo.Context) error {
+	var planId int
+	id := c.Param("planId")
+	planId, err := strconv.Atoi(id)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+
 	date := c.Param("date")
 	if date == "" {
 		return echo.ErrBadRequest
@@ -90,6 +106,7 @@ func (h *Handler) DayTasks(c echo.Context) error {
 
 	tasks, err := dq.GetTasksByDate(ctx, database.GetTasksByDateParams{
 		Date:   date,
+		PlanID: int64(planId),
 		User:   user.UserId,
 		User_2: user.UserId,
 	})
@@ -98,23 +115,10 @@ func (h *Handler) DayTasks(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks by date. err: %s", err))
 	}
 
-	// d, _ := lib.StringToDate(date)
-
-	// tasks := []models.Task{}
-
-	// for i := d.Day() * 100; i < (d.Day()*100)+20; i++ {
-	// 	tasks = append(tasks, models.Task{
-	// 		Id:          i,
-	// 		Date:        d,
-	// 		Title:       date,
-	// 		Subtitle:    "subtitle",
-	// 		Description: "description",
-	// 	})
-	// }
-
 	component := view.DayTasks(models.DayTasksResponse{
-		Date:  date,
-		Tasks: tasks,
+		Date:            date,
+		Tasks:           tasks,
+		HideDescription: true,
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/labstack/echo-contrib/session"
@@ -13,6 +14,12 @@ import (
 )
 
 func (h *Handler) Index(c echo.Context) error {
+	var planId int
+	id := c.Param("id")
+	if id != "" {
+		planId, _ = strconv.Atoi(id)
+	}
+
 	week := c.Param("week")
 	if week == "" {
 		week = lib.ISOWeek(time.Now())
@@ -58,7 +65,12 @@ func (h *Handler) Index(c echo.Context) error {
 	state.Plans = h.ListPlans(state.UserProfile.UserId)
 
 	if len(state.Plans) > 0 {
-		state.SelectedPlanId = int(state.Plans[0].ID)
+		for _, p := range state.Plans {
+			if planId == int(p.ID) || planId == 0 {
+				state.SelectedPlanId = int(p.ID)
+				break
+			}
+		}
 	}
 
 	component := view.Index(state)

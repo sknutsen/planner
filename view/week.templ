@@ -10,27 +10,38 @@ templ Week(state models.ClientState) {
     <div id="week">
         <div id="week__header">
             @planSelector(state)
-            @weekSelector(state.Week)
+            @weekSelector(state)
         </div>
         <div id="week__body">
-            @DayPreview(state.Week.Monday)
-            @DayPreview(state.Week.Tuesday)
-            @DayPreview(state.Week.Wednesday)
-            @DayPreview(state.Week.Thursday)
-            @DayPreview(state.Week.Friday)
-            @DayPreview(state.Week.Saturday)
-            @DayPreview(state.Week.Sunday)
+            @DayPreview(state, state.Week.Monday)
+            @DayPreview(state, state.Week.Tuesday)
+            @DayPreview(state, state.Week.Wednesday)
+            @DayPreview(state, state.Week.Thursday)
+            @DayPreview(state, state.Week.Friday)
+            @DayPreview(state, state.Week.Saturday)
+            @DayPreview(state, state.Week.Sunday)
         </div>
     </div>
 }
 
 templ planSelector(state models.ClientState) {
     <div id="plan-selector">
-        <select>
+        // <select name="plan_id" hx-get="/models" hx-target="#models">
+        <select onchange={planChanged()}>
+            <option value="" selected?={state.SelectedPlanId == 0} disabled>
+                Select plan
+            </option>
             for _, p := range state.Plans {
-                <option selected?={p.ID == int64(state.SelectedPlanId)}>{p.Name}</option>
+                <option value={fmt.Sprint(p.ID)} selected?={p.ID == int64(state.SelectedPlanId)}>{p.Name}</option>
             }
         </select>
+        if state.SelectedPlanId != 0 {
+            <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/plan/%d/edit", state.SelectedPlanId)}>
+                <span class="material-symbols-outlined">
+                    edit
+                </span>
+            </div>
+        }
         <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.PlanCreate}>
             <span class="material-symbols-outlined">
                 add
@@ -39,19 +50,23 @@ templ planSelector(state models.ClientState) {
     </div>
 }
 
-templ weekSelector(week models.Week) {
+templ weekSelector(state models.ClientState) {
     <div id="week-selector" class="nav-selector">
-        <a id="week-selector__back" class={ "nav-selector__back", templ.KV("hidden", week.ISOWeek == lib.ISOWeek(time.Now())) } href={templ.SafeURL(fmt.Sprintf("/"))}>
+        <a id="week-selector__back" class={ "nav-selector__back", templ.KV("hidden", state.Week.ISOWeek == lib.ISOWeek(time.Now())) } href={templ.SafeURL(fmt.Sprintf("/%d", state.SelectedPlanId))}>
             Today
         </a>
-        <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%s", week.Prev()))}>
+        <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, state.Week.Prev()))}>
             Prev
         </a>
-        <a id="week-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%s", week.Next()))}>
+        <a id="week-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, state.Week.Next()))}>
             Next
         </a>
         <span>
-            {week.ISOWeek}
+            {state.Week.ISOWeek}
         </span>
     </div>
+}
+
+script planChanged() {
+    window.open("/" + event.target.value, "_self");
 }

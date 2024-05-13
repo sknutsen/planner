@@ -98,17 +98,23 @@ t.id, t.plan_id, t.date, t.title, t.subtitle, t.description
 FROM tasks as t
 INNER JOIN plans as p ON t.plan_id = p.id
 LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE t.date = ? AND (p.user = ? OR pa.user = ?)
+WHERE t.date = ? AND t.plan_id = ? AND (p.user = ? OR pa.user = ?)
 `
 
 type GetTasksByDateParams struct {
 	Date   string
+	PlanID int64
 	User   string
 	User_2 string
 }
 
 func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) ([]Task, error) {
-	rows, err := q.db.QueryContext(ctx, getTasksByDate, arg.Date, arg.User, arg.User_2)
+	rows, err := q.db.QueryContext(ctx, getTasksByDate,
+		arg.Date,
+		arg.PlanID,
+		arg.User,
+		arg.User_2,
+	)
 	if err != nil {
 		return nil, err
 	}
