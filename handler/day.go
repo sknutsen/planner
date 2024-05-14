@@ -106,7 +106,7 @@ func (h *Handler) DayTasks(c echo.Context) error {
 
 	tasks, err := dq.GetTasksByDate(ctx, database.GetTasksByDateParams{
 		Date:   date,
-		PlanID: int64(planId),
+		ID:     int64(planId),
 		User:   user.UserId,
 		User_2: user.UserId,
 	})
