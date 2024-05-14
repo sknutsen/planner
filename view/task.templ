@@ -48,9 +48,7 @@ templ TaskPreview(task database.Task, hideDescription bool) {
                 </span>
             </button>
         </div>
-        <p id={fmt.Sprintf("task-%d__description", task.ID)} class={ "task-preview__description", templ.KV("hidden", hideDescription) } onload={renderDescription(task.ID, fmt.Sprint(task.Description))}>
-            // {fmt.Sprint(task.Description)}
-        </p>
+        <p id={fmt.Sprintf("task-%d__description", task.ID)} class={ "task-preview__description", templ.KV("hidden", hideDescription) }></p>
         @renderDescription(task.ID, fmt.Sprint(task.Description))
     </div>
 }
@@ -73,5 +71,4 @@ script renderDescription(id int64, description string) {
     const desc = document.getElementById("task-" + id + "__description");
 
     desc.innerHTML = md.render(description);
-    console.log(desc.innerHTML);
 }
