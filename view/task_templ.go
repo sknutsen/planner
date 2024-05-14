@@ -282,6 +282,10 @@ func TaskPreview(task database.Task, hideDescription bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = templ.RenderScriptItems(ctx, templ_7745c5c3_Buffer, renderDescription(task.ID, fmt.Sprint(task.Description)))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -298,16 +302,24 @@ func TaskPreview(task database.Task, hideDescription bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" onload=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var15 string = fmt.Sprint(task.Description)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		var templ_7745c5c3_Var15 templ.ComponentScript = renderDescription(task.ID, fmt.Sprint(task.Description))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15.Call)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></p>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = renderDescription(task.ID, fmt.Sprint(task.Description)).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -334,5 +346,17 @@ func toggleDescription(id int64) templ.ComponentScript {
     }}`,
 		Call:       templ.SafeScript(`__templ_toggleDescription_2393`, id),
 		CallInline: templ.SafeScriptInline(`__templ_toggleDescription_2393`, id),
+	}
+}
+
+func renderDescription(id int64, description string) templ.ComponentScript {
+	return templ.ComponentScript{
+		Name: `__templ_renderDescription_3b01`,
+		Function: `function __templ_renderDescription_3b01(id, description){const desc = document.getElementById("task-" + id + "__description");
+
+    desc.innerHTML = md.render(description);
+    console.log(desc.innerHTML);}`,
+		Call:       templ.SafeScript(`__templ_renderDescription_3b01`, id, description),
+		CallInline: templ.SafeScriptInline(`__templ_renderDescription_3b01`, id, description),
 	}
 }
