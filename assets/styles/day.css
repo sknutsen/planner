@@ -104,6 +104,51 @@
       height: 300px;
       margin: auto;
     }
+
+    .task-preview {
+      width: 300px;
+
+      .task-preview__header {
+        position: relative;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 5px;
+        margin-top: 10px;
+        margin-bottom: 0;
+        margin-left: 10px;
+        margin-right: 10px;
+        height: 40px;
+      }
+
+      .task-preview__header::before {
+        position: absolute;
+        top: -15px;
+        bottom: -1px;
+        left: -15px;
+        right: -15px;
+        content: "";
+        z-index: -1;
+        border-bottom: thin solid lightgray;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+      }
+
+      .task-preview__header:hover::before {
+        background-color: lightgray;
+      }
+
+      .task-preview__description.hidden {
+        display: block;
+        max-height: calc(100% - 60px);
+        overflow-y: auto;
+        margin: 0;
+      }
+
+      button {
+        display: none;
+      }
+    }
   }
 
   #day__footer {

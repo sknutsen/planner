@@ -1,7 +1,7 @@
 package view
 
 import "fmt"
-import "github.com/sknutsen/planner/lib"
+// import "github.com/sknutsen/planner/lib"
 import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
 import "time"
@@ -26,7 +26,6 @@ templ Week(state models.ClientState) {
 
 templ planSelector(state models.ClientState) {
     <div id="plan-selector">
-        // <select name="plan_id" hx-get="/models" hx-target="#models">
         <select onchange={planChanged()}>
             <option value="" selected?={state.SelectedPlanId == 0} disabled>
                 Select plan
@@ -52,7 +51,8 @@ templ planSelector(state models.ClientState) {
 
 templ weekSelector(state models.ClientState) {
     <div id="week-selector" class="nav-selector">
-        <a id="week-selector__back" class={ "nav-selector__back", templ.KV("hidden", state.Week.ISOWeek == lib.ISOWeek(time.Now())) } href={templ.SafeURL(fmt.Sprintf("/%d", state.SelectedPlanId))}>
+        <a id="week-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("/%d#%s", state.SelectedPlanId, time.Now().Weekday()))}>
+        // <a id="week-selector__back" class={ "nav-selector__back", templ.KV("hidden", state.Week.ISOWeek == lib.ISOWeek(time.Now())) } href={templ.SafeURL(fmt.Sprintf("/%d#%s", state.SelectedPlanId, time.Now().Weekday()))}>
             Today
         </a>
         <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, state.Week.Prev()))}>
