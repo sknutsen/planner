@@ -18,12 +18,10 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.Static(routes.Assets, "assets")
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(h.AuthConfig.ClientSecret))))
-	// e.Use(mw.IsAuthenticated)
 
 	e.GET(routes.Index, h.Index, mw.IsAuthenticated)
 	e.GET(routes.IndexPlan, h.Index, mw.IsAuthenticated)
 	e.GET(routes.IndexPlanWeek, h.Index, mw.IsAuthenticated)
-	// e.GET(routes.IndexWeek, h.Index, mw.IsAuthenticated)
 
 	e.GET(routes.Callback, h.Callback)
 

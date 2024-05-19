@@ -10,6 +10,7 @@ import (
 )
 
 const createPlan = `-- name: CreatePlan :exec
+
 INSERT INTO plans (
     name,
     user
@@ -24,6 +25,11 @@ type CreatePlanParams struct {
 	User string
 }
 
+// SELECT
+// p.*
+// FROM plans as p
+// LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+// WHERE (p.user = ? OR pa.user = ?);
 func (q *Queries) CreatePlan(ctx context.Context, arg CreatePlanParams) error {
 	_, err := q.db.ExecContext(ctx, createPlan, arg.Name, arg.User)
 	return err
@@ -49,10 +55,11 @@ func (q *Queries) DeletePlan(ctx context.Context, arg DeletePlanParams) error {
 
 const getPlan = `-- name: GetPlan :one
 SELECT 
-p.id, p.name, p.user 
-FROM plans as p
-LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE p.id = ? AND (p.user = ? OR pa.user = ?)
+id, name, user 
+FROM plans
+WHERE id IN (SELECT p.id FROM plans as p
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+             WHERE p.id = ? AND (p.user = ? OR pa.user = ?))
 `
 
 type GetPlanParams struct {
@@ -70,10 +77,11 @@ func (q *Queries) GetPlan(ctx context.Context, arg GetPlanParams) (Plan, error) 
 
 const listPlans = `-- name: ListPlans :many
 SELECT 
-p.id, p.name, p.user 
-FROM plans as p
-LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE (p.user = ? OR pa.user = ?)
+id, name, user 
+FROM plans
+WHERE id IN (SELECT p.id FROM plans as p
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+             WHERE p.user = ? OR pa.user = ?)
 `
 
 type ListPlansParams struct {
