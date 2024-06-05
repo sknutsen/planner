@@ -282,7 +282,7 @@ func TaskPreview(task database.Task, hideDescription bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p id=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -298,7 +298,7 @@ func TaskPreview(task database.Task, hideDescription bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></p>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -338,11 +338,13 @@ func toggleDescription(id int64) templ.ComponentScript {
 
 func renderDescription(id int64, description string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_renderDescription_7a2b`,
-		Function: `function __templ_renderDescription_7a2b(id, description){const desc = document.getElementById("task-" + id + "__description");
+		Name: `__templ_renderDescription_e128`,
+		Function: `function __templ_renderDescription_e128(id, description){const desc = document.getElementById("task-" + id + "__description");
 
-    desc.innerHTML = md.render(description);}`,
-		Call:       templ.SafeScript(`__templ_renderDescription_7a2b`, id, description),
-		CallInline: templ.SafeScriptInline(`__templ_renderDescription_7a2b`, id, description),
+    // desc.innerHTML = md.render(description);
+    // desc.innerHTML = marked.parse(description);
+    desc.innerHTML = simplemde.markdown(description);}`,
+		Call:       templ.SafeScript(`__templ_renderDescription_e128`, id, description),
+		CallInline: templ.SafeScriptInline(`__templ_renderDescription_e128`, id, description),
 	}
 }
