@@ -42,6 +42,14 @@ INSERT INTO tasks (
     ?
 );
 
+/* name: SetIsCompleteTask :exec */
+UPDATE tasks 
+SET is_complete = ?
+WHERE id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+             WHERE t.id = ? AND (p.user = ? OR pa.user = ?));
+
 /* name: UpdateTask :exec */
 UPDATE tasks 
 SET title = ?, subtitle = ?, date = ?, description = ?

@@ -65,7 +65,7 @@ func (q *Queries) DeleteTask(ctx context.Context, arg DeleteTaskParams) error {
 
 const getTask = `-- name: GetTask :one
 SELECT 
-t.id, t.plan_id, t.date, t.title, t.subtitle, t.description 
+t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete 
 FROM tasks as t
 INNER JOIN plans as p ON t.plan_id = p.id
 LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
@@ -88,13 +88,14 @@ func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) 
 		&i.Title,
 		&i.Subtitle,
 		&i.Description,
+		&i.IsComplete,
 	)
 	return i, err
 }
 
 const getTasksByDate = `-- name: GetTasksByDate :many
 SELECT
-  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete
 FROM
   tasks AS t
 WHERE
@@ -142,6 +143,7 @@ func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) 
 			&i.Title,
 			&i.Subtitle,
 			&i.Description,
+			&i.IsComplete,
 		); err != nil {
 			return nil, err
 		}
@@ -154,6 +156,32 @@ func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) 
 		return nil, err
 	}
 	return items, nil
+}
+
+const setIsCompleteTask = `-- name: SetIsCompleteTask :exec
+UPDATE tasks 
+SET is_complete = ?
+WHERE id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+             WHERE t.id = ? AND (p.user = ? OR pa.user = ?))
+`
+
+type SetIsCompleteTaskParams struct {
+	IsComplete int64
+	ID         int64
+	User       string
+	User_2     string
+}
+
+func (q *Queries) SetIsCompleteTask(ctx context.Context, arg SetIsCompleteTaskParams) error {
+	_, err := q.db.ExecContext(ctx, setIsCompleteTask,
+		arg.IsComplete,
+		arg.ID,
+		arg.User,
+		arg.User_2,
+	)
+	return err
 }
 
 const updateTask = `-- name: UpdateTask :exec

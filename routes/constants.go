@@ -25,10 +25,11 @@ const (
 	PlanEdit   string = Plan + "/edit"
 	PlanUpdate string = "/plan/update"
 
-	Task       string = "/task/:id"
-	TaskCreate string = Day + "/create"
-	TaskDelete string = Task + "/delete"
-	TaskEdit   string = Task + "/edit"
-	TaskUpdate string = "/task/update"
-	TaskCopy   string = "/task/copy"
+	Task         string = "/task/:id"
+	TaskComplete string = Task + "/complete"
+	TaskCopy     string = "/task/copy"
+	TaskCreate   string = Day + "/create"
+	TaskDelete   string = Task + "/delete"
+	TaskEdit     string = Task + "/edit"
+	TaskUpdate   string = "/task/update"
 )

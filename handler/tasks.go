@@ -62,6 +62,7 @@ func (h *Handler) EditTask(c echo.Context) error {
 		Title:       task.Title,
 		Subtitle:    task.Subtitle.(string),
 		Description: task.Description.(string),
+		IsComplete:  task.IsComplete != 0,
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
@@ -179,6 +180,63 @@ func (h *Handler) UpdateTask(c echo.Context) error {
 		if err != nil {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed updating task. err: %s", err))
 		}
+	}
+
+	c.Response().Header().Add("HX-Trigger", "updatedTask")
+
+	return h.Modal(c)
+}
+
+func (h *Handler) ToggleIsCompleteTask(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.ErrBadRequest
+	}
+
+	taskId, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
+	db := h.openDB()
+	defer db.Close()
+
+	ctx := context.Background()
+	dq := database.New(db)
+
+	task, err := dq.GetTask(ctx, database.GetTaskParams{
+		ID:     int64(taskId),
+		User:   user.UserId,
+		User_2: user.UserId,
+	})
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting task. err: %s", err))
+	}
+
+	var isComplete int64
+	if task.IsComplete == 0 {
+		isComplete = 1
+	} else {
+		isComplete = 0
+	}
+
+	err = dq.SetIsCompleteTask(ctx, database.SetIsCompleteTaskParams{
+		IsComplete: isComplete,
+		ID:         int64(taskId),
+		User:       user.UserId,
+		User_2:     user.UserId,
+	})
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed creating task. err: %s", err))
 	}
 
 	c.Response().Header().Add("HX-Trigger", "updatedTask")

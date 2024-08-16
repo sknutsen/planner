@@ -40,11 +40,12 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.POST(routes.PlanUpdate, h.UpdatePlan, mw.IsAuthenticated)
 
 	e.GET(routes.Task, h.Task, mw.IsAuthenticated)
+	e.GET(routes.TaskComplete, h.ToggleIsCompleteTask, mw.IsAuthenticated)
+	e.POST(routes.TaskCopy, h.CopyTask, mw.IsAuthenticated)
 	e.GET(routes.TaskCreate, h.CreateTask, mw.IsAuthenticated)
 	e.GET(routes.TaskDelete, h.DeleteTask, mw.IsAuthenticated)
 	e.GET(routes.TaskEdit, h.EditTask, mw.IsAuthenticated)
 	e.POST(routes.TaskUpdate, h.UpdateTask, mw.IsAuthenticated)
-	e.POST(routes.TaskCopy, h.CopyTask, mw.IsAuthenticated)
 
 	e.GET("/favicon.ico", func(c echo.Context) error {
 		return c.NoContent(http.StatusNoContent)

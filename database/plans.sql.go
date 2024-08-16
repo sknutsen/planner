@@ -10,7 +10,6 @@ import (
 )
 
 const createPlan = `-- name: CreatePlan :exec
-
 INSERT INTO plans (
     name,
     user
@@ -25,11 +24,6 @@ type CreatePlanParams struct {
 	User string
 }
 
-// SELECT
-// p.*
-// FROM plans as p
-// LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-// WHERE (p.user = ? OR pa.user = ?);
 func (q *Queries) CreatePlan(ctx context.Context, arg CreatePlanParams) error {
 	_, err := q.db.ExecContext(ctx, createPlan, arg.Name, arg.User)
 	return err

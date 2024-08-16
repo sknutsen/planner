@@ -23,4 +23,5 @@ type Task struct {
 	Title       string
 	Subtitle    interface{}
 	Description interface{}
+	IsComplete  int64
 }

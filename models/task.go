@@ -6,6 +6,7 @@ type Task struct {
 	Title       string
 	Subtitle    string
 	Description string
+	IsComplete  bool
 }
 
 type UpdateTaskRequest struct {
