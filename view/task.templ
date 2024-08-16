@@ -21,7 +21,8 @@ templ Task(state models.ClientState, task models.Task) {
             <div class="button-group">
                 <button type="submit" hx-target="#modal" hx-swap="outerHTML" hx-post={routes.TaskUpdate} hx-include="closest form" hx-ext="json-enc">Save</button>
                 if task.Id != 0 {
-                    <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-delete={fmt.Sprintf("/task/%d", task.Id)}>Delete</button>
+                    <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-post={routes.TaskCopy} hx-include="closest form" hx-ext="json-enc">Save as copy</button>
+                    <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/task/%d/delete", task.Id)}>Delete</button>
                 }
                 <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.ComponentsModal}>Cancel</button>
             </div>

@@ -30,4 +30,5 @@ const (
 	TaskDelete string = Task + "/delete"
 	TaskEdit   string = Task + "/edit"
 	TaskUpdate string = "/task/update"
+	TaskCopy   string = "/task/copy"
 )
