@@ -1,0 +1,73 @@
+package view
+
+import "fmt"
+import "github.com/sknutsen/planner/models"
+
+templ History(state models.HistoryState) {
+    @MainLayout(state.State) {
+        <div id="history">
+            <div id="history__header">
+                @planSelector(state.State)
+                @historyFilters()
+            </div>
+            <div id="history__body" hx-get={fmt.Sprintf("/history/%d/tasks", state.State.SelectedPlanId)} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load, updatedTask from:body">
+                @defaultLoader()
+            </div>
+        </div>
+    }
+}
+
+templ HistoryTasks(historyTasks models.HistoryTasksResponse) {
+    @ListTasks(historyTasks.Tasks, true, false)
+}
+
+templ historyFilters() {
+    <form id="history__filters">
+        <div>
+            <input type="radio" id="history-filter__show-complete_all" name="history-filter__show-complete" value="0" checked onclick={historyFilterShowCompleteChanged(0)} />
+            <label for="history-filter__show-complete_all">All</label>
+        </div>
+        <div>
+            <input type="radio" id="history-filter__show-complete_complete" name="history-filter__show-complete" value="1" onclick={historyFilterShowCompleteChanged(1)} />
+            <label for="history-filter__show-complete_complete">Complete</label>
+        </div>
+        <div>
+            <input type="radio" id="history-filter__show-complete_incomplete" name="history-filter__show-complete" value="2" onclick={historyFilterShowCompleteChanged(2)} />
+            <label for="history-filter__show-complete_incomplete">Incomplete</label>
+        </div>
+    </form>
+}
+
+script historyFilterShowCompleteChanged(v int) {
+    const historyBody = document.getElementById("history__body");
+    const hideComplete = historyBody.classList.contains("hide-complete");
+    const hideIncomplete = historyBody.classList.contains("hide-incomplete");
+
+    console.log(v);
+
+    if (v === 0) {
+        if (hideComplete) {
+            historyBody.classList.remove("hide-complete");
+        }
+
+        if (hideIncomplete) {
+            historyBody.classList.remove("hide-incomplete");
+        }
+    } else if (v === 1) {
+        if (hideComplete) {
+            historyBody.classList.remove("hide-complete");
+        }
+
+        if (!hideIncomplete) {
+            historyBody.classList.add("hide-incomplete");
+        }
+    } else if (v === 2) {
+        if (!hideComplete) {
+            historyBody.classList.add("hide-complete");
+        }
+
+        if (hideIncomplete) {
+            historyBody.classList.remove("hide-incomplete");
+        }
+    }
+}

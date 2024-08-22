@@ -25,6 +25,11 @@
         margin: 0;
       }
 
+      .task-preview__date {
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
+
       .task-preview__title {
         font-weight: 900;
       }

@@ -8,16 +8,49 @@ import (
 )
 
 type ClientState struct {
+	BaseRoute      string
 	Plans          []database.Plan
 	SelectedPlanId int
 	UserProfile    UserProfile
-	Week           Week
+}
+
+type HistoryState struct {
+	State ClientState
+	Tasks []Task
+}
+
+type WeekState struct {
+	State ClientState
+	Week  Week
 }
 
 func GetClientState() (ClientState, error) {
 	state := ClientState{
 		Plans:          []database.Plan{},
 		SelectedPlanId: 0,
+	}
+
+	return state, nil
+}
+
+func GetHistoryState() (HistoryState, error) {
+	state := HistoryState{
+		State: ClientState{
+			Plans:          []database.Plan{},
+			SelectedPlanId: 0,
+		},
+		Tasks: []Task{},
+	}
+
+	return state, nil
+}
+
+func GetWeekState() (WeekState, error) {
+	state := WeekState{
+		State: ClientState{
+			Plans:          []database.Plan{},
+			SelectedPlanId: 0,
+		},
 		Week: Week{
 			ISOWeek: lib.ISOWeek(time.Now()),
 			Monday: Day{

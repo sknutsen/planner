@@ -30,6 +30,7 @@ func DatesInWeek(y int, w int) []string {
 }
 
 func ISOWeekFromString(w string) (int, int) {
+	println(w)
 	parts := strings.Split(w, "-")
 
 	year, _ := strconv.Atoi(parts[0])

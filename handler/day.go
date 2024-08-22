@@ -28,7 +28,7 @@ func (h *Handler) Day(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	state, err := models.GetClientState()
+	state, err := models.GetWeekState()
 	if err != nil {
 		println(err)
 	}
@@ -45,8 +45,8 @@ func (h *Handler) Day(c echo.Context) error {
 		println(err)
 	}
 
-	state.SelectedPlanId = planId
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.SelectedPlanId = planId
+	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	for _, d := range dates {
 		date, _ := lib.StringToDate(d)
@@ -117,7 +117,7 @@ func (h *Handler) DayTasks(c echo.Context) error {
 
 	component := view.DayTasks(models.DayTasksResponse{
 		Date:            date,
-		Tasks:           tasks,
+		Tasks:           models.TasksFromDBModels(tasks),
 		HideDescription: true,
 	})
 	return component.Render(context.Background(), c.Response().Writer)

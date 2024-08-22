@@ -13,9 +13,10 @@ import "bytes"
 import "fmt"
 import "github.com/sknutsen/planner/lib"
 import "github.com/sknutsen/planner/models"
+import "github.com/sknutsen/planner/routes"
 import "time"
 
-func Day(state models.ClientState, day models.Day) templ.Component {
+func Day(state models.WeekState, day models.Day) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -47,7 +48,7 @@ func Day(state models.ClientState, day models.Day) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = daySelector(state, day).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = daySelector(state.State, day).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,7 +56,7 @@ func Day(state models.ClientState, day models.Day) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/%d/day/%s/tasks", state.SelectedPlanId, lib.DateToString(day.Date))))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -71,7 +72,7 @@ func Day(state models.ClientState, day models.Day) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = newTaskButton(state.SelectedPlanId, lib.DateToString(day.Date), false, state.SelectedPlanId == 0).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), false, state.State.SelectedPlanId == 0).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -84,7 +85,7 @@ func Day(state models.ClientState, day models.Day) templ.Component {
 			}
 			return templ_7745c5c3_Err
 		})
-		templ_7745c5c3_Err = MainLayout(state.UserProfile).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = MainLayout(state.State).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +96,7 @@ func Day(state models.ClientState, day models.Day) templ.Component {
 	})
 }
 
-func DayPreview(state models.ClientState, day models.Day) templ.Component {
+func DayPreview(state models.WeekState, day models.Day) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -133,7 +134,7 @@ func DayPreview(state models.ClientState, day models.Day) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var6 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.SelectedPlanId, lib.DateToString(day.Date)))
+		var templ_7745c5c3_Var6 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.State.SelectedPlanId, lib.DateToString(day.Date)))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var6)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -160,7 +161,7 @@ func DayPreview(state models.ClientState, day models.Day) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/%d/day/%s/tasks", state.SelectedPlanId, lib.DateToString(day.Date))))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -176,7 +177,7 @@ func DayPreview(state models.ClientState, day models.Day) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = newTaskButton(state.SelectedPlanId, lib.DateToString(day.Date), true, state.SelectedPlanId == 0).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), true, state.State.SelectedPlanId == 0).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,7 +206,7 @@ func DayTasks(dayTasks models.DayTasksResponse) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, t := range dayTasks.Tasks {
-			templ_7745c5c3_Err = TaskPreview(t, dayTasks.HideDescription).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = TaskPreview(t, dayTasks.HideDescription, true).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -234,7 +235,7 @@ func daySelector(state models.ClientState, day models.Day) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var11 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, day.Week()))
+		var templ_7745c5c3_Var11 templ.SafeURL = templ.SafeURL(fmt.Sprintf("%s/%d/%s", routes.Week, state.SelectedPlanId, day.Week()))
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var11)))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

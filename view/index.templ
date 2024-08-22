@@ -2,8 +2,8 @@ package view
 
 import "github.com/sknutsen/planner/models"
 
-templ Index(state models.ClientState) {
-    @MainLayout(state.UserProfile) {
+templ Index(state models.WeekState) {
+    @MainLayout(state.State) {
         @Week(state)
     }
 }

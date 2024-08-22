@@ -1,10 +1,18 @@
 package routes
 
 const (
-	Index         string = "/"
-	IndexPlan     string = Index + ":id"
-	IndexPlanWeek string = IndexPlan + "/:week"
+	Index string = "/"
+	// IndexPlan     string = Index + ":id"
+	// IndexPlanWeek string = IndexPlan + "/:week"
 	// IndexWeek     string = Index + ":week"
+
+	History          string = "/history"
+	HistoryPlan      string = History + "/:planId"
+	HistoryPlanTasks string = History + "/:planId/tasks"
+
+	Week         string = "/week"
+	WeekPlan     string = Week + "/:id"
+	WeekPlanWeek string = WeekPlan + "/:week"
 
 	Assets string = "/assets"
 

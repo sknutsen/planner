@@ -40,9 +40,9 @@
 
 .navbar__right {
   display: flex;
-  align-items: center;
+  justify-content: end;
   gap: 5px;
-  padding: 5px;
+  width: 34%;
 
   .avatar {
     height: 20px;

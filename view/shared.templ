@@ -1,9 +1,10 @@
 package view
 
+import "fmt"
 import "github.com/sknutsen/planner/models"
-// import "github.com/sknutsen/planner/routes"
+import "github.com/sknutsen/planner/routes"
 
-templ Nav(userInfo models.UserProfile) {
+templ Nav(state models.ClientState) {
 	<div class="navbar">
         <div class="navbar__left">
             <span></span>
@@ -11,19 +12,19 @@ templ Nav(userInfo models.UserProfile) {
         </div>
 
         <div class="navbar__center">
-            // <a href={templ.SafeURL(routes.Index)}>Home</a>
-            // <a href="/details">Details</a>
+            <a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Week, state.SelectedPlanId))}>Week</a>
+            <a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.History, state.SelectedPlanId))}>History</a>
         </div>
         
         <div class="navbar__right">
-            <img class="avatar" src={ userInfo.Picture } />
-            <span>{ userInfo.Name }</span>
-            // <span>ID: { userInfo.UserId }</span>
+            <img class="avatar" src={ state.UserProfile.Picture } />
+            <span>{ state.UserProfile.Name }</span>
+            // <span>ID: { state.UserProfile.UserId }</span>
         </div>
 	</div>
 }
 
-templ MainLayout(userInfo models.UserProfile) {
+templ MainLayout(state models.ClientState) {
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -45,7 +46,7 @@ templ MainLayout(userInfo models.UserProfile) {
                 <textarea></textarea>
             </div>
             @Modal("hidden")
-            @Nav(userInfo)
+            @Nav(state)
             { children... }
             <script type="text/javascript">
                 var mod = {};

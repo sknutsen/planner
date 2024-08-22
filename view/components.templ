@@ -1,5 +1,8 @@
 package view
 
+import "fmt"
+import "github.com/sknutsen/planner/models"
+import "github.com/sknutsen/planner/routes"
 import "github.com/sknutsen/planner/style"
 
 templ defaultLoader() {
@@ -19,4 +22,33 @@ templ Modal(class string) {
     <div id="modal" class={class}>
         { children... }
     </div>
+}
+
+templ planSelector(state models.ClientState) {
+    <div id="plan-selector">
+        <select onchange={planChanged(state.BaseRoute)}>
+            <option value="" selected?={state.SelectedPlanId == 0} disabled>
+                Select plan
+            </option>
+            for _, p := range state.Plans {
+                <option value={fmt.Sprint(p.ID)} selected?={p.ID == int64(state.SelectedPlanId)}>{p.Name}</option>
+            }
+        </select>
+        if state.SelectedPlanId != 0 {
+            <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/plan/%d/edit", state.SelectedPlanId)}>
+                <span class="material-symbols-outlined">
+                    edit
+                </span>
+            </div>
+        }
+        <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.PlanCreate}>
+            <span class="material-symbols-outlined">
+                add
+            </span>
+        </div>
+    </div>
+}
+
+script planChanged(baseRoute string) {
+    window.open(baseRoute + "/" + event.target.value, "_self");
 }

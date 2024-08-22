@@ -6,10 +6,10 @@ import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
 import "time"
 
-templ Week(state models.ClientState) {
+templ Week(state models.WeekState) {
     <div id="week">
         <div id="week__header">
-            @planSelector(state)
+            @planSelector(state.State)
             @weekSelector(state)
         </div>
         <div id="week__body">
@@ -24,49 +24,20 @@ templ Week(state models.ClientState) {
     </div>
 }
 
-templ planSelector(state models.ClientState) {
-    <div id="plan-selector">
-        <select onchange={planChanged()}>
-            <option value="" selected?={state.SelectedPlanId == 0} disabled>
-                Select plan
-            </option>
-            for _, p := range state.Plans {
-                <option value={fmt.Sprint(p.ID)} selected?={p.ID == int64(state.SelectedPlanId)}>{p.Name}</option>
-            }
-        </select>
-        if state.SelectedPlanId != 0 {
-            <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/plan/%d/edit", state.SelectedPlanId)}>
-                <span class="material-symbols-outlined">
-                    edit
-                </span>
-            </div>
-        }
-        <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.PlanCreate}>
-            <span class="material-symbols-outlined">
-                add
-            </span>
-        </div>
-    </div>
-}
-
-templ weekSelector(state models.ClientState) {
+templ weekSelector(state models.WeekState) {
     <div id="week-selector" class="nav-selector">
-        <a id="week-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("/%d#%s", state.SelectedPlanId, time.Now().Weekday()))}>
+        <a id="week-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("%s/%d#%s", routes.Week, state.State.SelectedPlanId, time.Now().Weekday()))}>
         // <a id="week-selector__back" class={ "nav-selector__back", templ.KV("hidden", state.Week.ISOWeek == lib.ISOWeek(time.Now())) } href={templ.SafeURL(fmt.Sprintf("/%d#%s", state.SelectedPlanId, time.Now().Weekday()))}>
             Today
         </a>
-        <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, state.Week.Prev()))}>
+        <a id="week-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("%s/%d/%s", routes.Week, state.State.SelectedPlanId, state.Week.Prev()))}>
             Prev
         </a>
-        <a id="week-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%d/%s", state.SelectedPlanId, state.Week.Next()))}>
+        <a id="week-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("%s/%d/%s", routes.Week, state.State.SelectedPlanId, state.Week.Next()))}>
             Next
         </a>
         <span>
             {state.Week.ISOWeek}
         </span>
     </div>
-}
-
-script planChanged() {
-    window.open("/" + event.target.value, "_self");
 }

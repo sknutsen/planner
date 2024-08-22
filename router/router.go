@@ -20,8 +20,10 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(h.AuthConfig.ClientSecret))))
 
 	e.GET(routes.Index, h.Index, mw.IsAuthenticated)
-	e.GET(routes.IndexPlan, h.Index, mw.IsAuthenticated)
-	e.GET(routes.IndexPlanWeek, h.Index, mw.IsAuthenticated)
+
+	e.GET(routes.History, h.History, mw.IsAuthenticated)
+	e.GET(routes.HistoryPlan, h.History, mw.IsAuthenticated)
+	e.GET(routes.HistoryPlanTasks, h.ListAllTasks, mw.IsAuthenticated)
 
 	e.GET(routes.Callback, h.Callback)
 
@@ -46,6 +48,10 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.GET(routes.TaskDelete, h.DeleteTask, mw.IsAuthenticated)
 	e.GET(routes.TaskEdit, h.EditTask, mw.IsAuthenticated)
 	e.POST(routes.TaskUpdate, h.UpdateTask, mw.IsAuthenticated)
+
+	e.GET(routes.Week, h.Week, mw.IsAuthenticated)
+	e.GET(routes.WeekPlan, h.Week, mw.IsAuthenticated)
+	e.GET(routes.WeekPlanWeek, h.Week, mw.IsAuthenticated)
 
 	e.GET("/favicon.ico", func(c echo.Context) error {
 		return c.NoContent(http.StatusNoContent)

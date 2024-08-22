@@ -158,6 +158,65 @@ func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) 
 	return items, nil
 }
 
+const getTasksByPlan = `-- name: GetTasksByPlan :many
+SELECT
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete
+FROM
+  tasks AS t
+WHERE
+  t.plan_id IN (
+    SELECT
+      p.id
+    FROM
+      plans AS p
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
+    WHERE
+      p.id = ?
+      AND (
+        p.user = ?
+        OR pa.user = ?
+      )
+  )
+ORDER BY t.date ASC
+`
+
+type GetTasksByPlanParams struct {
+	ID     int64
+	User   string
+	User_2 string
+}
+
+func (q *Queries) GetTasksByPlan(ctx context.Context, arg GetTasksByPlanParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, getTasksByPlan, arg.ID, arg.User, arg.User_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.Date,
+			&i.Title,
+			&i.Subtitle,
+			&i.Description,
+			&i.IsComplete,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const setIsCompleteTask = `-- name: SetIsCompleteTask :exec
 UPDATE tasks 
 SET is_complete = ?

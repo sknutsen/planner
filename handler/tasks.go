@@ -329,3 +329,40 @@ func (h *Handler) CreateTask(c echo.Context) error {
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
+
+func (h *Handler) ListAllTasks(c echo.Context) error {
+	var planId int
+	id := c.Param("planId")
+	planId, err := strconv.Atoi(id)
+	if err != nil {
+		return echo.ErrBadRequest
+	}
+
+	sess, err := session.Get("session", c)
+	if err != nil {
+		println(err)
+	}
+
+	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+
+	db := h.openDB()
+	defer db.Close()
+
+	ctx := context.Background()
+	dq := database.New(db)
+
+	tasks, err := dq.GetTasksByPlan(ctx, database.GetTasksByPlanParams{
+		ID:     int64(planId),
+		User:   user.UserId,
+		User_2: user.UserId,
+	})
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks by date. err: %s", err))
+	}
+
+	component := view.HistoryTasks(models.HistoryTasksResponse{
+		Tasks: models.TasksFromDBModels(tasks),
+	})
+	return component.Render(context.Background(), c.Response().Writer)
+}

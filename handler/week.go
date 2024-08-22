@@ -10,10 +10,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
+	"github.com/sknutsen/planner/routes"
 	"github.com/sknutsen/planner/view"
 )
 
-func (h *Handler) Index(c echo.Context) error {
+func (h *Handler) Week(c echo.Context) error {
 	var planId int
 	id := c.Param("id")
 	if id != "" {
@@ -25,7 +26,7 @@ func (h *Handler) Index(c echo.Context) error {
 		week = lib.ISOWeek(time.Now())
 	}
 
-	state, err := models.GetClientState()
+	state, err := models.GetWeekState()
 	if err != nil {
 		println(err)
 	}
@@ -35,7 +36,9 @@ func (h *Handler) Index(c echo.Context) error {
 		println(err)
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.BaseRoute = routes.Week
+
+	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	fmt.Printf("week: %s\n", week)
 	dates := lib.DatesInWeek(lib.ISOWeekFromString(week))
@@ -62,12 +65,12 @@ func (h *Handler) Index(c echo.Context) error {
 		}
 	}
 
-	state.Plans = h.ListPlans(state.UserProfile.UserId)
+	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
 
-	if len(state.Plans) > 0 {
-		for _, p := range state.Plans {
+	if len(state.State.Plans) > 0 {
+		for _, p := range state.State.Plans {
 			if planId == int(p.ID) || planId == 0 {
-				state.SelectedPlanId = int(p.ID)
+				state.State.SelectedPlanId = int(p.ID)
 				break
 			}
 		}
