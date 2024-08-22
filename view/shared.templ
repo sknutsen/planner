@@ -17,9 +17,11 @@ templ Nav(state models.ClientState) {
         </div>
         
         <div class="navbar__right">
-            <img class="avatar" src={ state.UserProfile.Picture } />
-            <span>{ state.UserProfile.Name }</span>
-            // <span>ID: { state.UserProfile.UserId }</span>
+            <div class="navbar__user-info" hx-get={routes.User} hx-replace-url="true" hx-target="body">
+                <img class="avatar" src={ state.UserProfile.Picture } />
+                <span>{ state.UserProfile.Name }</span>
+                // <span>ID: { state.UserProfile.UserId }</span>
+            </div>
         </div>
 	</div>
 }

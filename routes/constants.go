@@ -2,17 +2,6 @@ package routes
 
 const (
 	Index string = "/"
-	// IndexPlan     string = Index + ":id"
-	// IndexPlanWeek string = IndexPlan + "/:week"
-	// IndexWeek     string = Index + ":week"
-
-	History          string = "/history"
-	HistoryPlan      string = History + "/:planId"
-	HistoryPlanTasks string = History + "/:planId/tasks"
-
-	Week         string = "/week"
-	WeekPlan     string = Week + "/:id"
-	WeekPlanWeek string = WeekPlan + "/:week"
 
 	Assets string = "/assets"
 
@@ -23,6 +12,10 @@ const (
 
 	Day      string = "/:planId/day/:date"
 	Daytasks string = Day + "/tasks"
+
+	History          string = "/history"
+	HistoryPlan      string = History + "/:planId"
+	HistoryPlanTasks string = History + "/:planId/tasks"
 
 	Login  string = "/login"
 	Logout string = "/logout"
@@ -40,4 +33,10 @@ const (
 	TaskDelete   string = Task + "/delete"
 	TaskEdit     string = Task + "/edit"
 	TaskUpdate   string = "/task/update"
+
+	User string = "/user"
+
+	Week         string = "/week"
+	WeekPlan     string = Week + "/:id"
+	WeekPlanWeek string = WeekPlan + "/:week"
 )

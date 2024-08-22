@@ -19,6 +19,10 @@ type HistoryState struct {
 	Tasks []Task
 }
 
+type UserState struct {
+	State ClientState
+}
+
 type WeekState struct {
 	State ClientState
 	Week  Week
@@ -40,6 +44,17 @@ func GetHistoryState() (HistoryState, error) {
 			SelectedPlanId: 0,
 		},
 		Tasks: []Task{},
+	}
+
+	return state, nil
+}
+
+func GetUserState() (UserState, error) {
+	state := UserState{
+		State: ClientState{
+			Plans:          []database.Plan{},
+			SelectedPlanId: 0,
+		},
 	}
 
 	return state, nil

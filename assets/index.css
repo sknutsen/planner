@@ -5,6 +5,7 @@
 @import "styles/navbar.css";
 @import "styles/plan.css";
 @import "styles/task.css";
+@import "styles/user.css";
 @import "styles/week.css";
 
 * {

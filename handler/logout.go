@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
@@ -32,6 +33,15 @@ func (handler *Handler) Logout(c echo.Context) error {
 	parameters.Add("returnTo", returnTo.String())
 	parameters.Add("client_id", handler.AuthConfig.ClientId)
 	logoutUrl.RawQuery = parameters.Encode()
+
+	sess, _ := session.Get("session", c)
+
+	println("setting token")
+	sess.Values["access_token"] = nil
+	sess.Values["profile"] = nil
+	if err := sess.Save(c.Request(), c.Response()); err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
 
 	return c.Redirect(http.StatusTemporaryRedirect, logoutUrl.String())
 }

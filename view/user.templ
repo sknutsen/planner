@@ -1,0 +1,16 @@
+package view
+
+import "github.com/sknutsen/planner/models"
+
+templ User(state models.UserState) {
+    @MainLayout(state.State) {
+        <div id="user-page">
+            <div>Name: {state.State.UserProfile.Name}</div>
+            <div>Nickname: {state.State.UserProfile.Nickname}</div>
+            <div>ID: {state.State.UserProfile.UserId}</div>
+            <div>
+                <a href="/logout">Sign out</a>
+            </div>
+        </div>
+    }
+}

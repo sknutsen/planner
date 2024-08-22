@@ -41,11 +41,18 @@
 .navbar__right {
   display: flex;
   justify-content: end;
-  gap: 5px;
+  gap: 20px;
   width: 34%;
 
-  .avatar {
-    height: 20px;
-    border-radius: 50%;
+  .navbar__user-info {
+    display: flex;
+    justify-content: end;
+    gap: 5px;
+    cursor: pointer;
+
+    .avatar {
+      height: 20px;
+      border-radius: 50%;
+    }
   }
 }

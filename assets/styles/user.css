@@ -1,0 +1,9 @@
+#user-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 15px;
+  height: 100vh;
+}
