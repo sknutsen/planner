@@ -15,14 +15,11 @@ func (handler *Handler) Login(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	// handler.log.Info("callback: state ", zap.String("state", state))
 	sess, _ := session.Get("session", c)
 	sess.Values["state"] = state
 	if err := sess.Save(c.Request(), c.Response()); err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-
-	println(handler.Authenticator.AuthCodeURL(state))
 
 	return c.Redirect(http.StatusTemporaryRedirect, handler.Authenticator.AuthCodeURL(state))
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 
@@ -15,8 +14,6 @@ func (handler *Handler) Logout(c echo.Context) error {
 		return err
 	}
 
-	log.Println(logoutUrl)
-
 	scheme := "http"
 	if c.Request().TLS != nil {
 		scheme = "https"
@@ -26,8 +23,6 @@ func (handler *Handler) Logout(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-
-	log.Println(returnTo)
 
 	parameters := url.Values{}
 	parameters.Add("returnTo", returnTo.String())

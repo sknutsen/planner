@@ -15,10 +15,6 @@ import (
 )
 
 func Setup(e *echo.Echo, h *handler.Handler) {
-	// e.Use(middleware.Logger())
-	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// 	Format: "time=${time_rfc3339} method=${method}, uri=${uri}, status=${status}\n",
-	// }))
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogStatus: true,
 		LogURI:    true,

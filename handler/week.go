@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -40,7 +39,6 @@ func (h *Handler) Week(c echo.Context) error {
 
 	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
-	fmt.Printf("week: %s\n", week)
 	dates := lib.DatesInWeek(lib.ISOWeekFromString(week))
 	state.Week.ISOWeek = week
 
