@@ -14,6 +14,7 @@ templ Nav(state models.ClientState) {
         <div class="navbar__center">
             <a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Week, state.SelectedPlanId))}>Week</a>
             <a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.History, state.SelectedPlanId))}>History</a>
+            <a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Resources, state.SelectedPlanId))}>Resources</a>
         </div>
         
         <div class="navbar__right">

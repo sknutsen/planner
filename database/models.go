@@ -16,6 +16,14 @@ type PlanAccess struct {
 	User   string
 }
 
+type Resource struct {
+	ID           int64
+	Title        string
+	ResourceType int64
+	Content      interface{}
+	PlanID       int64
+}
+
 type Task struct {
 	ID          int64
 	PlanID      int64

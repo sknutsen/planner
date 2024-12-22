@@ -26,6 +26,15 @@ const (
 	PlanEdit   string = Plan + "/edit"
 	PlanUpdate string = "/plan/update"
 
+	Resources              string = "/resources"
+	ResourcesPlan          string = Resources + "/:planId"
+	ResourcesPlanResources string = Resources + "/:planId/resources"
+	Resource               string = "/resource/:id"
+	ResourceCreate         string = ResourcesPlan + "/create"
+	ResourceDelete         string = Resource + "/delete"
+	ResourceEdit           string = Resource + "/edit"
+	ResourceUpdate         string = "/resource/update"
+
 	Task         string = "/task/:id"
 	TaskComplete string = Task + "/complete"
 	TaskCopy     string = "/task/copy"

@@ -1,0 +1,145 @@
+#resources {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100vh - 65px);
+  width: calc(100vw - 50px);
+  margin: 0 auto;
+  padding: 10px;
+
+  #resources__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
+
+    span:first-child {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+  }
+
+  #resources__body {
+    display: flex;
+    flex-grow: 2;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: stretch;
+    gap: 10px;
+    width: 100%;
+    overflow: auto;
+    padding-bottom: 15px;
+
+    .resource-preview {
+      max-width: 900px;
+      width: 100%;
+    }
+  }
+
+  #resources__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
+
+    .new-task-button {
+      width: fit-content;
+      background-color: lawngreen;
+      color: white;
+      border: none;
+      border-radius: 50%;
+    }
+
+    .new-task-button:hover {
+      background-color: green;
+    }
+  }
+}
+
+.resource-preview {
+  border: thin solid lightgrey;
+  border-radius: 8px;
+  padding: 5px;
+  transition: all 0.5s ease;
+
+  .resource-preview__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .resource-preview__identifier {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: black;
+      position: relative;
+      cursor: pointer;
+      flex-grow: 2;
+      align-self: stretch;
+      margin: 0;
+      justify-content: center;
+
+      .resource-preview__date {
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
+
+      .resource-preview__title {
+        font-weight: 900;
+      }
+
+      .resource-preview__subtitle {
+        font-weight: 600;
+      }
+    }
+
+    button {
+      border: none;
+      background-color: transparent;
+      border-radius: 8px;
+      vertical-align: middle;
+
+      span {
+        display: block;
+        margin: auto;
+      }
+    }
+
+    button:hover {
+      cursor: pointer;
+      background-color: lightgray;
+    }
+  }
+
+  .resource-preview__content {
+    transition: all 0.5s ease-in;
+  }
+}
+
+#selected-resource {
+  background-color: white;
+  border: thin solid lightgrey;
+  border-radius: 8px;
+  padding: 5px;
+  opacity: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: fit-content;
+  width: 600px;
+  max-height: 100vh;
+  overflow: auto;
+
+  .CodeMirror-scroll {
+    max-height: 600px;
+  }
+
+  .CodeMirror-fullscreen {
+    .CodeMirror-scroll {
+      max-height: 100%;
+    }
+  }
+}

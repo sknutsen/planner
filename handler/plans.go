@@ -127,6 +127,10 @@ func (h *Handler) EditPlan(c echo.Context) error {
 		User_2: state.UserProfile.UserId,
 	})
 
+	if err != nil {
+		return err
+	}
+
 	component := view.Plan(state, models.Plan{
 		Id:   int(plan.ID),
 		Name: plan.Name,

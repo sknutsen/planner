@@ -51,6 +51,16 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.GET(routes.PlanEdit, h.EditPlan, mw.IsAuthenticated)
 	e.POST(routes.PlanUpdate, h.UpdatePlan, mw.IsAuthenticated)
 
+	e.GET(routes.Resources, h.Resources, mw.IsAuthenticated)
+	e.GET(routes.ResourcesPlan, h.Resources, mw.IsAuthenticated)
+	e.GET(routes.ResourcesPlanResources, h.ListAllResources, mw.IsAuthenticated)
+
+	e.GET(routes.Resource, h.Resource, mw.IsAuthenticated)
+	e.GET(routes.ResourceCreate, h.CreateResource, mw.IsAuthenticated)
+	e.GET(routes.ResourceDelete, h.DeleteResource, mw.IsAuthenticated)
+	e.GET(routes.ResourceEdit, h.EditResource, mw.IsAuthenticated)
+	e.POST(routes.ResourceUpdate, h.UpdateResource, mw.IsAuthenticated)
+
 	e.GET(routes.Task, h.Task, mw.IsAuthenticated)
 	e.GET(routes.TaskComplete, h.ToggleIsCompleteTask, mw.IsAuthenticated)
 	e.POST(routes.TaskCopy, h.CopyTask, mw.IsAuthenticated)

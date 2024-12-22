@@ -19,6 +19,11 @@ type HistoryState struct {
 	Tasks []Task
 }
 
+type ResourcesState struct {
+	State ClientState
+	Tasks []Task
+}
+
 type UserState struct {
 	State ClientState
 }
@@ -39,6 +44,18 @@ func GetClientState() (ClientState, error) {
 
 func GetHistoryState() (HistoryState, error) {
 	state := HistoryState{
+		State: ClientState{
+			Plans:          []database.Plan{},
+			SelectedPlanId: 0,
+		},
+		Tasks: []Task{},
+	}
+
+	return state, nil
+}
+
+func GetResourcesState() (ResourcesState, error) {
+	state := ResourcesState{
 		State: ClientState{
 			Plans:          []database.Plan{},
 			SelectedPlanId: 0,
