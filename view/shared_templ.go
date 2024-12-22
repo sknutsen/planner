@@ -121,7 +121,7 @@ func MainLayout(state models.ClientState) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"/assets/css/simplemde.min.css\"><link href=\"/assets/index.css\" rel=\"stylesheet\"><script src=\"/assets/js/simplemde.min.js\"></script><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/json-enc.js\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"/assets/css/simplemde.min.css\"><link rel=\"stylesheet\" href=\"/assets/index.css\"><link rel=\"icon\" href=\"data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;\n                    &lt;text y=%22.9em%22 font-size=%2290%22&gt;\n                        🗓️\n                    &lt;/text&gt;\n                &lt;/svg&gt;\"><script src=\"/assets/js/simplemde.min.js\"></script><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/json-enc.js\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
