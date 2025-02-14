@@ -3,8 +3,8 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "sqlc generate && templ generate && go build -o ./tmp/main ."
-  delay = 1000
+  cmd = "BUILD_MODE=develop go build -o ./tmp/main ."
+  delay = 100
   exclude_dir = ["assets", "tmp", "vendor"]
   exclude_file = []
   exclude_regex = [".*_templ.go"]
@@ -12,7 +12,7 @@ tmp_dir = "tmp"
   follow_symlink = false
   full_bin = ""
   include_dir = []
-  include_ext = ["go", "tpl", "tmpl", "templ", "html", "sql"]
+  include_ext = ["go", "tpl", "tmpl", "templ", "html", "sql", "css"]
   kill_delay = "0s"
   log = "build-errors.log"
   send_interrupt = false
