@@ -1,0 +1,24 @@
+# providers = ['go']
+
+[variables]
+CGO_ENABLED = '1'
+
+# [phases.setup]
+# nixPkgs = [
+    # ''
+# ]
+
+[phases.install]
+cmds = [
+    'go install github.com/a-h/templ/cmd/templ@latest',
+    'go generate .',
+    'go get .'
+]
+
+[phases.build]
+cmds = [
+    'go build .'
+]
+
+# [start]
+# cmd = ''
