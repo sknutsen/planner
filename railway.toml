@@ -1,5 +1,5 @@
-[build]
-builder = "nixpacks"
+# [build]
+# builder = "dockerfile"
 # nixpacksConfigPath = "nixpacks.toml"
 
 # [deploy]
