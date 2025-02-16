@@ -21,8 +21,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-    'go build -o ./out ./main.go',
-    'ls -a'
+    'CGO_ENABLED=1 go build -o ./out ./main.go'
 ]
 
 # [start]
