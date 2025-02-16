@@ -11,7 +11,6 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo-contrib v0.17.1
 	github.com/labstack/echo/v4 v4.12.0
-	github.com/magefile/mage v1.15.0
 	github.com/tursodatabase/go-libsql v0.0.0-20241221181756-6121e81fbf92
 	golang.org/x/oauth2 v0.20.0
 )
@@ -34,5 +33,4 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	nhooyr.io/websocket v1.8.11 // indirect
 )

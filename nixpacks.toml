@@ -1,20 +1,15 @@
 providers = ['go']
 
-[variables]
-CGO_ENABLED = '1'
-
 [phases.setup]
-# nixOverlays = ["github:a-h/templ"]
-# nixOverlays = ["https://github.com/a-h/templ/archive/master.tar.gz"]
 nixPkgs = [
-    '...',
+    # '...',
+    'go',
     'gcc',
     'templ'
 ]
 
 [phases.install]
 cmds = [
-    # 'go install github.com/a-h/templ/cmd/templ@latest',
     'go generate .',
     'go get .'
 ]
