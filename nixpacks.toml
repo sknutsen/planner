@@ -3,10 +3,10 @@ providers = ['...', 'go']
 [variables]
 CGO_ENABLED = '1'
 
-# [phases.setup]
-# nixPkgs = [
-    # ''
-# ]
+[phases.setup]
+nixPkgs = [
+    'gcc'
+]
 
 [phases.install]
 cmds = [
