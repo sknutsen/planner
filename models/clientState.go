@@ -24,6 +24,11 @@ type ResourcesState struct {
 	Tasks []Task
 }
 
+type TemplatesState struct {
+	State     ClientState
+	Templates []Template
+}
+
 type UserState struct {
 	State ClientState
 }
@@ -61,6 +66,18 @@ func GetResourcesState() (ResourcesState, error) {
 			SelectedPlanId: 0,
 		},
 		Tasks: []Task{},
+	}
+
+	return state, nil
+}
+
+func GetTemplatesState() (TemplatesState, error) {
+	state := TemplatesState{
+		State: ClientState{
+			Plans:          []database.Plan{},
+			SelectedPlanId: 0,
+		},
+		Templates: []Template{},
 	}
 
 	return state, nil

@@ -14,8 +14,8 @@ INSERT INTO plans (
     name,
     user
 ) VALUES (
-    ?,
-    ?
+    ?1,
+    ?2
 )
 `
 
@@ -33,17 +33,16 @@ const deletePlan = `-- name: DeletePlan :exec
 DELETE FROM plans
 WHERE id IN (SELECT p.id FROM plans as p
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.id = ? AND (p.user = ? OR pa.user = ?))
+             WHERE p.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
 `
 
 type DeletePlanParams struct {
 	ID     int64
-	User   string
-	User_2 string
+	UserId string
 }
 
 func (q *Queries) DeletePlan(ctx context.Context, arg DeletePlanParams) error {
-	_, err := q.db.ExecContext(ctx, deletePlan, arg.ID, arg.User, arg.User_2)
+	_, err := q.db.ExecContext(ctx, deletePlan, arg.ID, arg.UserId)
 	return err
 }
 
@@ -53,17 +52,16 @@ id, name, user
 FROM plans
 WHERE id IN (SELECT p.id FROM plans as p
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.id = ? AND (p.user = ? OR pa.user = ?))
+             WHERE p.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
 `
 
 type GetPlanParams struct {
 	ID     int64
-	User   string
-	User_2 string
+	UserId string
 }
 
 func (q *Queries) GetPlan(ctx context.Context, arg GetPlanParams) (Plan, error) {
-	row := q.db.QueryRowContext(ctx, getPlan, arg.ID, arg.User, arg.User_2)
+	row := q.db.QueryRowContext(ctx, getPlan, arg.ID, arg.UserId)
 	var i Plan
 	err := row.Scan(&i.ID, &i.Name, &i.User)
 	return i, err
@@ -75,16 +73,11 @@ id, name, user
 FROM plans
 WHERE id IN (SELECT p.id FROM plans as p
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.user = ? OR pa.user = ?)
+             WHERE p.user = ?1 OR pa.user = ?1)
 `
 
-type ListPlansParams struct {
-	User   string
-	User_2 string
-}
-
-func (q *Queries) ListPlans(ctx context.Context, arg ListPlansParams) ([]Plan, error) {
-	rows, err := q.db.QueryContext(ctx, listPlans, arg.User, arg.User_2)
+func (q *Queries) ListPlans(ctx context.Context, userid string) ([]Plan, error) {
+	rows, err := q.db.QueryContext(ctx, listPlans, userid)
 	if err != nil {
 		return nil, err
 	}
@@ -108,25 +101,19 @@ func (q *Queries) ListPlans(ctx context.Context, arg ListPlansParams) ([]Plan, e
 
 const updatePlan = `-- name: UpdatePlan :exec
 UPDATE plans 
-SET name = ?
+SET name = ?1
 WHERE id IN (SELECT p.id FROM plans as p
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.id = ? AND (p.user = ? OR pa.user = ?))
+             WHERE p.id = ?2 AND (p.user = ?3 OR pa.user = ?3))
 `
 
 type UpdatePlanParams struct {
 	Name   string
 	ID     int64
-	User   string
-	User_2 string
+	UserId string
 }
 
 func (q *Queries) UpdatePlan(ctx context.Context, arg UpdatePlanParams) error {
-	_, err := q.db.ExecContext(ctx, updatePlan,
-		arg.Name,
-		arg.ID,
-		arg.User,
-		arg.User_2,
-	)
+	_, err := q.db.ExecContext(ctx, updatePlan, arg.Name, arg.ID, arg.UserId)
 	return err
 }

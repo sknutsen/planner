@@ -45,17 +45,16 @@ DELETE FROM resources
 WHERE id IN (SELECT r.id FROM resources as r
              INNER JOIN plans as p ON r.plan_id = p.id
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ? AND (p.user = ? OR pa.user = ?))
+             WHERE r.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
 `
 
 type DeleteResourceParams struct {
 	ID     int64
-	User   string
-	User_2 string
+	UserId string
 }
 
 func (q *Queries) DeleteResource(ctx context.Context, arg DeleteResourceParams) error {
-	_, err := q.db.ExecContext(ctx, deleteResource, arg.ID, arg.User, arg.User_2)
+	_, err := q.db.ExecContext(ctx, deleteResource, arg.ID, arg.UserId)
 	return err
 }
 
@@ -65,17 +64,16 @@ SELECT
 FROM resources as r
 INNER JOIN plans as p ON r.plan_id = p.id
 LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE r.id = ? AND (p.user = ? OR pa.user = ?)
+WHERE r.id = ?1 AND (p.user = ?2 OR pa.user = ?2)
 `
 
 type GetResourceParams struct {
 	ID     int64
-	User   string
-	User_2 string
+	UserId string
 }
 
 func (q *Queries) GetResource(ctx context.Context, arg GetResourceParams) (Resource, error) {
-	row := q.db.QueryRowContext(ctx, getResource, arg.ID, arg.User, arg.User_2)
+	row := q.db.QueryRowContext(ctx, getResource, arg.ID, arg.UserId)
 	var i Resource
 	err := row.Scan(
 		&i.ID,
@@ -100,23 +98,21 @@ WHERE
       plans AS p
       LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
     WHERE
-      p.id = ?
+      p.id = ?1
       AND (
-        p.user = ?
-        OR pa.user = ?
+        p.user = ?2 OR pa.user = ?2
       )
   )
 ORDER BY r.title ASC
 `
 
 type GetResourcesByPlanParams struct {
-	ID     int64
-	User   string
-	User_2 string
+	PlanId int64
+	UserId string
 }
 
 func (q *Queries) GetResourcesByPlan(ctx context.Context, arg GetResourcesByPlanParams) ([]Resource, error) {
-	rows, err := q.db.QueryContext(ctx, getResourcesByPlan, arg.ID, arg.User, arg.User_2)
+	rows, err := q.db.QueryContext(ctx, getResourcesByPlan, arg.PlanId, arg.UserId)
 	if err != nil {
 		return nil, err
 	}
@@ -146,11 +142,11 @@ func (q *Queries) GetResourcesByPlan(ctx context.Context, arg GetResourcesByPlan
 
 const updateResource = `-- name: UpdateResource :exec
 UPDATE resources 
-SET title = ?, resource_type = ?, content = ?
+SET title = ?1, resource_type = ?2, content = ?3
 WHERE id IN (SELECT r.id FROM resources as r
              INNER JOIN plans as p ON r.plan_id = p.id
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ? AND (p.user = ? OR pa.user = ?))
+             WHERE r.id = ?4 AND (p.user = ?5 OR pa.user = ?5))
 `
 
 type UpdateResourceParams struct {
@@ -158,8 +154,7 @@ type UpdateResourceParams struct {
 	ResourceType int64
 	Content      interface{}
 	ID           int64
-	User         string
-	User_2       string
+	UserId       string
 }
 
 func (q *Queries) UpdateResource(ctx context.Context, arg UpdateResourceParams) error {
@@ -168,8 +163,7 @@ func (q *Queries) UpdateResource(ctx context.Context, arg UpdateResourceParams) 
 		arg.ResourceType,
 		arg.Content,
 		arg.ID,
-		arg.User,
-		arg.User_2,
+		arg.UserId,
 	)
 	return err
 }

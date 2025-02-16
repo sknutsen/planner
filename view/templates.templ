@@ -1,0 +1,149 @@
+package view
+
+import "fmt"
+import "github.com/sknutsen/planner/lib"
+import "github.com/sknutsen/planner/models"
+import "github.com/sknutsen/planner/routes"
+
+templ Templates(state models.TemplatesState) {
+	@MainLayout(state.State) {
+		<div id="templates">
+			<div id="templates__header">
+				@planSelector(state.State)
+			</div>
+			<div
+				id="templates__body"
+				hx-get={ fmt.Sprintf("/templates/%d/templates", state.State.SelectedPlanId) }
+				hx-swap="innerHTML"
+				hx-ext="multi-swap"
+				hx-trigger="load, updatedTemplate from:body"
+			>
+				@defaultLoader()
+			</div>
+			<div id="templates__footer">
+				@newTemplateButton(state.State.SelectedPlanId, false, state.State.SelectedPlanId == 0)
+			</div>
+		</div>
+	}
+}
+
+templ PlanTemplates(templates models.PlanTemplatesResponse) {
+	@ListTemplates(templates.Templates, true)
+}
+
+templ ListTemplates(templates []models.Template, hideDescription bool) {
+	for _, t := range templates {
+		@TemplatePreview(t, hideDescription)
+	}
+}
+
+templ TemplatePreview(template models.Template, hideDescription bool) {
+	<div id={ fmt.Sprintf("template-%d", template.Id) } class={ "template-preview surface-02" }>
+		<div class="template-preview__header">
+			<div
+				class="template-preview__identifier"
+				hx-target="#modal"
+				hx-swap="outerHTML"
+				hx-get={ fmt.Sprintf("/template/%d", template.Id) }
+			>
+				<h3 class="template-preview__title">{ template.Title }</h3>
+				<h4 class="template-preview__subtitle">{ fmt.Sprint(template.Subtitle) }</h4>
+			</div>
+			<button
+				class={ templ.KV("hidden", lib.IsNullOrEmpty(template.Description)) }
+				type="button"
+				onclick={ toggleTmplDescription(template.Id) }
+			>
+				<span id={ fmt.Sprintf("template-%d__expand-icon", template.Id) } class="material-symbols-outlined">
+					expand_more
+				</span>
+			</button>
+		</div>
+		<div
+			id={ fmt.Sprintf("template-%d__description", template.Id) }
+			class={ "template-preview__description" ,
+		templ.KV("hidden", hideDescription) }
+		></div>
+		@renderTmplDescription(template.Id, fmt.Sprint(template.Description))
+	</div>
+}
+
+templ Template(state models.ClientState, template models.Template) {
+	@Modal("") {
+		<form id="selected-template" class="template input-form">
+			<input type="number" class="hidden" name="id" value={ fmt.Sprint(template.Id) }/>
+			<input type="number" class="hidden" name="plan_id" value={ fmt.Sprint(state.SelectedPlanId) }/>
+			<input type="text" name="title" placeholder="Title" value={ template.Title }/>
+			<input type="text" name="subtitle" placeholder="Subtitle" value={ template.Subtitle }/>
+			@mdEditor("selected-template__description", "description", template.Description)
+			<div class="button-group">
+				<button
+					type="submit"
+					hx-target="#modal"
+					hx-swap="outerHTML"
+					hx-post={ routes.TemplateUpdate }
+					hx-include="closest form"
+					hx-ext="json-enc"
+				>Save</button>
+				if template.Id != 0 {
+					<button
+						type="button"
+						hx-target="#modal"
+						hx-swap="outerHTML"
+						hx-get={ fmt.Sprintf("/template/%d/delete",
+			template.Id) }
+					>Delete</button>
+				}
+				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
+			</div>
+		</form>
+		<script>
+	simplemde = new SimpleMDE({
+		element: document.getElementById("selected-template__description"),
+		forceSync: true,
+	});
+</script>
+	}
+}
+
+templ newTemplateButton(planId int, showLabel bool, isDisabled bool) {
+	if !isDisabled {
+		<div
+			class="new-task-button"
+			hx-target="#modal"
+			hx-swap="outerHTML"
+			hx-get={ fmt.Sprintf("/templates/%d/create", planId) }
+		>
+			<span class="material-symbols-outlined">
+				add
+			</span>
+			if showLabel {
+				<span>
+					Add
+				</span>
+			}
+		</div>
+	}
+}
+
+script toggleTmplDescription(id int) {
+const desc = document.getElementById("template-" + id + "__description");
+const icon = document.getElementById("template-" + id + "__expand-icon");
+const isHidden = desc.classList.contains("hidden");
+
+if (isHidden) {
+mod.show(desc.id);
+icon.innerHTML = "expand_less"
+} else {
+mod.hide(desc.id);
+icon.innerHTML = "expand_more"
+}
+}
+
+script renderTmplDescription(id int, description string) {
+const desc = document.getElementById("template-" + id + "__description");
+
+// desc.innerHTML = md.render(description);
+// desc.innerHTML = marked.parse(description);
+desc.innerHTML = simplemde.markdown(description);
+}

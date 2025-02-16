@@ -3,87 +3,152 @@ package view
 import "fmt"
 import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
-// import "github.com/sknutsen/planner/database"
 import "github.com/sknutsen/planner/lib"
 
 templ Task(state models.ClientState, task models.Task) {
-    @Modal("") {
-        <form id="selected-task" class="task">
-            <input type="number" class="hidden" name="id" value={fmt.Sprint(task.Id)} />
-            <input type="number" class="hidden" name="plan_id" value={fmt.Sprint(state.SelectedPlanId)} />
-            <input type="text" name="title" placeholder="Title" value={task.Title} />
-            <input type="date" name="date" value={task.Date} />
-            <input type="text" name="subtitle" placeholder="Subtitle" value={task.Subtitle} />
-            <textarea id="selected-task__description" name="description">
-                {task.Description}
-            </textarea>
+	@Modal("") {
+		<form id="selected-task" class="task input-form">
+			<input type="number" class="hidden" name="id" value={ fmt.Sprint(task.Id) }/>
+			<input type="number" class="hidden" name="plan_id" value={ fmt.Sprint(state.SelectedPlanId) }/>
+			<input type="text" name="title" placeholder="Title" value={ task.Title }/>
+			<input type="date" name="date" value={ task.Date }/>
+			<input type="text" name="subtitle" placeholder="Subtitle" value={ task.Subtitle }/>
+			@mdEditor("selected-task__description", "description", task.Description)
+			<div class="button-group">
+				<button
+					type="submit"
+					hx-target="#modal"
+					hx-swap="outerHTML"
+					hx-post={ routes.TaskUpdate }
+					hx-include="closest form"
+					hx-ext="json-enc"
+				>Save</button>
+				if task.Id != 0 {
+					<button
+						type="button"
+						hx-target="#modal"
+						hx-swap="outerHTML"
+						hx-post={ routes.TaskCopy }
+						hx-include="closest form"
+						hx-ext="json-enc"
+					>Save as copy</button>
+					<button
+						type="button"
+						hx-target="#modal"
+						hx-swap="outerHTML"
+						hx-get={ fmt.Sprintf("/task/%d/delete", task.Id) }
+					>Delete</button>
+				}
+				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
+			</div>
+		</form>
+		<script>
+	simplemde = new SimpleMDE({
+		element: document.getElementById("selected-task__description"),
+		forceSync: true,
+	});
+</script>
+	}
+}
 
-            <div class="button-group">
-                <button type="submit" hx-target="#modal" hx-swap="outerHTML" hx-post={routes.TaskUpdate} hx-include="closest form" hx-ext="json-enc">Save</button>
-                if task.Id != 0 {
-                    <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-post={routes.TaskCopy} hx-include="closest form" hx-ext="json-enc">Save as copy</button>
-                    <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/task/%d/delete", task.Id)}>Delete</button>
-                }
-                <button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.ComponentsModal}>Cancel</button>
-            </div>
-        </form>
-        <script>
-            simplemde = new SimpleMDE({ 
-                element: document.getElementById("selected-task__description"),
-                forceSync: true,
-            });
-        </script>
-    }
+templ TaskFromTemplate(state models.ClientState, task models.Task, templates []models.Template) {
+	@Modal("") {
+		<form id="selected-task" class="task input-form">
+			<input type="number" class="hidden" name="id" value={ fmt.Sprint(task.Id) }/>
+			<input type="number" class="hidden" name="plan_id" value={ fmt.Sprint(state.SelectedPlanId) }/>
+			<input type="date" name="date" value={ task.Date }/>
+			<select name="template">
+				<option selected>select a template</option>
+				for _, t := range templates {
+					<option value={ fmt.Sprint(t.Id) }>{ t.Title }</option>
+				}
+			</select>
+			<div class="button-group">
+				<button
+					type="submit"
+					hx-target="#modal"
+					hx-swap="outerHTML"
+					hx-post={ routes.TaskUpdate }
+					hx-include="closest form"
+					hx-ext="json-enc"
+				>Save</button>
+				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
+			</div>
+		</form>
+	}
 }
 
 templ TaskPreview(task models.Task, hideDescription bool, hideDate bool) {
-    <div id={fmt.Sprintf("task-%d", task.Id)} class={ templ.KV("task-complete", task.IsComplete), templ.KV("task-incomplete", !task.IsComplete), "task-preview" }>
-        <div class="task-preview__header">
-            <button class={ templ.KV("task-complete", task.IsComplete), templ.KV("task-incomplete", !task.IsComplete) } type="button" hx-get={fmt.Sprintf("/task/%d/complete", task.Id)}>
-                <span></span>
-            </button>
-            <div class="task-preview__identifier" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/task/%d", task.Id)}>
-                <div class={ templ.KV("hidden", hideDate), "task-preview__date" }>
-                    {task.Date}
-                </div>
-                <h3 class="task-preview__title">{task.Title}</h3>
-                <h4 class="task-preview__subtitle">{fmt.Sprint(task.Subtitle)}</h4>
-            </div>
-            <button class={ templ.KV("hidden", lib.IsNullOrEmpty(task.Description)) } type="button" onclick={toggleDescription(task.Id)}>
-                <span id={fmt.Sprintf("task-%d__expand-icon", task.Id)} class="material-symbols-outlined">
-                    expand_more
-                </span>
-            </button>
-        </div>
-        <div id={fmt.Sprintf("task-%d__description", task.Id)} class={ "task-preview__description", templ.KV("hidden", hideDescription) }></div>
-        @renderDescription(task.Id, fmt.Sprint(task.Description))
-    </div>
+	<div
+		id={ fmt.Sprintf("task-%d", task.Id) }
+		class={ templ.KV("task-complete", task.IsComplete),
+	templ.KV("task-incomplete", !task.IsComplete), "task-preview surface-02" }
+	>
+		<div class="task-preview__header">
+			<button
+				class={ templ.KV("task-complete highlight", task.IsComplete), templ.KV("task-incomplete",
+			!task.IsComplete) }
+				type="button"
+				hx-get={ fmt.Sprintf("/task/%d/complete", task.Id) }
+			>
+				<span></span>
+			</button>
+			<div
+				class="task-preview__identifier"
+				hx-target="#modal"
+				hx-swap="outerHTML"
+				hx-get={ fmt.Sprintf("/task/%d",
+			task.Id) }
+			>
+				<div class={ templ.KV("hidden", hideDate), "task-preview__date" }>
+					{ task.Date }
+				</div>
+				<h3 class="task-preview__title">{ task.Title }</h3>
+				<h4 class="task-preview__subtitle">{ fmt.Sprint(task.Subtitle) }</h4>
+			</div>
+			<button
+				class={ templ.KV("hidden", lib.IsNullOrEmpty(task.Description)) }
+				type="button"
+				onclick={ toggleDescription(task.Id) }
+			>
+				<span id={ fmt.Sprintf("task-%d__expand-icon", task.Id) } class="material-symbols-outlined">
+					expand_more
+				</span>
+			</button>
+		</div>
+		<div
+			id={ fmt.Sprintf("task-%d__description", task.Id) }
+			class={ "task-preview__description" , templ.KV("hidden",
+		hideDescription) }
+		></div>
+		@renderDescription(task.Id, fmt.Sprint(task.Description))
+	</div>
 }
 
 templ ListTasks(tasks []models.Task, hideDescription bool, hideDate bool) {
-    for _, t := range tasks {
-        @TaskPreview(t, hideDescription, hideDate)
-    }
+	for _, t := range tasks {
+		@TaskPreview(t, hideDescription, hideDate)
+	}
 }
 
 script toggleDescription(id int) {
-    const desc = document.getElementById("task-" + id + "__description");
-    const icon = document.getElementById("task-" + id + "__expand-icon");
-    const isHidden = desc.classList.contains("hidden");
+const desc = document.getElementById("task-" + id + "__description");
+const icon = document.getElementById("task-" + id + "__expand-icon");
+const isHidden = desc.classList.contains("hidden");
 
-    if (isHidden) {
-        mod.show(desc.id);
-        icon.innerHTML = "expand_less"
-    } else {
-        mod.hide(desc.id);
-        icon.innerHTML = "expand_more"
-    }
+if (isHidden) {
+mod.show(desc.id);
+icon.innerHTML = "expand_less"
+} else {
+mod.hide(desc.id);
+icon.innerHTML = "expand_more"
+}
 }
 
 script renderDescription(id int, description string) {
-    const desc = document.getElementById("task-" + id + "__description");
+const desc = document.getElementById("task-" + id + "__description");
 
-    // desc.innerHTML = md.render(description);
-    // desc.innerHTML = marked.parse(description);
-    desc.innerHTML = simplemde.markdown(description);
+// desc.innerHTML = md.render(description);
+// desc.innerHTML = marked.parse(description);
+desc.innerHTML = simplemde.markdown(description);
 }

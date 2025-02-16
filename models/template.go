@@ -2,42 +2,40 @@ package models
 
 import "github.com/sknutsen/planner/database"
 
-type Task struct {
+type Template struct {
 	Id          int
-	Date        string
 	Title       string
 	Subtitle    string
 	Description string
-	IsComplete  bool
 }
 
-type UpdateTaskRequest struct {
+type UpdateTemplateRequest struct {
 	Id          string `json:"id"`
 	PlanId      string `json:"plan_id"`
-	Date        string `json:"date"`
 	Title       string `json:"title"`
 	Subtitle    string `json:"subtitle"`
 	Description string `json:"description"`
-	Template    string `json:"template"`
 }
 
-func TasksFromDBModels(m []database.Task) []Task {
-	tasks := []Task{}
+type PlanTemplatesResponse struct {
+	Templates []Template
+}
+
+func TemplatesFromDBModels(m []database.Template) []Template {
+	templates := []Template{}
 
 	for _, v := range m {
-		tasks = append(tasks, TaskFromDBModel(v))
+		templates = append(templates, TemplateFromDBModel(v))
 	}
 
-	return tasks
+	return templates
 }
 
-func TaskFromDBModel(m database.Task) Task {
-	return Task{
+func TemplateFromDBModel(m database.Template) Template {
+	return Template{
 		Id:          int(m.ID),
-		Date:        m.Date,
 		Title:       m.Title,
 		Subtitle:    m.Subtitle.(string),
 		Description: m.Description.(string),
-		IsComplete:  m.IsComplete != 0,
 	}
 }

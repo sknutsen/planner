@@ -14,7 +14,7 @@ import (
 	"github.com/sknutsen/planner/view"
 )
 
-func (h *Handler) Resources(c echo.Context) error {
+func (h *Handler) Templates(c echo.Context) error {
 	var planId int
 	var err error
 	id := c.Param("planId")
@@ -25,7 +25,7 @@ func (h *Handler) Resources(c echo.Context) error {
 		}
 	}
 
-	state, err := models.GetResourcesState()
+	state, err := models.GetTemplatesState()
 	if err != nil {
 		println(err)
 	}
@@ -35,7 +35,7 @@ func (h *Handler) Resources(c echo.Context) error {
 		println(err)
 	}
 
-	state.State.BaseRoute = routes.History
+	state.State.BaseRoute = routes.Templates
 
 	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
@@ -50,11 +50,11 @@ func (h *Handler) Resources(c echo.Context) error {
 		}
 	}
 
-	component := view.Resources(state)
+	component := view.Templates(state)
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
-func (h *Handler) ListAllResources(c echo.Context) error {
+func (h *Handler) ListAllTemplates(c echo.Context) error {
 	var planId int
 	id := c.Param("planId")
 	planId, err := strconv.Atoi(id)
@@ -75,32 +75,32 @@ func (h *Handler) ListAllResources(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	tasks, err := dq.GetResourcesByPlan(ctx, database.GetResourcesByPlanParams{
+	templates, err := dq.GetTemplatesByPlan(ctx, database.GetTemplatesByPlanParams{
 		PlanId: int64(planId),
 		UserId: user.UserId,
 	})
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks by date. err: %s", err))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing templates. err: %s", err))
 	}
 
-	component := view.PlanResources(models.PlanResourcesResponse{
-		Resources: models.ResourcesFromDBModels(tasks),
+	component := view.PlanTemplates(models.PlanTemplatesResponse{
+		Templates: models.TemplatesFromDBModels(templates),
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
-func (h *Handler) Resource(c echo.Context) error {
-	return h.EditResource(c)
+func (h *Handler) Template(c echo.Context) error {
+	return h.EditTemplate(c)
 }
 
-func (h *Handler) EditResource(c echo.Context) error {
+func (h *Handler) EditTemplate(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return echo.ErrBadRequest
 	}
 
-	taskId, err := strconv.Atoi(id)
+	templateId, err := strconv.Atoi(id)
 	if err != nil {
 		return err
 	}
@@ -123,31 +123,31 @@ func (h *Handler) EditResource(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	task, err := dq.GetResource(ctx, database.GetResourceParams{
-		ID:     int64(taskId),
+	template, err := dq.GetTemplate(ctx, database.GetTemplateParams{
+		ID:     int64(templateId),
 		UserId: state.UserProfile.UserId,
 	})
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting resource. err: %s", err))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting template. err: %s", err))
 	}
 
-	component := view.Resource(state, models.Resource{
-		Id:      int(task.ID),
-		Title:   task.Title,
-		Type:    int(task.ResourceType),
-		Content: task.Content.(string),
+	component := view.Template(state, models.Template{
+		Id:          int(template.ID),
+		Title:       template.Title,
+		Subtitle:    template.Subtitle.(string),
+		Description: template.Description.(string),
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
-func (h *Handler) DeleteResource(c echo.Context) error {
+func (h *Handler) DeleteTemplate(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return echo.ErrBadRequest
 	}
 
-	taskId, err := strconv.Atoi(id)
+	templateId, err := strconv.Atoi(id)
 	if err != nil {
 		return err
 	}
@@ -170,26 +170,26 @@ func (h *Handler) DeleteResource(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	task, err := dq.GetResource(ctx, database.GetResourceParams{
-		ID:     int64(taskId),
+	template, err := dq.GetTemplate(ctx, database.GetTemplateParams{
+		ID:     int64(templateId),
 		UserId: state.UserProfile.UserId,
 	})
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting resource. err: %s", err))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting template. err: %s", err))
 	}
 
-	dq.DeleteResource(ctx, database.DeleteResourceParams{
-		ID:     task.ID,
+	dq.DeleteTemplate(ctx, database.DeleteTemplateParams{
+		ID:     template.ID,
 		UserId: state.UserProfile.UserId,
 	})
 
-	c.Response().Header().Add("HX-Trigger", "updatedResource")
+	c.Response().Header().Add("HX-Trigger", "updatedTemplate")
 
 	return h.Modal(c)
 }
 
-func (h *Handler) CreateResource(c echo.Context) error {
+func (h *Handler) CreateTemplate(c echo.Context) error {
 	var planId int
 	id := c.Param("planId")
 	planId, err := strconv.Atoi(id)
@@ -210,17 +210,17 @@ func (h *Handler) CreateResource(c echo.Context) error {
 	state.SelectedPlanId = planId
 	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
-	component := view.Resource(state, models.Resource{
-		Id:      0,
-		Title:   "",
-		Type:    0,
-		Content: "",
+	component := view.Template(state, models.Template{
+		Id:          0,
+		Title:       "",
+		Subtitle:    "",
+		Description: "",
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
 
-func (h *Handler) UpdateResource(c echo.Context) error {
-	var request models.UpdateResourceRequest
+func (h *Handler) UpdateTemplate(c echo.Context) error {
+	var request models.UpdateTemplateRequest
 
 	err := c.Bind(&request)
 	if err != nil {
@@ -240,47 +240,44 @@ func (h *Handler) UpdateResource(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	resourceType, err := strconv.Atoi(request.Type)
-	if err != nil {
-		return c.String(http.StatusBadRequest, fmt.Sprintf("type is not a number. err: %s", err))
-	}
-
 	if request.Id == "0" {
+		println("Creating template")
 		planId, err := strconv.Atoi(request.PlanId)
 		if err != nil {
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
-		err = dq.CreateResource(ctx, database.CreateResourceParams{
-			PlanID:       int64(planId),
-			Title:        request.Title,
-			ResourceType: int64(resourceType),
-			Content:      request.Content,
+		err = dq.CreateTemplate(ctx, database.CreateTemplateParams{
+			PlanID:      int64(planId),
+			Title:       request.Title,
+			Subtitle:    request.Subtitle,
+			Description: request.Description,
 		})
 
 		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed creating resource. err: %s", err))
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed creating template. err: %s", err))
 		}
 	} else {
+		println("Updating template")
 		id, err := strconv.Atoi(request.Id)
 		if err != nil {
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
-		err = dq.UpdateResource(ctx, database.UpdateResourceParams{
-			ID:           int64(id),
-			Title:        request.Title,
-			ResourceType: int64(resourceType),
-			Content:      request.Content,
-			UserId:       user.UserId,
+		err = dq.UpdateTemplate(ctx, database.UpdateTemplateParams{
+			ID:          int64(id),
+			Title:       request.Title,
+			Subtitle:    request.Subtitle,
+			Description: request.Description,
+			UserId:      user.UserId,
 		})
 
 		if err != nil {
-			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed updating resource. err: %s", err))
+			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed updating template. err: %s", err))
 		}
 	}
 
-	c.Response().Header().Add("HX-Trigger", "updatedResource")
+	c.Response().Header().Add("HX-Trigger", "updatedTemplate")
 
 	return h.Modal(c)
 }

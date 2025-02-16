@@ -65,9 +65,20 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.GET(routes.TaskComplete, h.ToggleIsCompleteTask, mw.IsAuthenticated)
 	e.POST(routes.TaskCopy, h.CopyTask, mw.IsAuthenticated)
 	e.GET(routes.TaskCreate, h.CreateTask, mw.IsAuthenticated)
+	e.GET(routes.TaskCreateTemplate, h.CreateTaskFromTemplate, mw.IsAuthenticated)
 	e.GET(routes.TaskDelete, h.DeleteTask, mw.IsAuthenticated)
 	e.GET(routes.TaskEdit, h.EditTask, mw.IsAuthenticated)
 	e.POST(routes.TaskUpdate, h.UpdateTask, mw.IsAuthenticated)
+
+	e.GET(routes.Templates, h.Templates, mw.IsAuthenticated)
+	e.GET(routes.TemplatesPlan, h.Templates, mw.IsAuthenticated)
+	e.GET(routes.TemplatesPlanTemplates, h.ListAllTemplates, mw.IsAuthenticated)
+
+	e.GET(routes.Template, h.Template, mw.IsAuthenticated)
+	e.GET(routes.TemplateCreate, h.CreateTemplate, mw.IsAuthenticated)
+	e.GET(routes.TemplateDelete, h.DeleteTemplate, mw.IsAuthenticated)
+	e.GET(routes.TemplateEdit, h.EditTemplate, mw.IsAuthenticated)
+	e.POST(routes.TemplateUpdate, h.UpdateTemplate, mw.IsAuthenticated)
 
 	e.GET(routes.User, h.User, mw.IsAuthenticated)
 

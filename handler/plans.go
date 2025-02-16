@@ -26,10 +26,7 @@ func (h *Handler) ListPlans(userId string) []database.Plan {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	plans, err := dq.ListPlans(ctx, database.ListPlansParams{
-		User:   userId,
-		User_2: userId,
-	})
+	plans, err := dq.ListPlans(ctx, userId)
 	if err != nil {
 		println(err.Error())
 		return []database.Plan{}
@@ -79,9 +76,9 @@ func (h *Handler) UpdatePlan(c echo.Context) error {
 		}
 
 		err = dq.UpdatePlan(ctx, database.UpdatePlanParams{
-			ID:   int64(id),
-			Name: request.Name,
-			User: user.UserId,
+			ID:     int64(id),
+			Name:   request.Name,
+			UserId: user.UserId,
 		})
 
 		if err != nil {
@@ -123,8 +120,7 @@ func (h *Handler) EditPlan(c echo.Context) error {
 
 	plan, err := dq.GetPlan(ctx, database.GetPlanParams{
 		ID:     int64(planId),
-		User:   state.UserProfile.UserId,
-		User_2: state.UserProfile.UserId,
+		UserId: state.UserProfile.UserId,
 	})
 
 	if err != nil {

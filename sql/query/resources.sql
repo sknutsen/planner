@@ -4,7 +4,7 @@ SELECT
 FROM resources as r
 INNER JOIN plans as p ON r.plan_id = p.id
 LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE r.id = ? AND (p.user = ? OR pa.user = ?);
+WHERE r.id = @id AND (p.user = @userId OR pa.user = @userId);
 
 /* name: GetResourcesByPlan :many */
 SELECT
@@ -19,10 +19,9 @@ WHERE
       plans AS p
       LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
     WHERE
-      p.id = ?
+      p.id = @planId
       AND (
-        p.user = ?
-        OR pa.user = ?
+        p.user = @userId OR pa.user = @userId
       )
   )
 ORDER BY r.title ASC;
@@ -42,15 +41,15 @@ INSERT INTO resources (
 
 /* name: UpdateResource :exec */
 UPDATE resources 
-SET title = ?, resource_type = ?, content = ?
+SET title = @title, resource_type = @resourceType, content = @content
 WHERE id IN (SELECT r.id FROM resources as r
              INNER JOIN plans as p ON r.plan_id = p.id
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ? AND (p.user = ? OR pa.user = ?));
+             WHERE r.id = @id AND (p.user = @userId OR pa.user = @userId));
 
 /* name: DeleteResource :exec */
 DELETE FROM resources
 WHERE id IN (SELECT r.id FROM resources as r
              INNER JOIN plans as p ON r.plan_id = p.id
              LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ? AND (p.user = ? OR pa.user = ?));
+             WHERE r.id = @id AND (p.user = @userId OR pa.user = @userId));

@@ -8,74 +8,90 @@ import "time"
 
 templ Day(state models.WeekState, day models.Day) {
     @MainLayout(state.State) {
-        <div id="day">
-            <div id="day__header">
-                <span>
-                    {fmt.Sprint(day.Date.Weekday())}
-                </span>
-                @daySelector(state.State, day)
-            </div>
-            <div id="day__body" hx-get={fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load">
-                @defaultLoader()
-            </div>
-            <div id="day__footer">
-                @newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), false, state.State.SelectedPlanId == 0)
-            </div>
-        </div>
+	<div id="day">
+	    <div id="day__header">
+		<span>
+			{fmt.Sprint(day.Date.Weekday())}
+		</span>
+		@daySelector(state.State, day)
+	    </div>
+	    <div id="day__body" hx-get={fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load">
+		@defaultLoader()
+	    </div>
+	    <div id="day__footer">
+		@newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), false, state.State.SelectedPlanId == 0)
+	    </div>
+	</div>
     }
 }
 
 templ DayPreview(state models.WeekState, day models.Day) {
-    <div id={fmt.Sprint(day.Date.Weekday())} class={ "day-preview", templ.KV("day-preview--today", lib.DateToString(day.Date) == lib.DateToString(time.Now())) }>
-        <a class="day-preview__header" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.State.SelectedPlanId, lib.DateToString(day.Date)))}>
-            <span>
-                {fmt.Sprint(day.Date.Weekday())}
-            </span>
-            <span>
-                {day.StringShort()}
-            </span>
-        </a>
-        <div class="day-preview__tasks" hx-get={fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load, updatedTask from:body">
-            @defaultLoader()
-        </div>
-        @newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), true, state.State.SelectedPlanId == 0)
+    <div id={fmt.Sprint(day.Date.Weekday())} class={ "day-preview surface-01", templ.KV("day-preview--today", lib.DateToString(day.Date)==lib.DateToString(time.Now())) }>
+	<a class="day-preview__header" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.State.SelectedPlanId, lib.DateToString(day.Date)))}>
+		<span>
+			{fmt.Sprint(day.Date.Weekday())}
+		</span>
+		<span>
+			{day.StringShort()}
+		</span>
+	</a>
+	<div class="day-preview__tasks" hx-get={fmt.Sprintf("/%d/day/%s/tasks", state.State.SelectedPlanId, lib.DateToString(day.Date))} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load, updatedTask from:body">
+		@defaultLoader()
+	</div>
+	@newTaskButton(state.State.SelectedPlanId, lib.DateToString(day.Date), true, state.State.SelectedPlanId == 0)
+	@newTaskFromTemplateButton(state.State.SelectedPlanId, lib.DateToString(day.Date), true, state.State.SelectedPlanId == 0)
     </div>
 }
 
 templ DayTasks(dayTasks models.DayTasksResponse) {
     for _, t := range dayTasks.Tasks {
-        @TaskPreview(t, dayTasks.HideDescription, true)
+	@TaskPreview(t, dayTasks.HideDescription, true)
     }
 }
 
 templ daySelector(state models.ClientState, day models.Day) {
     <div id="day-selector" class="nav-selector">
-        <a id="day-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("%s/%d/%s", routes.Week, state.SelectedPlanId, day.Week()))}>
-            Back to week
-        </a>
-        <a id="day-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.SelectedPlanId, day.Prev()))}>
-            Prev
-        </a>
-        <a id="day-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.SelectedPlanId, day.Next()))}>
-            Next
-        </a>
-        <span>
-            {day.String()}
-        </span>
+	<a id="day-selector__back" class="nav-selector__back" href={templ.SafeURL(fmt.Sprintf("%s/%d/%s", routes.Week, state.SelectedPlanId, day.Week()))}>
+		Back to week
+	</a>
+	<a id="day-selector__prev" class="nav-selector__prev" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.SelectedPlanId, day.Prev()))}>
+		Prev
+	</a>
+	<a id="day-selector__next" class="nav-selector__next" href={templ.SafeURL(fmt.Sprintf("/%d/day/%s", state.SelectedPlanId, day.Next()))}>
+		Next
+	</a>
+	<span>
+		{day.String()}
+	</span>
     </div>
 }
 
 templ newTaskButton(planId int, date string, showLabel bool, isDisabled bool) {
     if !isDisabled {
-        <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/%d/day/%s/create", planId, date)}>
-            <span class="material-symbols-outlined">
-                add
-            </span>
-            if showLabel {
-                <span>
-                    Add
-                </span>
-            }
-        </div>
+	<div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/%d/day/%s/create", planId, date)}>
+	    <span class="material-symbols-outlined">
+		add
+	    </span>
+	    if showLabel {
+		<span>
+		    Add
+		</span>
+	    }
+	</div>
+    }
+}
+
+templ newTaskFromTemplateButton(planId int, date string, showLabel bool, isDisabled bool) {
+    if !isDisabled {
+	<div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/%d/day/%s/create/template", planId, date)}>
+	    <span class="material-symbols-outlined">
+		add
+	    </span>
+	    if showLabel {
+	    <span>
+		Add from template
+	    </span>
+	    }
+	</div>
     }
 }

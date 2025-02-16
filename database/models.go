@@ -33,3 +33,11 @@ type Task struct {
 	Description interface{}
 	IsComplete  int64
 }
+
+type Template struct {
+	ID          int64
+	PlanID      int64
+	Title       string
+	Subtitle    interface{}
+	Description interface{}
+}

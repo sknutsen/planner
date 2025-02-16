@@ -6,49 +6,70 @@ import "github.com/sknutsen/planner/routes"
 import "github.com/sknutsen/planner/style"
 
 templ defaultLoader() {
-    @loader(style.Primary)
+	@loader(style.Primary)
 }
 
 templ loader(theme string) {
-    <svg class="loader" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
-        <circle class="loader__animation" cx="400" cy="400" fill="none"
-                r="200" stroke-width="44" stroke={theme}
-                stroke-dasharray="946 1400"
-                stroke-linecap="round" />
-    </svg>
+	<svg class="loader" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+		<circle
+			class="loader__animation"
+			cx="400"
+			cy="400"
+			fill="none"
+			r="200"
+			stroke-width="44"
+			stroke={ theme }
+			stroke-dasharray="946 1400"
+			stroke-linecap="round"
+		></circle>
+	</svg>
 }
 
 templ Modal(class string) {
-    <div id="modal" class={class}>
-        { children... }
-    </div>
+	<div id="modal" class={ class }>
+		{ children... }
+	</div>
 }
 
 templ planSelector(state models.ClientState) {
-    <div id="plan-selector">
-        <select onchange={planChanged(state.BaseRoute)}>
-            <option value="" selected?={state.SelectedPlanId == 0} disabled>
-                Select plan
-            </option>
-            for _, p := range state.Plans {
-                <option value={fmt.Sprint(p.ID)} selected?={p.ID == int64(state.SelectedPlanId)}>{p.Name}</option>
-            }
-        </select>
-        if state.SelectedPlanId != 0 {
-            <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={fmt.Sprintf("/plan/%d/edit", state.SelectedPlanId)}>
-                <span class="material-symbols-outlined">
-                    edit
-                </span>
-            </div>
-        }
-        <div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={routes.PlanCreate}>
-            <span class="material-symbols-outlined">
-                add
-            </span>
-        </div>
-    </div>
+	<div id="plan-selector">
+		<select onchange={ planChanged(state.BaseRoute) }>
+			<option value="" selected?={ state.SelectedPlanId==0 } disabled>
+				Select plan
+			</option>
+			for _, p := range state.Plans {
+				<option value={ fmt.Sprint(p.ID) } selected?={ p.ID==int64(state.SelectedPlanId) }>{ p.Name }</option>
+			}
+		</select>
+		if state.SelectedPlanId != 0 {
+			<div
+				class="new-task-button"
+				hx-target="#modal"
+				hx-swap="outerHTML"
+				hx-get={ fmt.Sprintf("/plan/%d/edit",
+		state.SelectedPlanId) }
+			>
+				<span class="material-symbols-outlined">
+					edit
+				</span>
+			</div>
+		}
+		<div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.PlanCreate }>
+			<span class="material-symbols-outlined">
+				add
+			</span>
+		</div>
+	</div>
+}
+
+templ mdEditor(id string, name string, value string) {
+	<div class="md-editor">
+		<textarea id={ id } name={ name }>
+			{ value }
+		</textarea>
+	</div>
 }
 
 script planChanged(baseRoute string) {
-    window.open(baseRoute + "/" + event.target.value, "_self");
+window.open(baseRoute + "/" + event.target.value, "_self");
 }

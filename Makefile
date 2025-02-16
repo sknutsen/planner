@@ -7,7 +7,7 @@ live/templ:
 # run air to detect any go file changes to re-build and re-run the server.
 live/server:
 	go run github.com/cosmtrek/air@v1.51.0
-	--build.full_bin "BUILD_MODE=develop go build -o tmp/bin/main" --build.bin "tmp/bin/main" --build.delay "100" \
+	--build.full_bin "CGO_ENABLED=1 BUILD_MODE=develop go build -o tmp/bin/main" --build.bin "tmp/bin/main" --build.delay "100" \
 	--build.exclude_dir "node_modules" \
 	--build.include_ext "go" \
 	--build.stop_on_error "false" \
@@ -28,8 +28,14 @@ live/sync_assets:
 dev:
 	make -j3 live/templ live/server live/sync_assets
 
-dev-env:
+zj:
 	zellij --layout ./zj.kdl
+
+sql:
+	sqlc generate
+
+goose-up:
+	GOOSE_DRIVER=turso GOOSE_MIGRATION_DIR=./sql/schema/ goose up
 
 build:
 	go generate

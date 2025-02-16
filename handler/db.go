@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"time"
 
-	_ "github.com/tursodatabase/libsql-client-go/libsql"
+	_ "github.com/tursodatabase/go-libsql"
 )
 
 func (h *Handler) openDB() *sql.DB {
@@ -14,6 +15,7 @@ func (h *Handler) openDB() *sql.DB {
 		fmt.Fprintf(os.Stderr, "Failed creating authenticator. Error: %s\n", err)
 		os.Exit(1)
 	}
+	db.SetConnMaxIdleTime(9 * time.Second)
 
 	return db
 }
