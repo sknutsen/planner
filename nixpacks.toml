@@ -4,12 +4,12 @@ providers = ['...', 'go']
 CGO_ENABLED = '1'
 
 [phases.setup]
-nixOverlays = ["github:a-h/templ"]
+# nixOverlays = ["github:a-h/templ"]
 # nixOverlays = ["https://github.com/a-h/templ/archive/master.tar.gz"]
 nixPkgs = [
     '...',
     'gcc',
-    'templ.overlays.default.templ'
+    'templ'
 ]
 
 [phases.install]
