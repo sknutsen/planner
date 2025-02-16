@@ -14,6 +14,8 @@ COPY . ./
 # Install project dependencies
 RUN go mod download
 
+RUN apk add build-base
+
 # Build the app
 RUN CGO_ENABLED=1 go build -o app
 
