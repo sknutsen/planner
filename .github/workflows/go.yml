@@ -17,14 +17,14 @@ jobs:
         with:
           go-version: "1.22"
 
-      - name: Install dependencies
-        run: go get .
-
       - name: Install templ
         run: go install github.com/a-h/templ/cmd/templ@latest
 
       - name: Generate
-        run: go generate -v ./...
+        run: go generate .
+
+      - name: Install dependencies
+        run: go get .
 
       - name: Build
         run: CGO_ENABLED=1 go build -v ./...
