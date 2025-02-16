@@ -1,6 +1,6 @@
 # Use the Go 1.23 alpine official image
 # https://hub.docker.com/_/golang
-FROM golang:1.23.4-alpine
+FROM golang:1.23-bookworm
 
 # Create and change to the app directory.
 WORKDIR /app
@@ -14,10 +14,10 @@ COPY . ./
 # Install project dependencies
 RUN go get .
 
-RUN apk add build-base
+RUN apt-get update && apt-get install -y gcc
 
 # Build the app
-RUN CGO_ENABLED=1 go build -o app
+RUN CGO_ENABLED=1 GOOS=linux go build -o app
 
 # Run the service on container startup.
 ENTRYPOINT ["./app"]
