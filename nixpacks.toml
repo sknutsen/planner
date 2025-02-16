@@ -21,7 +21,7 @@ cmds = [
 
 [phases.build]
 cmds = [
-    'go build .',
+    'go build -o ./out ./main.go',
     'ls -a'
 ]
 
