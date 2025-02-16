@@ -12,7 +12,7 @@ COPY go.mod go.sum ./
 COPY . ./
 
 # Install project dependencies
-RUN go mod download
+RUN go get .
 
 RUN apk add build-base
 
