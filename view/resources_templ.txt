@@ -1,0 +1,33 @@
+<div id=\"resources\"><div id=\"resources__header\">
+</div><div id=\"resources__body\" hx-get=\"
+\" hx-swap=\"innerHTML\" hx-ext=\"multi-swap\" hx-trigger=\"load, updatedResource from:body\">
+</div><div id=\"resources__footer\">
+</div></div>
+<div id=\"
+\" class=\"
+\"><div class=\"resource-preview__header\"><h3 class=\"resource-preview__identifier\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">
+</h3>
+<button class=\"
+\" type=\"button\" onclick=\"
+\"><span id=\"
+\" class=\"material-symbols-outlined\">expand_more</span></button></div>
+<div id=\"
+\" class=\"
+\"></div>
+</div>
+<form id=\"selected-resource\" class=\"resource input-form\"><input type=\"number\" class=\"hidden\" name=\"id\" value=\"
+\"> <input type=\"number\" class=\"hidden\" name=\"plan_id\" value=\"
+\"> <input type=\"text\" name=\"title\" placeholder=\"Title\" value=\"
+\"> <input type=\"number\" class=\"hidden\" name=\"type\" value=\"
+\">
+<div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Delete</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Cancel</button></div></form><script>\n\tsimplemde = new SimpleMDE({\n\t\telement: document.getElementById(\"selected-resource__content\"),\n\t\tforceSync: true,\n\t});\n</script>
+<div class=\"new-task-button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\"><span class=\"material-symbols-outlined\">add</span> 
+<span>Add</span>
+</div>

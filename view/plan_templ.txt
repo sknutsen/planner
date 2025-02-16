@@ -1,0 +1,10 @@
+<form id=\"selected-plan\" class=\"plan\">
+<input type=\"number\" class=\"hidden\" name=\"id\" value=\"
+\"> 
+<input type=\"text\" name=\"name\" placeholder=\"name\" value=\"
+\"><div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-delete=\"
+\">Delete</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Cancel</button></div></form>

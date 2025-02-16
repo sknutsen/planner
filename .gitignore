@@ -5,8 +5,8 @@
 *.so
 *.dylib
 
-*_templ.go
-*_templ.txt
+# *_templ.go
+# *_templ.txt
 # Test binary, built with `go test -c`
 *.test
 

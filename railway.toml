@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-nixpacksConfigPath = "nixpacks.toml"
+# nixpacksConfigPath = "nixpacks.toml"
 
 # [deploy]
 # restartPolicyType = ""

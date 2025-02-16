@@ -1,0 +1,28 @@
+<div id=\"day\"><div id=\"day__header\"><span>
+</span>
+</div><div id=\"day__body\" hx-get=\"
+\" hx-swap=\"innerHTML\" hx-ext=\"multi-swap\" hx-trigger=\"load\">
+</div><div id=\"day__footer\">
+</div></div>
+<div id=\"
+\" class=\"
+\"><a class=\"day-preview__header\" href=\"
+\"><span>
+</span> <span>
+</span></a><div class=\"day-preview__tasks\" hx-get=\"
+\" hx-swap=\"innerHTML\" hx-ext=\"multi-swap\" hx-trigger=\"load, updatedTask from:body\">
+</div>
+</div>
+<div id=\"day-selector\" class=\"nav-selector\"><a id=\"day-selector__back\" class=\"nav-selector__back\" href=\"
+\">Back to week</a> <a id=\"day-selector__prev\" class=\"nav-selector__prev\" href=\"
+\">Prev</a> <a id=\"day-selector__next\" class=\"nav-selector__next\" href=\"
+\">Next</a> <span>
+</span></div>
+<div class=\"new-task-button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\"><span class=\"material-symbols-outlined\">add</span> 
+<span>Add</span>
+</div>
+<div class=\"new-task-button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\"><span class=\"material-symbols-outlined\">add</span> 
+<span>Add from template</span>
+</div>

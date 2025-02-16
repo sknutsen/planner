@@ -1,0 +1,34 @@
+<div id=\"templates\"><div id=\"templates__header\">
+</div><div id=\"templates__body\" hx-get=\"
+\" hx-swap=\"innerHTML\" hx-ext=\"multi-swap\" hx-trigger=\"load, updatedTemplate from:body\">
+</div><div id=\"templates__footer\">
+</div></div>
+<div id=\"
+\" class=\"
+\"><div class=\"template-preview__header\"><div class=\"template-preview__identifier\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\"><h3 class=\"template-preview__title\">
+</h3><h4 class=\"template-preview__subtitle\">
+</h4></div>
+<button class=\"
+\" type=\"button\" onclick=\"
+\"><span id=\"
+\" class=\"material-symbols-outlined\">expand_more</span></button></div>
+<div id=\"
+\" class=\"
+\"></div>
+</div>
+<form id=\"selected-template\" class=\"template input-form\"><input type=\"number\" class=\"hidden\" name=\"id\" value=\"
+\"> <input type=\"number\" class=\"hidden\" name=\"plan_id\" value=\"
+\"> <input type=\"text\" name=\"title\" placeholder=\"Title\" value=\"
+\"> <input type=\"text\" name=\"subtitle\" placeholder=\"Subtitle\" value=\"
+\">
+<div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Delete</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Cancel</button></div></form><script>\n\tsimplemde = new SimpleMDE({\n\t\telement: document.getElementById(\"selected-template__description\"),\n\t\tforceSync: true,\n\t});\n</script>
+<div class=\"new-task-button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\"><span class=\"material-symbols-outlined\">add</span> 
+<span>Add</span>
+</div>

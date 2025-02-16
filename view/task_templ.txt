@@ -1,0 +1,43 @@
+<form id=\"selected-task\" class=\"task input-form\"><input type=\"number\" class=\"hidden\" name=\"id\" value=\"
+\"> <input type=\"number\" class=\"hidden\" name=\"plan_id\" value=\"
+\"> <input type=\"text\" name=\"title\" placeholder=\"Title\" value=\"
+\"> <input type=\"date\" name=\"date\" value=\"
+\"> <input type=\"text\" name=\"subtitle\" placeholder=\"Subtitle\" value=\"
+\">
+<div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save as copy</button> <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Delete</button> 
+<button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Cancel</button></div></form><script>\n\tsimplemde = new SimpleMDE({\n\t\telement: document.getElementById(\"selected-task__description\"),\n\t\tforceSync: true,\n\t});\n</script>
+<form id=\"selected-task\" class=\"task input-form\"><input type=\"number\" class=\"hidden\" name=\"id\" value=\"
+\"> <input type=\"number\" class=\"hidden\" name=\"plan_id\" value=\"
+\"> <input type=\"date\" name=\"date\" value=\"
+\"> <select name=\"template\"><option selected>select a template</option> 
+<option value=\"
+\">
+</option>
+</select><div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">Cancel</button></div></form>
+<div id=\"
+\" class=\"
+\"><div class=\"task-preview__header\">
+<button class=\"
+\" type=\"button\" hx-get=\"
+\"><span></span></button><div class=\"task-preview__identifier\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
+\">
+<div class=\"
+\">
+</div><h3 class=\"task-preview__title\">
+</h3><h4 class=\"task-preview__subtitle\">
+</h4></div>
+<button class=\"
+\" type=\"button\" onclick=\"
+\"><span id=\"
+\" class=\"material-symbols-outlined\">expand_more</span></button></div>
+<div id=\"
+\" class=\"
+\"></div>
+</div>

@@ -1,0 +1,11 @@
+<div id=\"history\"><div id=\"history__header\">
+</div><div id=\"history__body\" hx-get=\"
+\" hx-swap=\"innerHTML\" hx-ext=\"multi-swap\" hx-trigger=\"load, updatedTask from:body\">
+</div></div>
+<form id=\"history__filters\"><div>
+<input type=\"radio\" id=\"history-filter__show-complete_all\" name=\"history-filter__show-complete\" value=\"0\" checked onclick=\"
+\"> <label for=\"history-filter__show-complete_all\">All</label></div><div>
+<input type=\"radio\" id=\"history-filter__show-complete_complete\" name=\"history-filter__show-complete\" value=\"1\" onclick=\"
+\"> <label for=\"history-filter__show-complete_complete\">Complete</label></div><div>
+<input type=\"radio\" id=\"history-filter__show-complete_incomplete\" name=\"history-filter__show-complete\" value=\"2\" onclick=\"
+\"> <label for=\"history-filter__show-complete_incomplete\">Incomplete</label></div></form>

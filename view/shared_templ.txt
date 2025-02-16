@@ -1,0 +1,10 @@
+<div class=\"navbar\"><div class=\"navbar__left\"><span></span></div><div class=\"navbar__center\"><a href=\"
+\">Week</a> <a href=\"
+\">History</a> <a href=\"
+\">Templates</a> <a href=\"
+\">Resources</a></div><div class=\"navbar__right\"><div class=\"navbar__user-info\" hx-get=\"
+\" hx-replace-url=\"true\" hx-target=\"body\"><img class=\"avatar\" src=\"
+\"> <span>
+</span></div></div></div>
+<!doctype html><html lang=\"en\"><head><title>Planner</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"/assets/css/simplemde.min.css\"><link rel=\"stylesheet\" href=\"/assets/index.css\"><link rel=\"icon\" href=\"data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;\n                    &lt;text y=%22.9em%22 font-size=%2290%22&gt;\n                        🗓️\n                    &lt;/text&gt;\n                &lt;/svg&gt;\"><script src=\"https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script><script src=\"/assets/js/simplemde.min.js\"></script><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/json-enc.js\"></script><script type=\"module\" src=\"/assets/bundle.js\"></script></head><body><div style=\"display: none;\"><textarea></textarea></div>
+<script type=\"text/javascript\">\n\t\tvar mod = {};\n\t\tvar simplemde = new SimpleMDE({});\n                // const md = window.markdownit();\n\t</script><script type=\"module\">\n\t\timport * as module from \"/assets/bundle.js\";\n\n\t\tmod = module;\n\t</script></body></html>

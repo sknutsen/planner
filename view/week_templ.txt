@@ -1,0 +1,8 @@
+<div id=\"week\"><div id=\"week__header\">
+</div><div id=\"week__body\">
+</div></div>
+<div id=\"week-selector\" class=\"nav-selector\"><a id=\"week-selector__back\" class=\"nav-selector__back\" href=\"
+\">Today</a> <a id=\"week-selector__prev\" class=\"nav-selector__prev\" href=\"
+\">Prev</a> <a id=\"week-selector__next\" class=\"nav-selector__next\" href=\"
+\">Next</a> <span>
+</span></div>
