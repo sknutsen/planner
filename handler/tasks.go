@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
+	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/view"
 )
@@ -59,7 +60,7 @@ func (h *Handler) EditTask(c echo.Context) error {
 
 	component := view.Task(state, models.Task{
 		Id:          int(task.ID),
-		Date:        task.Date,
+		Date:        lib.StripDateString(task.Date),
 		Title:       task.Title,
 		Subtitle:    task.Subtitle.(string),
 		Description: task.Description.(string),

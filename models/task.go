@@ -1,6 +1,9 @@
 package models
 
-import "github.com/sknutsen/planner/database"
+import (
+	"github.com/sknutsen/planner/database"
+	"github.com/sknutsen/planner/lib"
+)
 
 type Task struct {
 	Id          int
@@ -34,7 +37,7 @@ func TasksFromDBModels(m []database.Task) []Task {
 func TaskFromDBModel(m database.Task) Task {
 	return Task{
 		Id:          int(m.ID),
-		Date:        m.Date,
+		Date:        lib.StripDateString(m.Date),
 		Title:       m.Title,
 		Subtitle:    m.Subtitle.(string),
 		Description: m.Description.(string),

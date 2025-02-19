@@ -79,3 +79,13 @@ func ISOWeek(d time.Time) string {
 
 	return fmt.Sprintf("%d-%d", y, w)
 }
+
+func StripDateString(d string) string {
+	s := d
+
+	if strings.Contains(d, "T") {
+		s = strings.Split(d, "T")[0]
+	}
+
+	return s
+}
