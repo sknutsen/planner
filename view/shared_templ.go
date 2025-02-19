@@ -76,7 +76,7 @@ func Nav(state models.ClientState) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(routes.User)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 22, Col: 52}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 20, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -89,7 +89,7 @@ func Nav(state models.ClientState) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(state.UserProfile.Picture)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 23, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 21, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -102,7 +102,7 @@ func Nav(state models.ClientState) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(state.UserProfile.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 24, Col: 33}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `view/shared.templ`, Line: 22, Col: 34}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -137,7 +137,7 @@ func MainLayout(state models.ClientState) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<!doctype html><html lang=\"en\"><head><title>Planner</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"/assets/css/simplemde.min.css\"><link rel=\"stylesheet\" href=\"/assets/index.css\"><link rel=\"icon\" href=\"data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;\n                    &lt;text y=%22.9em%22 font-size=%2290%22&gt;\n                        🗓️\n                    &lt;/text&gt;\n                &lt;/svg&gt;\"><script src=\"https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script><script src=\"/assets/js/simplemde.min.js\"></script><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/json-enc.js\"></script><script type=\"module\" src=\"/assets/bundle.js\"></script></head><body><div style=\"display: none;\"><textarea></textarea></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<!doctype html><html lang=\"en\"><head><title>Planner</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\"><link rel=\"stylesheet\" href=\"/assets/css/simplemde.min.css\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css\"><link rel=\"stylesheet\" href=\"/assets/index.css\"><link rel=\"icon\" href=\"data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;\n                    &lt;text y=%22.9em%22 font-size=%2290%22&gt;\n                        🗓️\n                    &lt;/text&gt;\n                &lt;/svg&gt;\"><script src=\"https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.js\"></script><script src=\"/assets/js/simplemde.min.js\"></script><script src=\"/assets/js/htmx.min.js\"></script><script src=\"/assets/js/json-enc.js\"></script><script type=\"module\" src=\"/assets/bundle.js\"></script></head><body><div style=\"display: none;\"><textarea></textarea></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -153,7 +153,7 @@ func MainLayout(state models.ClientState) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script type=\"text/javascript\">\n\t\tvar mod = {};\n\t\tvar simplemde = new SimpleMDE({});\n                // const md = window.markdownit();\n\t</script><script type=\"module\">\n\t\timport * as module from \"/assets/bundle.js\";\n\n\t\tmod = module;\n\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script type=\"module\">\n\t\timport * as module from \"/assets/bundle.js\";\n\n\t\tmod = module;\n\t</script><script type=\"text/javascript\">\n\t\tvar mod = {};\n\t\tvar simplemde = new SimpleMDE({});\n\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

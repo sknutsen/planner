@@ -11,7 +11,7 @@
 \" hx-include=\"closest form\" hx-ext=\"json-enc\">Save as copy</button> <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
 \">Delete</button> 
 <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
-\">Cancel</button></div></form><script>\n\tsimplemde = new SimpleMDE({\n\t\telement: document.getElementById(\"selected-task__description\"),\n\t\tforceSync: true,\n\t});\n</script>
+\">Cancel</button></div></form>
 <form id=\"selected-task\" class=\"task input-form\"><input type=\"number\" class=\"hidden\" name=\"id\" value=\"
 \"> <input type=\"number\" class=\"hidden\" name=\"plan_id\" value=\"
 \"> <input type=\"date\" name=\"date\" value=\"

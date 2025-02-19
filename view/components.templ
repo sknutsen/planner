@@ -73,3 +73,10 @@ templ mdEditor(id string, name string, value string) {
 script planChanged(baseRoute string) {
 window.open(baseRoute + "/" + event.target.value, "_self");
 }
+
+script renderMDE(id string) {
+    const editor = new MarkdownEditor(id, {
+	placeholder: 'Write your markdown...',
+	toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview'],
+    });
+}

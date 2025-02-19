@@ -83,12 +83,25 @@
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
-	height: fit-content;
+	height: 50vh;
 	width: 600px;
 	max-height: 100vh;
 	overflow: auto;
 
-	.CodeMirror-scroll {
+	.md-editor {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 2;
+	}
+
+	.markdown-editor-wrapper,
+	.editor-layout {
+		display: contents;
+		/* flex-direction: column; */
+	}
+
+	.textarea-wrapper {
+		flex-grow: 2;
 		max-height: 600px;
 	}
 

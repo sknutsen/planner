@@ -96,12 +96,7 @@ templ Resource(state models.ClientState, resource models.Resource) {
 				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
 			</div>
 		</form>
-		<script>
-	simplemde = new SimpleMDE({
-		element: document.getElementById("selected-resource__content"),
-		forceSync: true,
-	});
-</script>
+		@renderMDE("#selected-resource__content")
 	}
 }
 

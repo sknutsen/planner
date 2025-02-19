@@ -97,12 +97,7 @@ templ Template(state models.ClientState, template models.Template) {
 				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
 			</div>
 		</form>
-		<script>
-	simplemde = new SimpleMDE({
-		element: document.getElementById("selected-template__description"),
-		forceSync: true,
-	});
-</script>
+		@renderMDE("#selected-template__description")
 	}
 }
 

@@ -5,72 +5,71 @@ import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
 
 templ Nav(state models.ClientState) {
-<div class="navbar">
-	<div class="navbar__left">
-		<span></span>
-		// <span>ZDK</span>
-	</div>
-
-	<div class="navbar__center">
-		<a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Week, state.SelectedPlanId))}>Week</a>
-		<a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.History, state.SelectedPlanId))}>History</a>
-		<a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Templates, state.SelectedPlanId))}>Templates</a>
-		<a href={templ.SafeURL(fmt.Sprintf("%s/%d", routes.Resources, state.SelectedPlanId))}>Resources</a>
-	</div>
-
-	<div class="navbar__right">
-		<div class="navbar__user-info" hx-get={routes.User} hx-replace-url="true" hx-target="body">
-			<img class="avatar" src={ state.UserProfile.Picture } />
-			<span>{ state.UserProfile.Name }</span>
-			// <span>ID: { state.UserProfile.UserId }</span>
+	<div class="navbar">
+		<div class="navbar__left">
+			<span></span>
+			// <span>ZDK</span>
+		</div>
+		<div class="navbar__center">
+			<a href={ templ.SafeURL(fmt.Sprintf("%s/%d", routes.Week, state.SelectedPlanId)) }>Week</a>
+			<a href={ templ.SafeURL(fmt.Sprintf("%s/%d", routes.History, state.SelectedPlanId)) }>History</a>
+			<a href={ templ.SafeURL(fmt.Sprintf("%s/%d", routes.Templates, state.SelectedPlanId)) }>Templates</a>
+			<a href={ templ.SafeURL(fmt.Sprintf("%s/%d", routes.Resources, state.SelectedPlanId)) }>Resources</a>
+		</div>
+		<div class="navbar__right">
+			<div class="navbar__user-info" hx-get={ routes.User } hx-replace-url="true" hx-target="body">
+				<img class="avatar" src={ state.UserProfile.Picture }/>
+				<span>{ state.UserProfile.Name }</span>
+				// <span>ID: { state.UserProfile.UserId }</span>
+			</div>
 		</div>
 	</div>
-</div>
 }
 
 templ MainLayout(state models.ClientState) {
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-	<title>Planner</title>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-	<link rel="stylesheet" href="/assets/css/simplemde.min.css" />
-	<link rel="stylesheet" href="/assets/index.css" />
-	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>Planner</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<link
+				rel="stylesheet"
+				href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+			/>
+			<link rel="stylesheet" href="/assets/css/simplemde.min.css"/>
+			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.css"/>
+			<link rel="stylesheet" href="/assets/index.css"/>
+			<link
+				rel="icon"
+				href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22>
                     <text y=%22.9em%22 font-size=%2290%22>
                         🗓️
                     </text>
-                </svg>" />
-	<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-	<script src="/assets/js/simplemde.min.js" />
-	<script src="/assets/js/htmx.min.js" />
-	<script src="/assets/js/json-enc.js"></script>
-	<script type="module" src="/assets/bundle.js" />
-</head>
-
-<body>
-	<div style="display: none;">
-		<textarea></textarea>
-	</div>
-	@Modal("hidden")
-	@Nav(state)
-	{ children... }
-	<script type="text/javascript">
-		var mod = {};
-		var simplemde = new SimpleMDE({});
-                // const md = window.markdownit();
-	</script>
-	<script type="module">
+                </svg>"
+			/>
+			<script src="https://cdn.jsdelivr.net/npm/markdown-text-editor/dist/markdown-text-editor.js"></script>
+			<script src="/assets/js/simplemde.min.js"></script>
+			<script src="/assets/js/htmx.min.js"></script>
+			<script src="/assets/js/json-enc.js"></script>
+			<script type="module" src="/assets/bundle.js"></script>
+		</head>
+		<body>
+			<div style="display: none;">
+				<textarea></textarea>
+			</div>
+			@Modal("hidden")
+			@Nav(state)
+			{ children... }
+			<script type="module">
 		import * as module from "/assets/bundle.js";
 
 		mod = module;
 	</script>
-</body>
-
-</html>
+			<script type="text/javascript">
+		var mod = {};
+		var simplemde = new SimpleMDE({});
+	</script>
+		</body>
+	</html>
 }

@@ -26,7 +26,7 @@
 <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
 \">Delete</button> 
 <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
-\">Cancel</button></div></form><script>\n\tsimplemde = new SimpleMDE({\n\t\telement: document.getElementById(\"selected-resource__content\"),\n\t\tforceSync: true,\n\t});\n</script>
+\">Cancel</button></div></form>
 <div class=\"new-task-button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
 \"><span class=\"material-symbols-outlined\">add</span> 
 <span>Add</span>
