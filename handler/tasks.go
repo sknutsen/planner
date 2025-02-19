@@ -58,6 +58,8 @@ func (h *Handler) EditTask(c echo.Context) error {
 
 	println(task.Date)
 
+	state.SelectedPlanId = int(task.PlanID)
+
 	component := view.Task(state, models.Task{
 		Id:          int(task.ID),
 		Date:        lib.StripDateString(task.Date),

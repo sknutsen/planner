@@ -5,7 +5,8 @@
 \"> <input type=\"text\" name=\"subtitle\" placeholder=\"Subtitle\" value=\"
 \">
 <div class=\"button-group\"><button type=\"submit\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
-\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> 
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save</button> <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
+\" hx-include=\"closest form\" hx-ext=\"json-enc\">Save as template</button> 
 <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-post=\"
 \" hx-include=\"closest form\" hx-ext=\"json-enc\">Save as copy</button> <button type=\"button\" hx-target=\"#modal\" hx-swap=\"outerHTML\" hx-get=\"
 \">Delete</button> 

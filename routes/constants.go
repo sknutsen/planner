@@ -70,12 +70,13 @@ const (
 	TemplatesPlan          string = Templates + planId
 	TemplatesPlanTemplates string = Templates + planId + Templates
 
-	template       string = "/template"
-	Template       string = template + id
-	TemplateCreate string = TemplatesPlan + create
-	TemplateDelete string = Template + delete
-	TemplateEdit   string = Template + edit
-	TemplateUpdate string = template + update
+	template         string = "/template"
+	Template         string = template + id
+	TemplateCreate   string = TemplatesPlan + create
+	TemplateDelete   string = Template + delete
+	TemplateEdit     string = Template + edit
+	TemplateUpdate   string = template + update
+	TemplateFromTask string = template + task
 
 	User string = "/user"
 

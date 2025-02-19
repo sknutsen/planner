@@ -227,6 +227,23 @@ func (h *Handler) UpdateTemplate(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
 	}
 
+	return h.updateTemplate(c, request)
+}
+
+func (h *Handler) TemplateFromTask(c echo.Context) error {
+	var request models.UpdateTemplateRequest
+
+	err := c.Bind(&request)
+	if err != nil {
+		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
+	}
+
+	request.Id = "0"
+
+	return h.updateTemplate(c, request)
+}
+
+func (h *Handler) updateTemplate(c echo.Context, r models.UpdateTemplateRequest) error {
 	sess, err := session.Get("session", c)
 	if err != nil {
 		println(err)
@@ -240,18 +257,18 @@ func (h *Handler) UpdateTemplate(c echo.Context) error {
 	ctx := context.Background()
 	dq := database.New(db)
 
-	if request.Id == "0" {
+	if r.Id == "0" {
 		println("Creating template")
-		planId, err := strconv.Atoi(request.PlanId)
+		planId, err := strconv.Atoi(r.PlanId)
 		if err != nil {
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
 		err = dq.CreateTemplate(ctx, database.CreateTemplateParams{
 			PlanID:      int64(planId),
-			Title:       request.Title,
-			Subtitle:    request.Subtitle,
-			Description: request.Description,
+			Title:       r.Title,
+			Subtitle:    r.Subtitle,
+			Description: r.Description,
 		})
 
 		if err != nil {
@@ -259,16 +276,16 @@ func (h *Handler) UpdateTemplate(c echo.Context) error {
 		}
 	} else {
 		println("Updating template")
-		id, err := strconv.Atoi(request.Id)
+		id, err := strconv.Atoi(r.Id)
 		if err != nil {
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
 		err = dq.UpdateTemplate(ctx, database.UpdateTemplateParams{
 			ID:          int64(id),
-			Title:       request.Title,
-			Subtitle:    request.Subtitle,
-			Description: request.Description,
+			Title:       r.Title,
+			Subtitle:    r.Subtitle,
+			Description: r.Description,
 			UserId:      user.UserId,
 		})
 

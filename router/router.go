@@ -79,6 +79,7 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.GET(routes.TemplateDelete, h.DeleteTemplate, mw.IsAuthenticated)
 	e.GET(routes.TemplateEdit, h.EditTemplate, mw.IsAuthenticated)
 	e.POST(routes.TemplateUpdate, h.UpdateTemplate, mw.IsAuthenticated)
+	e.POST(routes.TemplateFromTask, h.TemplateFromTask, mw.IsAuthenticated)
 
 	e.GET(routes.User, h.User, mw.IsAuthenticated)
 

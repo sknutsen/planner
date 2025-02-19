@@ -23,6 +23,14 @@ templ Task(state models.ClientState, task models.Task) {
 					hx-include="closest form"
 					hx-ext="json-enc"
 				>Save</button>
+				<button
+					type="button"
+					hx-target="#modal"
+					hx-swap="outerHTML"
+					hx-post={ routes.TemplateFromTask }
+					hx-include="closest form"
+					hx-ext="json-enc"
+				>Save as template</button>
 				if task.Id != 0 {
 					<button
 						type="button"
