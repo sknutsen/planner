@@ -1,73 +1,78 @@
 body {
-	--text-color: #222;
-	--text-color-inv: #eee;
-	--bkg-color: #fff;
-	--bkg-color-inv: #121212;
-	--border-color: #222;
-	--border-color-inv: #eee;
-	--highlight-color: lightblue;
-	--sfc-01-color: #1212125;
-	--sfc-02-color: #12121207;
-	--sfc-03-color: #12121208;
-	--sfc-04-color: #12121209;
-	--sfc-06-color: #12121211;
-	--sfc-08-color: #12121212;
-	--sfc-12-color: #12121214;
-	--sfc-16-color: #12121215;
-	--sfc-24-color: #12121216;
-	--sfc-color-inv: #121212;
-	--sfc-elev: 1dp;
-	--elevation: 0;
-	--epx: calc(var(--elevation) * 1px);
+  --text-color: #222;
+  --text-color-inv: #eee;
+  --bkg-color: #fff;
+  --bkg-color-inv: #121212;
+  --border-color: #222;
+  --border-color-inv: #eee;
+  --highlight-color: lightblue;
+  --sfc-01-color: #1212125;
+  --sfc-02-color: #12121207;
+  --sfc-03-color: #12121208;
+  --sfc-04-color: #12121209;
+  --sfc-06-color: #12121211;
+  --sfc-08-color: #12121212;
+  --sfc-12-color: #12121214;
+  --sfc-16-color: #12121215;
+  --sfc-24-color: #12121216;
+  --sfc-color-inv: #121212;
+  --sfc-elev: 1dp;
+  --elevation: 0;
+  --epx: calc(var(--elevation) * 1px);
 
-	/* these 2 shadows serve as a border for  0-1 elevation    */
-	--shadow1: 0 0 1px rgba(0, 0, 0, .1);
-	--shadow2: 0 1px 2px rgba(0, 0, 0, .08);
+  /* these 2 shadows serve as a border for  0-1 elevation    */
+  --shadow1: 0 0 1px rgba(0, 0, 0, 0.1);
+  --shadow2: 0 1px 2px rgba(0, 0, 0, 0.08);
 
-	--offset-y: calc(var(--epx) + 1px);
-	--blur: calc(var(--epx) * 2);
-	--spread: calc(var(--epx) * .3);
-	--shadow3: 0 var(--offset-y) var(--blur) var(--spread) rgba(0, 0, 0, 0.2);
+  --offset-y: calc(var(--epx) + 1px);
+  --blur: calc(var(--epx) * 2);
+  --spread: calc(var(--epx) * 0.3);
+  --shadow3: 0 var(--offset-y) var(--blur) var(--spread) rgba(0, 0, 0, 0.2);
 
-	--ico-complete: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><rect width="24" height="24" fill="none"></rect><path d="M5 13.3636L8.03559 16.3204C8.42388 16.6986 9.04279 16.6986 9.43108 16.3204L19 7" stroke="%23000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></g></svg>');
+  --ico-complete: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><rect width="24" height="24" fill="none"></rect><path d="M5 13.3636L8.03559 16.3204C8.42388 16.6986 9.04279 16.6986 9.43108 16.3204L19 7" stroke="%23000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></g></svg>');
+
+  /* MD editor overrides */
+  --surface--color: var(--bkg-color) !important;
+  --surface--bg-color: var(--text-color) !important;
 }
 
 @media (prefers-color-scheme: dark) {
-	html {
-		color-scheme: dark;
-	}
+  html {
+    color-scheme: dark;
+  }
 
-	body {
-		--text-color: #eee;
-		--text-color-inv: #222;
-		--bkg-color: #121212;
-		--bkg-color-inv: #fff;
-		--border-color: #eee;
-		--border-color-inv: #222;
-		--highlight-color: #3700b3;
-		--sfc-01-color: #ffffff05;
-		--sfc-02-color: #ffffff07;
-		--sfc-03-color: #ffffff08;
-		--sfc-04-color: #ffffff09;
-		--sfc-06-color: #ffffff11;
-		--sfc-08-color: #ffffff12;
-		--sfc-12-color: #ffffff14;
-		--sfc-16-color: #ffffff15;
-		--sfc-24-color: #ffffff16;
-		--sfc-color-inv: #fff;
-		--sfc-elev: 1dp;
-		--elevation: 0;
-		--epx: calc(var(--elevation) * 1px);
+  body {
+    --text-color: #eee;
+    --text-color-inv: #222;
+    --bkg-color: #121212;
+    --bkg-color-inv: #fff;
+    --border-color: #eee;
+    --border-color-inv: #222;
+    --highlight-color: #3700b3;
+    --sfc-01-color: #ffffff05;
+    --sfc-02-color: #ffffff07;
+    --sfc-03-color: #ffffff08;
+    --sfc-04-color: #ffffff09;
+    --sfc-06-color: #ffffff11;
+    --sfc-08-color: #ffffff12;
+    --sfc-12-color: #ffffff14;
+    --sfc-16-color: #ffffff15;
+    --sfc-24-color: #ffffff16;
+    --sfc-color-inv: #fff;
+    --sfc-elev: 1dp;
+    --elevation: 0;
+    --epx: calc(var(--elevation) * 1px);
 
-		/* these 2 shadows serve as a border for  0-1 elevation    */
-		--shadow1: 0 0 1px rgba(255, 255, 255, .1);
-		--shadow2: 0 1px 2px rgba(255, 255, 255, .08);
+    /* these 2 shadows serve as a border for  0-1 elevation    */
+    --shadow1: 0 0 1px rgba(255, 255, 255, 0.1);
+    --shadow2: 0 1px 2px rgba(255, 255, 255, 0.08);
 
-		--offset-y: calc(var(--epx) + 1px);
-		--blur: calc(var(--epx) * 2);
-		--spread: calc(var(--epx) * .3);
-		--shadow3: 0 var(--offset-y) var(--blur) var(--spread) rgba(255, 255, 255, 0.2);
+    --offset-y: calc(var(--epx) + 1px);
+    --blur: calc(var(--epx) * 2);
+    --spread: calc(var(--epx) * 0.3);
+    --shadow3: 0 var(--offset-y) var(--blur) var(--spread)
+      rgba(255, 255, 255, 0.2);
 
-		--ico-complete: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><rect width="24" height="24" fill="none"></rect><path d="M5 13.3636L8.03559 16.3204C8.42388 16.6986 9.04279 16.6986 9.43108 16.3204L19 7" stroke="%23eeeeee" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></g></svg>');
-	}
+    --ico-complete: url('data:image/svg+xml,<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><rect width="24" height="24" fill="none"></rect><path d="M5 13.3636L8.03559 16.3204C8.42388 16.6986 9.04279 16.6986 9.43108 16.3204L19 7" stroke="%23eeeeee" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></g></svg>');
+  }
 }
