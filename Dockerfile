@@ -1,6 +1,6 @@
 # Use the Go 1.23 alpine official image
 # https://hub.docker.com/_/golang
-FROM golang:1.23-bookworm
+FROM golang:1.25-bookworm
 
 # Create and change to the app directory.
 WORKDIR /app
