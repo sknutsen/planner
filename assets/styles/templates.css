@@ -1,127 +1,127 @@
 #templates {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	height: calc(100vh - 65px);
-	width: calc(100vw - 50px);
-	margin: 0 auto;
-	padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100vh - 40px);
+  width: calc(100vw - 50px);
+  margin: 0 auto;
+  padding: 10px;
 
-	#templates__header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		height: 30px;
+  #templates__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
 
-		span:first-child {
-			font-size: 1.2em;
-			font-weight: 600;
-		}
-	}
+    span:first-child {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+  }
 
-	#templates__body {
-		display: flex;
-		flex-grow: 2;
-		flex-direction: column;
-		flex-wrap: nowrap;
-		align-items: center;
-		align-content: stretch;
-		gap: 10px;
-		width: 100%;
-		overflow: auto;
-		padding-bottom: 15px;
+  #templates__body {
+    display: flex;
+    flex-grow: 2;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: stretch;
+    gap: 10px;
+    width: 100%;
+    overflow: auto;
+    padding-bottom: 15px;
 
-		.template-preview {
-			max-width: 900px;
-			width: 100%;
-		}
-	}
+    .template-preview {
+      max-width: 900px;
+      width: 100%;
+    }
+  }
 
-	#templates__footer {
-		display: flex;
-		flex-direction: row;
-		justify-content: end;
-		align-items: center;
+  #templates__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
 
-		.new-task-button {
-			width: fit-content;
-			background-color: lawngreen;
-			color: white;
-			border: none;
-			border-radius: 50%;
-		}
+    .new-task-button {
+      width: fit-content;
+      background-color: lawngreen;
+      color: white;
+      border: none;
+      border-radius: 50%;
+    }
 
-		.new-task-button:hover {
-			background-color: green;
-		}
-	}
+    .new-task-button:hover {
+      background-color: green;
+    }
+  }
 }
 
 .template-preview {
-	/* border: thin solid lightgrey; */
-	border-radius: 8px;
-	padding: 10px;
-	transition: all 0.5s ease;
+  /* border: thin solid lightgrey; */
+  border-radius: 8px;
+  padding: 10px;
+  transition: all 0.5s ease;
 
-	.template-preview__header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+  .template-preview__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-		.template-preview__identifier {
-			display: flex;
-			flex-direction: column;
-			text-decoration: none;
-			position: relative;
-			cursor: pointer;
-			flex-grow: 2;
-			align-self: stretch;
-			margin: 0;
-			justify-content: center;
+    .template-preview__identifier {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      position: relative;
+      cursor: pointer;
+      flex-grow: 2;
+      align-self: stretch;
+      margin: 0;
+      justify-content: center;
 
-			h3,
-			h4 {
-				margin: 0;
-			}
+      h3,
+      h4 {
+        margin: 0;
+      }
 
-			.template-preview__date {
-				font-size: 0.8rem;
-				font-weight: 400;
-			}
+      .template-preview__date {
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
 
-			.template-preview__title {
-				font-weight: 900;
-			}
+      .template-preview__title {
+        font-weight: 900;
+      }
 
-			.template-preview__subtitle {
-				font-weight: 600;
-			}
-		}
+      .template-preview__subtitle {
+        font-weight: 600;
+      }
+    }
 
-		button {
-			box-shadow: none;
-			border: none;
-			background-color: transparent;
-			border-radius: 8px;
-			vertical-align: middle;
-			padding: 5px;
+    button {
+      box-shadow: none;
+      border: none;
+      background-color: transparent;
+      border-radius: 8px;
+      vertical-align: middle;
+      padding: 5px;
 
-			span {
-				display: block;
-				margin: auto;
-			}
-		}
+      span {
+        display: block;
+        margin: auto;
+      }
+    }
 
-		button:hover {
-			cursor: pointer;
-			/* background-color: lightgray; */
-			background-color: var(--sfc-24-color);
-		}
-	}
+    button:hover {
+      cursor: pointer;
+      /* background-color: lightgray; */
+      background-color: var(--sfc-24-color);
+    }
+  }
 
-	.template-preview__description {
-		transition: all 0.5s ease-in;
-	}
+  .template-preview__description {
+    transition: all 0.5s ease-in;
+  }
 }

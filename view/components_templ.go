@@ -358,14 +358,14 @@ func planChanged(baseRoute string) templ.ComponentScript {
 
 func renderMDE(id string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_renderMDE_19dd`,
-		Function: `function __templ_renderMDE_19dd(id){const editor = new MarkdownEditor(id, {
+		Name: `__templ_renderMDE_6af0`,
+		Function: `function __templ_renderMDE_6af0(id){const editor = new MarkdownEditor(id, {
 	placeholder: 'Write your markdown...',
-	toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'checklist', 'blockquote', 'link', 'preview'],
+	toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'blockquote', 'link', 'preview'],
     });
 }`,
-		Call:       templ.SafeScript(`__templ_renderMDE_19dd`, id),
-		CallInline: templ.SafeScriptInline(`__templ_renderMDE_19dd`, id),
+		Call:       templ.SafeScript(`__templ_renderMDE_6af0`, id),
+		CallInline: templ.SafeScriptInline(`__templ_renderMDE_6af0`, id),
 	}
 }
 

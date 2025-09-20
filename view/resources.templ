@@ -60,7 +60,7 @@ templ ResourcePreview(resource models.Resource, hideDescription bool, hideDate b
 		</div>
 		<div
 			id={ fmt.Sprintf("resource-%d__content", resource.Id) }
-			class={ "resource-preview__content" ,
+			class={ "resource-preview__content", "md-preview" ,
 		templ.KV("hidden", hideDescription) }
 		></div>
 		@renderContent(resource.Id, fmt.Sprint(resource.Content))

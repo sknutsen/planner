@@ -1,113 +1,127 @@
 .highlight {
-	background-color: var(--highlight-color);
+  background-color: var(--highlight-color);
 }
 
 .surface-01 {
-	--elevation: 1;
-	background-color: var(--sfc-01-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 1;
+  background-color: var(--sfc-01-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-02 {
-	--elevation: 2;
-	background-color: var(--sfc-02-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 2;
+  background-color: var(--sfc-02-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-03 {
-	--elevation: 3;
-	background-color: var(--sfc-03-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 3;
+  background-color: var(--sfc-03-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-04 {
-	--elevation: 4;
-	background-color: var(--sfc-04-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 4;
+  background-color: var(--sfc-04-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-06 {
-	--elevation: 6;
-	background-color: var(--sfc-06-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 6;
+  background-color: var(--sfc-06-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-08 {
-	--elevation: 8;
-	background-color: var(--sfc-08-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 8;
+  background-color: var(--sfc-08-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-12 {
-	--elevation: 12;
-	background-color: var(--sfc-12-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 12;
+  background-color: var(--sfc-12-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-16 {
-	--elevation: 16;
-	background-color: var(--sfc-16-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 16;
+  background-color: var(--sfc-16-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .surface-24 {
-	--elevation: 24;
-	background-color: var(--sfc-24-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  --elevation: 24;
+  background-color: var(--sfc-24-color);
+  box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+  -moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 }
 
 .input-form {
-	background-color: var(--bkg-color);
-	/* border: thin solid lightgrey; */
-	border-radius: 8px;
-	padding: 20px;
-	opacity: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
-	height: 50vh;
-	width: 600px;
-	max-height: 100vh;
-	overflow: auto;
+  background-color: var(--bkg-color);
+  /* border: thin solid lightgrey; */
+  border-radius: 8px;
+  padding: 20px;
+  opacity: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 50vh;
+  width: 600px;
+  max-height: 100vh;
+  overflow: auto;
 
-	.md-editor {
-		display: flex;
-		flex-direction: column;
-		flex-grow: 2;
-	}
+  .md-editor {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 2;
+    border-radius: 2px;
+  }
 
-	.markdown-editor-wrapper,
-	.editor-layout {
-		display: contents;
-		/* flex-direction: column; */
-	}
+  .markdown-editor-wrapper,
+  .editor-layout {
+    display: contents;
+    /* flex-direction: column; */
+  }
 
-	.textarea-wrapper {
-		flex-grow: 2;
-		max-height: 600px;
-	}
+  .toolbar {
+    background-color: var(--sfc-06-color);
 
-	.CodeMirror-fullscreen {
-		.CodeMirror-scroll {
-			max-height: 100%;
-		}
-	}
+    div {
+      background-color: transparent !important;
+    }
+  }
+
+  .textarea-wrapper {
+    flex-grow: 2;
+    max-height: 600px;
+    background-color: var(--sfc-06-color);
+  }
+
+  .CodeMirror-fullscreen {
+    .CodeMirror-scroll {
+      max-height: 100%;
+    }
+  }
+}
+
+.md-preview * {
+  color: var(--text-color) !important;
 }

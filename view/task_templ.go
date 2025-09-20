@@ -576,7 +576,7 @@ func TaskPreview(task models.Task, hideDescription bool, hideDate bool) templ.Co
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var39 = []any{"task-preview__description", templ.KV("hidden",
+		var templ_7745c5c3_Var39 = []any{"task-preview__description", "md-preview", templ.KV("hidden",
 			hideDescription)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var39...)
 		if templ_7745c5c3_Err != nil {

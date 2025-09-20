@@ -61,7 +61,7 @@ templ TemplatePreview(template models.Template, hideDescription bool) {
 		</div>
 		<div
 			id={ fmt.Sprintf("template-%d__description", template.Id) }
-			class={ "template-preview__description" ,
+			class={ "template-preview__description", "md-preview" ,
 		templ.KV("hidden", hideDescription) }
 		></div>
 		@renderTmplDescription(template.Id, fmt.Sprint(template.Description))

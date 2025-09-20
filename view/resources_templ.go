@@ -287,7 +287,7 @@ func ResourcePreview(resource models.Resource, hideDescription bool, hideDate bo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var16 = []any{"resource-preview__content",
+		var templ_7745c5c3_Var16 = []any{"resource-preview__content", "md-preview",
 			templ.KV("hidden", hideDescription)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var16...)
 		if templ_7745c5c3_Err != nil {

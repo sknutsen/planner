@@ -300,7 +300,7 @@ func TemplatePreview(template models.Template, hideDescription bool) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var17 = []any{"template-preview__description",
+		var templ_7745c5c3_Var17 = []any{"template-preview__description", "md-preview",
 			templ.KV("hidden", hideDescription)}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var17...)
 		if templ_7745c5c3_Err != nil {

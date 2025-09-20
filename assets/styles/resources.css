@@ -1,123 +1,123 @@
 #resources {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
-	height: calc(100vh - 65px);
-	width: calc(100vw - 50px);
-	margin: 0 auto;
-	padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: calc(100vh - 40px);
+  width: calc(100vw - 50px);
+  margin: 0 auto;
+  padding: 10px;
 
-	#resources__header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
-		height: 30px;
+  #resources__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 30px;
 
-		span:first-child {
-			font-size: 1.2em;
-			font-weight: 600;
-		}
-	}
+    span:first-child {
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+  }
 
-	#resources__body {
-		display: flex;
-		flex-grow: 2;
-		flex-direction: column;
-		flex-wrap: nowrap;
-		align-items: center;
-		align-content: stretch;
-		gap: 10px;
-		width: 100%;
-		overflow: auto;
-		padding-bottom: 15px;
+  #resources__body {
+    display: flex;
+    flex-grow: 2;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    align-content: stretch;
+    gap: 10px;
+    width: 100%;
+    overflow: auto;
+    padding-bottom: 15px;
 
-		.resource-preview {
-			max-width: 900px;
-			width: 100%;
-		}
-	}
+    .resource-preview {
+      max-width: 900px;
+      width: 100%;
+    }
+  }
 
-	#resources__footer {
-		display: flex;
-		flex-direction: row;
-		justify-content: end;
-		align-items: center;
+  #resources__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    align-items: center;
 
-		.new-task-button {
-			width: fit-content;
-			background-color: lawngreen;
-			color: white;
-			border: none;
-			border-radius: 50%;
-		}
+    .new-task-button {
+      width: fit-content;
+      background-color: lawngreen;
+      color: white;
+      border: none;
+      border-radius: 50%;
+    }
 
-		.new-task-button:hover {
-			background-color: green;
-		}
-	}
+    .new-task-button:hover {
+      background-color: green;
+    }
+  }
 }
 
 .resource-preview {
-	/* border: thin solid lightgrey; */
-	border-radius: 8px;
-	padding: 10px;
-	transition: all 0.5s ease;
+  /* border: thin solid lightgrey; */
+  border-radius: 8px;
+  padding: 10px;
+  transition: all 0.5s ease;
 
-	.resource-preview__header {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		align-items: center;
+  .resource-preview__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-		.resource-preview__identifier {
-			display: flex;
-			flex-direction: column;
-			text-decoration: none;
-			/* color: black; */
-			position: relative;
-			cursor: pointer;
-			flex-grow: 2;
-			align-self: stretch;
-			margin: 0;
-			justify-content: center;
+    .resource-preview__identifier {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      /* color: black; */
+      position: relative;
+      cursor: pointer;
+      flex-grow: 2;
+      align-self: stretch;
+      margin: 0;
+      justify-content: center;
 
-			.resource-preview__date {
-				font-size: 0.8rem;
-				font-weight: 400;
-			}
+      .resource-preview__date {
+        font-size: 0.8rem;
+        font-weight: 400;
+      }
 
-			.resource-preview__title {
-				font-weight: 900;
-			}
+      .resource-preview__title {
+        font-weight: 900;
+      }
 
-			.resource-preview__subtitle {
-				font-weight: 600;
-			}
-		}
+      .resource-preview__subtitle {
+        font-weight: 600;
+      }
+    }
 
-		button {
-			box-shadow: none;
-			border: none;
-			background-color: transparent;
-			border-radius: 8px;
-			vertical-align: middle;
-			padding: 5px;
+    button {
+      box-shadow: none;
+      border: none;
+      background-color: transparent;
+      border-radius: 8px;
+      vertical-align: middle;
+      padding: 5px;
 
-			span {
-				display: block;
-				margin: auto;
-			}
-		}
+      span {
+        display: block;
+        margin: auto;
+      }
+    }
 
-		button:hover {
-			cursor: pointer;
-			/* background-color: lightgray; */
-			background-color: var(--sfc-24-color);
-		}
-	}
+    button:hover {
+      cursor: pointer;
+      /* background-color: lightgray; */
+      background-color: var(--sfc-24-color);
+    }
+  }
 
-	.resource-preview__content {
-		transition: all 0.5s ease-in;
-	}
+  .resource-preview__content {
+    transition: all 0.5s ease-in;
+  }
 }
