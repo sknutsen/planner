@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
@@ -34,12 +33,12 @@ func (h *Handler) EditTask(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	db := h.openDB()
 	defer db.Close()
@@ -79,12 +78,11 @@ func (h *Handler) CopyTask(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 	println(user.UserId)
 	if user.UserId != "" {
 
@@ -134,12 +132,11 @@ func (h *Handler) UpdateTask(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
@@ -212,12 +209,11 @@ func (h *Handler) ToggleIsCompleteTask(c echo.Context) error {
 		return err
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
@@ -248,7 +244,7 @@ func (h *Handler) ToggleIsCompleteTask(c echo.Context) error {
 	})
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed creating task. err: %s", err))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed updating task completion. err: %s", err))
 	}
 
 	c.Response().Header().Add("HX-Trigger", "updatedTask")
@@ -272,12 +268,12 @@ func (h *Handler) DeleteTask(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	db := h.openDB()
 	defer db.Close()
@@ -294,10 +290,12 @@ func (h *Handler) DeleteTask(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting task. err: %s", err))
 	}
 
-	dq.DeleteTask(ctx, database.DeleteTaskParams{
+	if err := dq.DeleteTask(ctx, database.DeleteTaskParams{
 		ID:     task.ID,
 		UserId: state.UserProfile.UserId,
-	})
+	}); err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed deleting task. err: %s", err))
+	}
 
 	c.Response().Header().Add("HX-Trigger", "updatedTask")
 
@@ -399,12 +397,11 @@ func (h *Handler) ListAllTasks(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
@@ -418,7 +415,7 @@ func (h *Handler) ListAllTasks(c echo.Context) error {
 	})
 
 	if err != nil {
-		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks by date. err: %s", err))
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks for plan. err: %s", err))
 	}
 
 	component := view.HistoryTasks(models.HistoryTasksResponse{

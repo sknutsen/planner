@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
@@ -40,34 +38,15 @@ func (h *Handler) Day(c echo.Context) error {
 	dates := lib.DatesInWeek(d.ISOWeek())
 	state.Week.ISOWeek = week
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
 	state.State.SelectedPlanId = planId
-	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.UserProfile = user
 
-	for _, d := range dates {
-		date, _ := lib.StringToDate(d)
-
-		switch date.Weekday() {
-		case time.Monday:
-			state.Week.Monday.Date = date
-		case time.Tuesday:
-			state.Week.Tuesday.Date = date
-		case time.Wednesday:
-			state.Week.Wednesday.Date = date
-		case time.Thursday:
-			state.Week.Thursday.Date = date
-		case time.Friday:
-			state.Week.Friday.Date = date
-		case time.Saturday:
-			state.Week.Saturday.Date = date
-		case time.Sunday:
-			state.Week.Sunday.Date = date
-		}
-	}
+	models.PopulateWeekDates(&state.Week, dates)
 
 	weekday, err := state.Week.GetWeekday(d)
 	if err != nil {
@@ -91,12 +70,10 @@ func (h *Handler) DayTasks(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
-
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()

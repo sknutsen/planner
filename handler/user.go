@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/view"
@@ -15,12 +14,12 @@ func (h *Handler) User(c echo.Context) error {
 		return err
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.UserProfile = user
 
 	component := view.User(state)
 	return component.Render(context.Background(), c.Response().Writer)

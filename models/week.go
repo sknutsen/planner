@@ -52,3 +52,29 @@ func (w *Week) Prev() string {
 func (w *Week) Next() string {
 	return lib.NextISOWeek(w.ISOWeek)
 }
+
+// PopulateWeekDates sets each weekday's Date from ISO date strings (YYYY-MM-DD).
+func PopulateWeekDates(w *Week, dateStrings []string) {
+	for _, s := range dateStrings {
+		date, err := lib.StringToDate(s)
+		if err != nil {
+			continue
+		}
+		switch date.Weekday() {
+		case time.Monday:
+			w.Monday.Date = date
+		case time.Tuesday:
+			w.Tuesday.Date = date
+		case time.Wednesday:
+			w.Wednesday.Date = date
+		case time.Thursday:
+			w.Thursday.Date = date
+		case time.Friday:
+			w.Friday.Date = date
+		case time.Saturday:
+			w.Saturday.Date = date
+		case time.Sunday:
+			w.Sunday.Date = date
+		}
+	}
+}

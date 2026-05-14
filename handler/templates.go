@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/models"
@@ -30,25 +29,18 @@ func (h *Handler) Templates(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
 	state.State.BaseRoute = routes.Templates
 
-	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.UserProfile = user
 
 	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
 
-	if len(state.State.Plans) > 0 {
-		for _, p := range state.State.Plans {
-			if planId == int(p.ID) || planId == 0 {
-				state.State.SelectedPlanId = int(p.ID)
-				break
-			}
-		}
-	}
+	state.State.SelectedPlanId = selectedPlanID(state.State.Plans, planId)
 
 	component := view.Templates(state)
 	return component.Render(context.Background(), c.Response().Writer)
@@ -62,12 +54,10 @@ func (h *Handler) ListAllTemplates(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
-
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
@@ -110,12 +100,12 @@ func (h *Handler) EditTemplate(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	db := h.openDB()
 	defer db.Close()
@@ -157,12 +147,12 @@ func (h *Handler) DeleteTemplate(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	db := h.openDB()
 	defer db.Close()
@@ -179,10 +169,12 @@ func (h *Handler) DeleteTemplate(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting template. err: %s", err))
 	}
 
-	dq.DeleteTemplate(ctx, database.DeleteTemplateParams{
+	if err := dq.DeleteTemplate(ctx, database.DeleteTemplateParams{
 		ID:     template.ID,
 		UserId: state.UserProfile.UserId,
-	})
+	}); err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed deleting template. err: %s", err))
+	}
 
 	c.Response().Header().Add("HX-Trigger", "updatedTemplate")
 
@@ -202,13 +194,13 @@ func (h *Handler) CreateTemplate(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
 	state.SelectedPlanId = planId
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	component := view.Template(state, models.Template{
 		Id:          0,
@@ -244,12 +236,10 @@ func (h *Handler) TemplateFromTask(c echo.Context) error {
 }
 
 func (h *Handler) updateTemplate(c echo.Context, r models.UpdateTemplateRequest) error {
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
-
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
