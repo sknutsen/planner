@@ -1,4 +1,4 @@
-# Use the Go 1.23 alpine official image
+# Use the official Go image (version aligned with go.mod)
 # https://hub.docker.com/_/golang
 FROM golang:1.25-bookworm
 
