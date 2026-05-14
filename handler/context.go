@@ -6,7 +6,6 @@ import (
 
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/models"
 )
 
@@ -28,15 +27,4 @@ func userProfileFromContext(c echo.Context) (models.UserProfile, error) {
 		return models.UserProfile{}, errNoSessionProfile
 	}
 	return models.GetUserProfile(m), nil
-}
-
-// selectedPlanID picks the first plan whose ID matches requestedID, or the first
-// plan when requestedID is 0. It returns 0 when plans is empty or there is no match.
-func selectedPlanID(plans []database.Plan, requestedID int) int {
-	for _, p := range plans {
-		if requestedID == 0 || requestedID == int(p.ID) {
-			return int(p.ID)
-		}
-	}
-	return 0
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sknutsen/planner/internal/planid"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/routes"
 	"github.com/sknutsen/planner/view"
@@ -37,7 +38,7 @@ func (h *Handler) History(c echo.Context) error {
 
 	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
 
-	state.State.SelectedPlanId = selectedPlanID(state.State.Plans, planId)
+	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
 	component := view.History(state)
 	return component.Render(context.Background(), c.Response().Writer)

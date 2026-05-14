@@ -1,4 +1,4 @@
-.PHONY: help dev build sql goose-up zj live/templ live/server live/sync_assets
+.PHONY: help dev build test sql goose-up zj live/templ live/server live/sync_assets
 
 .DEFAULT_GOAL := help
 
@@ -45,6 +45,9 @@ goose-up: ## Apply SQL migrations with goose (requires goose, Turso driver env)
 build: ## go generate (templ) then compile the binary
 	go generate ./...
 	go build
+
+test: ## Run all Go tests (CGO / gcc required, same as `go build`)
+	CGO_ENABLED=1 go test ./...
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z0-9/_-]+:.*?##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-22s\033[0m %s\n", $$1, $$2}'
