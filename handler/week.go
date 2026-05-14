@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
@@ -30,49 +29,23 @@ func (h *Handler) Week(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
 	state.State.BaseRoute = routes.Week
 
-	state.State.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.State.UserProfile = user
 
 	dates := lib.DatesInWeek(lib.ISOWeekFromString(week))
 	state.Week.ISOWeek = week
 
-	for _, d := range dates {
-		date, _ := lib.StringToDate(d)
-
-		switch date.Weekday() {
-		case time.Monday:
-			state.Week.Monday.Date = date
-		case time.Tuesday:
-			state.Week.Tuesday.Date = date
-		case time.Wednesday:
-			state.Week.Wednesday.Date = date
-		case time.Thursday:
-			state.Week.Thursday.Date = date
-		case time.Friday:
-			state.Week.Friday.Date = date
-		case time.Saturday:
-			state.Week.Saturday.Date = date
-		case time.Sunday:
-			state.Week.Sunday.Date = date
-		}
-	}
+	models.PopulateWeekDates(&state.Week, dates)
 
 	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
 
-	if len(state.State.Plans) > 0 {
-		for _, p := range state.State.Plans {
-			if planId == int(p.ID) || planId == 0 {
-				state.State.SelectedPlanId = int(p.ID)
-				break
-			}
-		}
-	}
+	state.State.SelectedPlanId = selectedPlanID(state.State.Plans, planId)
 
 	component := view.Index(state)
 	return component.Render(context.Background(), c.Response().Writer)

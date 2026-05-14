@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/lib"
@@ -47,12 +46,10 @@ func (h *Handler) UpdatePlan(c echo.Context) error {
 		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
-
-	user := models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	db := h.openDB()
 	defer db.Close()
@@ -105,12 +102,12 @@ func (h *Handler) EditPlan(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	db := h.openDB()
 	defer db.Close()
@@ -140,12 +137,12 @@ func (h *Handler) CreatePlan(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
+	user, err := userProfileFromContext(c)
 	if err != nil {
-		println(err)
+		println(err.Error())
 	}
 
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	state.UserProfile = user
 
 	component := view.Plan(state, models.Plan{
 		Id:   0,
