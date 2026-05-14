@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"os"
 
@@ -16,6 +17,8 @@ type Handler struct {
 	TursoConfig   TursoConfig
 	AuthConfig    AuthConfig
 	Authenticator auth.Authenticator
+	// DB is a process-wide sql.DB pool; opened in main and closed on shutdown.
+	DB *sql.DB
 }
 
 type TursoConfig struct {

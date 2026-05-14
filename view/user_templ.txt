@@ -1,4 +1,0 @@
-<div id=\"user-page\"><div>Name: 
-</div><div>Nickname: 
-</div><div>ID: 
-</div><div><a href=\"/logout\">Sign out</a></div></div>

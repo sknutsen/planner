@@ -56,6 +56,14 @@ func main() {
 		},
 	}
 
+	db, err := handler.OpenTursoDB(h.TursoConfig)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed opening database: %v\n", err)
+		os.Exit(1)
+	}
+	h.DB = db
+	defer db.Close()
+
 	h.Setup()
 
 	gob.Register(map[string]interface{}{})

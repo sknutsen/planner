@@ -1,21 +1,25 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
-	"os"
 	"time"
 
 	_ "github.com/tursodatabase/go-libsql"
 )
 
-func (h *Handler) openDB() *sql.DB {
-	db, err := sql.Open("libsql", fmt.Sprintf("%s?authToken=%s", h.TursoConfig.PrimaryUrl, h.TursoConfig.AuthToken))
+// OpenTursoDB opens a libsql client for reuse across requests. The caller owns
+// the returned *sql.DB and must Close it on process shutdown.
+func OpenTursoDB(cfg TursoConfig) (*sql.DB, error) {
+	db, err := sql.Open("libsql", fmt.Sprintf("%s?authToken=%s", cfg.PrimaryUrl, cfg.AuthToken))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed opening database: %s\n", err)
-		os.Exit(1)
+		return nil, err
 	}
 	db.SetConnMaxIdleTime(9 * time.Second)
-
-	return db
+	if err := db.PingContext(context.Background()); err != nil {
+		db.Close()
+		return nil, err
+	}
+	return db, nil
 }

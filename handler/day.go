@@ -75,11 +75,8 @@ func (h *Handler) DayTasks(c echo.Context) error {
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	tasks, err := dq.GetTasksByDate(ctx, database.GetTasksByDateParams{
 		Date:   date,

@@ -40,11 +40,8 @@ func (h *Handler) EditTask(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	task, err := dq.GetTask(ctx, database.GetTaskParams{
 		ID:     int64(taskId),
@@ -63,8 +60,8 @@ func (h *Handler) EditTask(c echo.Context) error {
 		Id:          int(task.ID),
 		Date:        lib.StripDateString(task.Date),
 		Title:       task.Title,
-		Subtitle:    task.Subtitle.(string),
-		Description: task.Description.(string),
+		Subtitle:    lib.AsString(task.Subtitle),
+		Description: lib.AsString(task.Description),
 		IsComplete:  task.IsComplete != 0,
 	})
 	return component.Render(context.Background(), c.Response().Writer)
@@ -86,11 +83,8 @@ func (h *Handler) CopyTask(c echo.Context) error {
 	println(user.UserId)
 	if user.UserId != "" {
 
-		db := h.openDB()
-		defer db.Close()
-
-		ctx := context.Background()
-		dq := database.New(db)
+		ctx := c.Request().Context()
+		dq := database.New(h.DB)
 
 		taskId, err := strconv.Atoi(request.Id)
 		if err != nil {
@@ -137,12 +131,8 @@ func (h *Handler) UpdateTask(c echo.Context) error {
 		println(err.Error())
 	}
 
-
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	if request.Id == "0" {
 		planId, err := strconv.Atoi(request.PlanId)
@@ -214,12 +204,8 @@ func (h *Handler) ToggleIsCompleteTask(c echo.Context) error {
 		println(err.Error())
 	}
 
-
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	task, err := dq.GetTask(ctx, database.GetTaskParams{
 		ID:     int64(taskId),
@@ -275,11 +261,8 @@ func (h *Handler) DeleteTask(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	task, err := dq.GetTask(ctx, database.GetTaskParams{
 		ID:     int64(taskId),
@@ -320,13 +303,20 @@ func (h *Handler) CreateTask(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
-	if err != nil {
-		println(err)
-	}
+	// sess, err := session.Get("session", c)
+	// if err != nil {
+	// 	println(err)
+	// }
 
 	state.SelectedPlanId = planId
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	user, err := userProfileFromContext(c)
+	if err != nil {
+		println(err.Error())
+	}
+
+	state.UserProfile = user
+
+	// state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
 	component := view.Task(state, models.Task{
 		Id:          0,
@@ -356,19 +346,23 @@ func (h *Handler) CreateTaskFromTemplate(c echo.Context) error {
 		println(err)
 	}
 
-	sess, err := session.Get("session", c)
-	if err != nil {
-		println(err)
-	}
+	// sess, err := session.Get("session", c)
+	// if err != nil {
+	// 	println(err)
+	// }
 
 	state.SelectedPlanId = planId
-	state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
+	// state.UserProfile = models.GetUserProfile(sess.Values["profile"].(map[string]interface{}))
 
-	db := h.openDB()
-	defer db.Close()
+	user, err := userProfileFromContext(c)
+	if err != nil {
+		println(err.Error())
+	}
 
-	ctx := context.Background()
-	dq := database.New(db)
+	state.UserProfile = user
+
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	templates, err := dq.GetTemplatesByPlan(ctx, database.GetTemplatesByPlanParams{
 		PlanId: int64(planId),
@@ -402,12 +396,8 @@ func (h *Handler) ListAllTasks(c echo.Context) error {
 		println(err.Error())
 	}
 
-
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	tasks, err := dq.GetTasksByPlan(ctx, database.GetTasksByPlanParams{
 		PlanId: int64(planId),

@@ -1,3 +1,6 @@
+# App HTTP port the templ dev proxy forwards to (default 8081; override if .env PORT differs).
+DEV_APP_PORT ?= 8081
+
 .PHONY: help dev build test sql goose-up zj live/templ live/server live/sync_assets
 
 .DEFAULT_GOAL := help
@@ -6,23 +9,24 @@
 # re-create _templ.txt files on change, then send reload event to browser.
 # Default url: http://localhost:7331
 live/templ: ## Watch .templ files and reload browser via templ proxy (port 7331)
-	templ generate --watch --proxy="http://127.0.0.1:8081" --open-browser=false -v
+	TEMPL_DEV_MODE=1 templ generate --watch --proxy="http://127.0.0.1:$(DEV_APP_PORT)" --open-browser=false -v
 
 # run air to detect any go file changes to re-build and re-run the server.
-live/server: ## Rebuild and restart the app on Go changes (uses air.toml when flags omitted)
+live/server: ## Rebuild and restart the app on Go changes (watches .go and .templ, excludes tmp/)
 	go run github.com/cosmtrek/air@v1.51.0 \
-	--build.full_bin "CGO_ENABLED=1 BUILD_MODE=develop go build -o tmp/bin/main" \
-	--build.bin "tmp/bin/main" \
+	--build.full_bin "TEMPL_DEV_MODE=1 CGO_ENABLED=1 BUILD_MODE=develop go build -o tmp/main" \
+	--build.bin "tmp/main" \
 	--build.delay "100" \
 	--build.exclude_dir "node_modules" \
-	--build.include_ext "go" \
+	--build.exclude_dir "tmp" \
+	--build.include_ext "go,templ" \
 	--build.stop_on_error "false" \
 	--misc.clean_on_exit true
 
 # watch for any js or css change in the assets/ folder, then reload the browser via templ proxy.
 live/sync_assets: ## On assets/*.js,css changes run templ --notify-proxy for live reload
 	go run github.com/cosmtrek/air@v1.51.0 \
-	--build.cmd "templ generate --notify-proxy" \
+	--build.cmd "TEMPL_DEV_MODE=1 templ generate --notify-proxy" \
 	--build.bin "true" \
 	--build.delay "100" \
 	--build.exclude_dir "node_modules" \

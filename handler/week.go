@@ -44,7 +44,7 @@ func (h *Handler) Week(c echo.Context) error {
 
 	models.PopulateWeekDates(&state.Week, dates)
 
-	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
+	state.State.Plans = h.ListPlans(c.Request().Context(), state.State.UserProfile.UserId)
 
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 

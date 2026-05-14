@@ -39,8 +39,8 @@ func TaskFromDBModel(m database.Task) Task {
 		Id:          int(m.ID),
 		Date:        lib.StripDateString(m.Date),
 		Title:       m.Title,
-		Subtitle:    m.Subtitle.(string),
-		Description: m.Description.(string),
+		Subtitle:    lib.AsString(m.Subtitle),
+		Description: lib.AsString(m.Description),
 		IsComplete:  m.IsComplete != 0,
 	}
 }

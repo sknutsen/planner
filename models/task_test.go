@@ -44,6 +44,22 @@ func TestTaskFromDBModel_NotComplete(t *testing.T) {
 	}
 }
 
+func TestTaskFromDBModel_NilOptionalStrings(t *testing.T) {
+	m := database.Task{
+		ID:          1,
+		PlanID:      1,
+		Date:        "2025-01-01",
+		Title:       "T",
+		Subtitle:    nil,
+		Description: nil,
+		IsComplete:  0,
+	}
+	got := TaskFromDBModel(m)
+	if got.Subtitle != "" || got.Description != "" {
+		t.Fatalf("want empty strings, got %+v", got)
+	}
+}
+
 func TestTasksFromDBModels(t *testing.T) {
 	out := TasksFromDBModels([]database.Task{
 		{ID: 1, PlanID: 1, Date: "2025-01-01", Title: "a", Subtitle: "", Description: "", IsComplete: 0},
