@@ -18,12 +18,8 @@ func (h *Handler) Plan(c echo.Context) error {
 	return h.EditPlan(c)
 }
 
-func (h *Handler) ListPlans(userId string) []database.Plan {
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+func (h *Handler) ListPlans(ctx context.Context, userId string) []database.Plan {
+	dq := database.New(h.DB)
 
 	plans, err := dq.ListPlans(ctx, userId)
 	if err != nil {
@@ -51,11 +47,8 @@ func (h *Handler) UpdatePlan(c echo.Context) error {
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	if request.Id == "" {
 		err = dq.CreatePlan(ctx, database.CreatePlanParams{
@@ -109,11 +102,8 @@ func (h *Handler) EditPlan(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	plan, err := dq.GetPlan(ctx, database.GetPlanParams{
 		ID:     int64(planId),

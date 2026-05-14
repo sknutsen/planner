@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/internal/planid"
+	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/routes"
 	"github.com/sknutsen/planner/view"
@@ -39,7 +40,7 @@ func (h *Handler) Resources(c echo.Context) error {
 
 	state.State.UserProfile = user
 
-	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
+	state.State.Plans = h.ListPlans(c.Request().Context(), state.State.UserProfile.UserId)
 
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
@@ -60,11 +61,8 @@ func (h *Handler) ListAllResources(c echo.Context) error {
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	tasks, err := dq.GetResourcesByPlan(ctx, database.GetResourcesByPlanParams{
 		PlanId: int64(planId),
@@ -108,11 +106,8 @@ func (h *Handler) EditResource(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	task, err := dq.GetResource(ctx, database.GetResourceParams{
 		ID:     int64(taskId),
@@ -127,7 +122,7 @@ func (h *Handler) EditResource(c echo.Context) error {
 		Id:      int(task.ID),
 		Title:   task.Title,
 		Type:    int(task.ResourceType),
-		Content: task.Content.(string),
+		Content: lib.AsString(task.Content),
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
@@ -155,11 +150,8 @@ func (h *Handler) DeleteResource(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	task, err := dq.GetResource(ctx, database.GetResourceParams{
 		ID:     int64(taskId),
@@ -225,11 +217,8 @@ func (h *Handler) UpdateResource(c echo.Context) error {
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	resourceType, err := strconv.Atoi(request.Type)
 	if err != nil {

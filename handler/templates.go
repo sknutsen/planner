@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/database"
 	"github.com/sknutsen/planner/internal/planid"
+	"github.com/sknutsen/planner/lib"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/routes"
 	"github.com/sknutsen/planner/view"
@@ -39,7 +40,7 @@ func (h *Handler) Templates(c echo.Context) error {
 
 	state.State.UserProfile = user
 
-	state.State.Plans = h.ListPlans(state.State.UserProfile.UserId)
+	state.State.Plans = h.ListPlans(c.Request().Context(), state.State.UserProfile.UserId)
 
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
@@ -60,11 +61,8 @@ func (h *Handler) ListAllTemplates(c echo.Context) error {
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	templates, err := dq.GetTemplatesByPlan(ctx, database.GetTemplatesByPlanParams{
 		PlanId: int64(planId),
@@ -108,11 +106,8 @@ func (h *Handler) EditTemplate(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	template, err := dq.GetTemplate(ctx, database.GetTemplateParams{
 		ID:     int64(templateId),
@@ -126,8 +121,8 @@ func (h *Handler) EditTemplate(c echo.Context) error {
 	component := view.Template(state, models.Template{
 		Id:          int(template.ID),
 		Title:       template.Title,
-		Subtitle:    template.Subtitle.(string),
-		Description: template.Description.(string),
+		Subtitle:    lib.AsString(template.Subtitle),
+		Description: lib.AsString(template.Description),
 	})
 	return component.Render(context.Background(), c.Response().Writer)
 }
@@ -155,11 +150,8 @@ func (h *Handler) DeleteTemplate(c echo.Context) error {
 
 	state.UserProfile = user
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	template, err := dq.GetTemplate(ctx, database.GetTemplateParams{
 		ID:     int64(templateId),
@@ -242,11 +234,8 @@ func (h *Handler) updateTemplate(c echo.Context, r models.UpdateTemplateRequest)
 		println(err.Error())
 	}
 
-	db := h.openDB()
-	defer db.Close()
-
-	ctx := context.Background()
-	dq := database.New(db)
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
 
 	if r.Id == "0" {
 		println("Creating template")
