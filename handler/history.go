@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -40,6 +39,5 @@ func (h *Handler) History(c echo.Context) error {
 
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
-	component := view.History(state)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, view.History(state))
 }

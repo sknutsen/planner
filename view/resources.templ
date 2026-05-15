@@ -7,23 +7,9 @@ import "github.com/sknutsen/planner/routes"
 
 templ Resources(state models.ResourcesState) {
 	@MainLayout(state.State) {
-		<div id="resources">
-			<div id="resources__header">
-				@planSelector(state.State)
-			</div>
-			<div
-				id="resources__body"
-				hx-get={ fmt.Sprintf("/resources/%d/resources", state.State.SelectedPlanId) }
-				hx-swap="innerHTML"
-				hx-ext="multi-swap"
-				hx-trigger="load, updatedResource from:body"
-			>
-				@defaultLoader()
-			</div>
-			<div id="resources__footer">
-				@newResourceButton(state.State.SelectedPlanId, false, state.State.SelectedPlanId == 0)
-			</div>
-		</div>
+		@planScopedListPage(state.State, "resources", routes.PlanResourcesListPath(state.State.SelectedPlanId), "load, updatedResource from:body") {
+			@newPlanScopedButton(routes.ResourceCreatePath(state.State.SelectedPlanId), false, state.State.SelectedPlanId == 0)
+		}
 	}
 }
 
@@ -44,7 +30,7 @@ templ ResourcePreview(resource models.Resource, hideDescription bool, hideDate b
 				class="resource-preview__identifier"
 				hx-target="#modal"
 				hx-swap="outerHTML"
-				hx-get={ fmt.Sprintf("/resource/%d", resource.Id) }
+				hx-get={ routes.ResourcePath(resource.Id) }
 			>
 				{ resource.Title }
 			</h3>
@@ -89,34 +75,13 @@ templ Resource(state models.ClientState, resource models.Resource) {
 						type="button"
 						hx-target="#modal"
 						hx-swap="outerHTML"
-						hx-get={ fmt.Sprintf("/resource/%d/delete",
-			resource.Id) }
+						hx-get={ routes.ResourceDeletePath(resource.Id) }
 					>Delete</button>
 				}
 				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
 			</div>
 		</form>
 		@renderMDE("#selected-resource__content")
-	}
-}
-
-templ newResourceButton(planId int, showLabel bool, isDisabled bool) {
-	if !isDisabled {
-		<div
-			class="new-task-button"
-			hx-target="#modal"
-			hx-swap="outerHTML"
-			hx-get={ fmt.Sprintf("/resources/%d/create", planId) }
-		>
-			<span class="material-symbols-outlined">
-				add
-			</span>
-			if showLabel {
-				<span>
-					Add
-				</span>
-			}
-		</div>
 	}
 }
 

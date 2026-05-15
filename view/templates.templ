@@ -7,23 +7,9 @@ import "github.com/sknutsen/planner/routes"
 
 templ Templates(state models.TemplatesState) {
 	@MainLayout(state.State) {
-		<div id="templates">
-			<div id="templates__header">
-				@planSelector(state.State)
-			</div>
-			<div
-				id="templates__body"
-				hx-get={ fmt.Sprintf("/templates/%d/templates", state.State.SelectedPlanId) }
-				hx-swap="innerHTML"
-				hx-ext="multi-swap"
-				hx-trigger="load, updatedTemplate from:body"
-			>
-				@defaultLoader()
-			</div>
-			<div id="templates__footer">
-				@newTemplateButton(state.State.SelectedPlanId, false, state.State.SelectedPlanId == 0)
-			</div>
-		</div>
+		@planScopedListPage(state.State, "templates", routes.PlanTemplatesListPath(state.State.SelectedPlanId), "load, updatedTemplate from:body") {
+			@newPlanScopedButton(routes.TemplateCreatePath(state.State.SelectedPlanId), false, state.State.SelectedPlanId == 0)
+		}
 	}
 }
 
@@ -44,7 +30,7 @@ templ TemplatePreview(template models.Template, hideDescription bool) {
 				class="template-preview__identifier"
 				hx-target="#modal"
 				hx-swap="outerHTML"
-				hx-get={ fmt.Sprintf("/template/%d", template.Id) }
+				hx-get={ routes.TemplatePath(template.Id) }
 			>
 				<h3 class="template-preview__title">{ template.Title }</h3>
 				<h4 class="template-preview__subtitle">{ fmt.Sprint(template.Subtitle) }</h4>
@@ -90,34 +76,13 @@ templ Template(state models.ClientState, template models.Template) {
 						type="button"
 						hx-target="#modal"
 						hx-swap="outerHTML"
-						hx-get={ fmt.Sprintf("/template/%d/delete",
-			template.Id) }
+						hx-get={ routes.TemplateDeletePath(template.Id) }
 					>Delete</button>
 				}
 				<button type="button" hx-target="#modal" hx-swap="outerHTML" hx-get={ routes.ComponentsModal }>Cancel</button>
 			</div>
 		</form>
 		@renderMDE("#selected-template__description")
-	}
-}
-
-templ newTemplateButton(planId int, showLabel bool, isDisabled bool) {
-	if !isDisabled {
-		<div
-			class="new-task-button"
-			hx-target="#modal"
-			hx-swap="outerHTML"
-			hx-get={ fmt.Sprintf("/templates/%d/create", planId) }
-		>
-			<span class="material-symbols-outlined">
-				add
-			</span>
-			if showLabel {
-				<span>
-					Add
-				</span>
-			}
-		</div>
 	}
 }
 

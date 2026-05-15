@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"strconv"
 	"time"
 
@@ -48,6 +47,5 @@ func (h *Handler) Week(c echo.Context) error {
 
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
-	component := view.Index(state)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, view.Index(state))
 }
