@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"context"
-
 	"github.com/labstack/echo/v4"
 	"github.com/sknutsen/planner/models"
 	"github.com/sknutsen/planner/view"
@@ -21,6 +19,5 @@ func (h *Handler) User(c echo.Context) error {
 
 	state.State.UserProfile = user
 
-	component := view.User(state)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, view.User(state))
 }

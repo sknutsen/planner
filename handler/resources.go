@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -45,7 +44,7 @@ func (h *Handler) Resources(c echo.Context) error {
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
 	component := view.Resources(state)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) ListAllResources(c echo.Context) error {
@@ -76,7 +75,7 @@ func (h *Handler) ListAllResources(c echo.Context) error {
 	component := view.PlanResources(models.PlanResourcesResponse{
 		Resources: models.ResourcesFromDBModels(tasks),
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) Resource(c echo.Context) error {
@@ -124,7 +123,7 @@ func (h *Handler) EditResource(c echo.Context) error {
 		Type:    int(task.ResourceType),
 		Content: lib.AsString(task.Content),
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) DeleteResource(c echo.Context) error {
@@ -201,7 +200,7 @@ func (h *Handler) CreateResource(c echo.Context) error {
 		Type:    0,
 		Content: "",
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) UpdateResource(c echo.Context) error {

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -64,7 +63,7 @@ func (h *Handler) EditTask(c echo.Context) error {
 		Description: lib.AsString(task.Description),
 		IsComplete:  task.IsComplete != 0,
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) CopyTask(c echo.Context) error {
@@ -325,7 +324,7 @@ func (h *Handler) CreateTask(c echo.Context) error {
 		Subtitle:    "",
 		Description: "",
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) CreateTaskFromTemplate(c echo.Context) error {
@@ -380,7 +379,7 @@ func (h *Handler) CreateTaskFromTemplate(c echo.Context) error {
 		Subtitle:    "",
 		Description: "",
 	}, models.TemplatesFromDBModels(templates))
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) ListAllTasks(c echo.Context) error {
@@ -411,5 +410,5 @@ func (h *Handler) ListAllTasks(c echo.Context) error {
 	component := view.HistoryTasks(models.HistoryTasksResponse{
 		Tasks: models.TasksFromDBModels(tasks),
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }

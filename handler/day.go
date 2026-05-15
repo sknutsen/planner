@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -53,8 +52,7 @@ func (h *Handler) Day(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	component := view.Day(state, weekday)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, view.Day(state, weekday))
 }
 
 func (h *Handler) DayTasks(c echo.Context) error {
@@ -88,10 +86,9 @@ func (h *Handler) DayTasks(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed listing tasks by date. err: %s", err))
 	}
 
-	component := view.DayTasks(models.DayTasksResponse{
+	return render(c, view.DayTasks(models.DayTasksResponse{
 		Date:            date,
 		Tasks:           models.TasksFromDBModels(tasks),
 		HideDescription: true,
-	})
-	return component.Render(context.Background(), c.Response().Writer)
+	}))
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -45,7 +44,7 @@ func (h *Handler) Templates(c echo.Context) error {
 	state.State.SelectedPlanId = planid.Selected(state.State.Plans, planId)
 
 	component := view.Templates(state)
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) ListAllTemplates(c echo.Context) error {
@@ -76,7 +75,7 @@ func (h *Handler) ListAllTemplates(c echo.Context) error {
 	component := view.PlanTemplates(models.PlanTemplatesResponse{
 		Templates: models.TemplatesFromDBModels(templates),
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) Template(c echo.Context) error {
@@ -124,7 +123,7 @@ func (h *Handler) EditTemplate(c echo.Context) error {
 		Subtitle:    lib.AsString(template.Subtitle),
 		Description: lib.AsString(template.Description),
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) DeleteTemplate(c echo.Context) error {
@@ -201,7 +200,7 @@ func (h *Handler) CreateTemplate(c echo.Context) error {
 		Subtitle:    "",
 		Description: "",
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) UpdateTemplate(c echo.Context) error {

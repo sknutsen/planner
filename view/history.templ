@@ -1,20 +1,18 @@
 package view
 
-import "fmt"
 import "github.com/sknutsen/planner/models"
+import "github.com/sknutsen/planner/routes"
 
 templ History(state models.HistoryState) {
-    @MainLayout(state.State) {
-        <div id="history">
-            <div id="history__header">
-                @planSelector(state.State)
-                @historyFilters()
-            </div>
-            <div id="history__body" hx-get={fmt.Sprintf("/history/%d/tasks", state.State.SelectedPlanId)} hx-swap="innerHTML" hx-ext="multi-swap" hx-trigger="load, updatedTask from:body">
-                @defaultLoader()
-            </div>
-        </div>
-    }
+	@MainLayout(state.State) {
+		<div id="history">
+			<div id="history__header">
+				@planSelector(state.State)
+				@historyFilters()
+			</div>
+			@htmxListBody("history__body", routes.HistoryPlanTasksPath(state.State.SelectedPlanId), "load, updatedTask from:body")
+		</div>
+	}
 }
 
 templ HistoryTasks(historyTasks models.HistoryTasksResponse) {

@@ -31,6 +31,41 @@ templ Modal(class string) {
 	</div>
 }
 
+templ htmxListBody(bodyID string, hxGet string, hxTrigger string) {
+	<div
+		id={ bodyID }
+		hx-get={ hxGet }
+		hx-swap="innerHTML"
+		hx-ext="multi-swap"
+		hx-trigger={ hxTrigger }
+	>
+		@defaultLoader()
+	</div>
+}
+
+templ planScopedListPage(state models.ClientState, root string, hxGet string, hxTrigger string) {
+	<div id={ root }>
+		<div id={ fmt.Sprintf("%s__header", root) }>
+			@planSelector(state)
+		</div>
+		@htmxListBody(fmt.Sprintf("%s__body", root), hxGet, hxTrigger)
+		<div id={ fmt.Sprintf("%s__footer", root) }>
+			{ children... }
+		</div>
+	</div>
+}
+
+templ newPlanScopedButton(hxGet string, showLabel bool, isDisabled bool) {
+	if !isDisabled {
+		<div class="new-task-button" hx-target="#modal" hx-swap="outerHTML" hx-get={ hxGet }>
+			<span class="material-symbols-outlined">add</span>
+			if showLabel {
+				<span>Add</span>
+			}
+		</div>
+	}
+}
+
 templ planSelector(state models.ClientState) {
 	<div id="plan-selector">
 		<select onchange={ planChanged(state.BaseRoute) }>
@@ -46,8 +81,7 @@ templ planSelector(state models.ClientState) {
 				class="new-task-button"
 				hx-target="#modal"
 				hx-swap="outerHTML"
-				hx-get={ fmt.Sprintf("/plan/%d/edit",
-		state.SelectedPlanId) }
+				hx-get={ routes.PlanEditPath(state.SelectedPlanId) }
 			>
 				<span class="material-symbols-outlined">
 					edit

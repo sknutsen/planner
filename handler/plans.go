@@ -118,7 +118,7 @@ func (h *Handler) EditPlan(c echo.Context) error {
 		Id:   int(plan.ID),
 		Name: plan.Name,
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
 
 func (h *Handler) CreatePlan(c echo.Context) error {
@@ -138,5 +138,5 @@ func (h *Handler) CreatePlan(c echo.Context) error {
 		Id:   0,
 		Name: "",
 	})
-	return component.Render(context.Background(), c.Response().Writer)
+	return render(c, component)
 }
