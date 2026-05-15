@@ -1,5 +1,4 @@
 package style
 
-const (
-	Primary = "#1219f5"
-)
+// Primary must match --brand-primary in assets/styles/vars.css (light theme).
+const Primary = "#1219f5"
