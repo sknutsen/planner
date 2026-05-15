@@ -37,20 +37,16 @@ body {
 }
 
 button,
-select {
+select,
+input {
 	--elevation: 6;
 	background-color: var(--sfc-06-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	/* background-color: transparent; */
-	/* border-color: var(--border-color); */
-	border-radius: 6px;
 	border: none;
-	/* border-width: 1px; */
-	/* border-style: solid; */
+	border-radius: 6px;
+	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+	-webkit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
+	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
 	color: var(--text-color);
-	padding: 5px;
 	font-weight: 500;
 	font-size: 1rem;
 	padding: 7px 15px;
@@ -59,22 +55,7 @@ select {
 button:hover,
 select:hover {
 	background-color: var(--sfc-24-color);
-	/* background-color: lightgray; */
 	color: var(--text-color);
 	border-color: var(--border-color-inv);
 	cursor: pointer;
-}
-
-input {
-	--elevation: 6;
-	background-color: var(--sfc-06-color);
-	box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-web-kit-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	-moz-box-shadow: var(--shadow1), var(--shadow2), var(--shadow3);
-	/* background-color: transparent; */
-	color: var(--text-color);
-	font-weight: 500;
-	font-size: 1rem;
-	border: none;
-	padding: 7px 15px;
 }

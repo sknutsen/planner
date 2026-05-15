@@ -1,4 +1,5 @@
 body {
+  --brand-primary: #1219f5;
   --text-color: #222;
   --text-color-inv: #eee;
   --bkg-color: #fff;
@@ -45,6 +46,7 @@ body {
   }
 
   body {
+    --brand-primary: #8897ff;
     --text-color: #eee;
     --text-color-inv: #222;
     --bkg-color: #121212;

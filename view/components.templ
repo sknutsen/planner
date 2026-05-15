@@ -3,13 +3,12 @@ package view
 import "fmt"
 import "github.com/sknutsen/planner/models"
 import "github.com/sknutsen/planner/routes"
-import "github.com/sknutsen/planner/style"
 
 templ defaultLoader() {
-	@loader(style.Primary)
+	@loader()
 }
 
-templ loader(theme string) {
+templ loader() {
 	<svg class="loader" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
 		<circle
 			class="loader__animation"
@@ -18,7 +17,6 @@ templ loader(theme string) {
 			fill="none"
 			r="200"
 			stroke-width="44"
-			stroke={ theme }
 			stroke-dasharray="946 1400"
 			stroke-linecap="round"
 		></circle>
