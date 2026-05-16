@@ -9,18 +9,21 @@ import (
 	"context"
 )
 
-const createResource = `-- name: CreateResource :exec
+const createResource = `-- name: CreateResource :one
 INSERT INTO resources (
     plan_id,
     title,
     resource_type,
-    content
+    content,
+    updated_at
 ) VALUES (
     ?,
     ?,
     ?,
-    ?
+    ?,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
+RETURNING id, title, resource_type, content, plan_id, updated_at, deleted_at
 `
 
 type CreateResourceParams struct {
@@ -30,22 +33,34 @@ type CreateResourceParams struct {
 	Content      interface{}
 }
 
-func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) error {
-	_, err := q.db.ExecContext(ctx, createResource,
+func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) (Resource, error) {
+	row := q.db.QueryRowContext(ctx, createResource,
 		arg.PlanID,
 		arg.Title,
 		arg.ResourceType,
 		arg.Content,
 	)
-	return err
+	var i Resource
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.ResourceType,
+		&i.Content,
+		&i.PlanID,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
 const deleteResource = `-- name: DeleteResource :exec
-DELETE FROM resources
+UPDATE resources
+SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 WHERE id IN (SELECT r.id FROM resources as r
-             INNER JOIN plans as p ON r.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
+             INNER JOIN plans as p ON r.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE r.id = ?1 AND r.deleted_at IS NULL AND (p.user = ?2 OR pa.user = ?2))
 `
 
 type DeleteResourceParams struct {
@@ -60,11 +75,11 @@ func (q *Queries) DeleteResource(ctx context.Context, arg DeleteResourceParams) 
 
 const getResource = `-- name: GetResource :one
 SELECT 
-    r.id, r.title, r.resource_type, r.content, r.plan_id 
+    r.id, r.title, r.resource_type, r.content, r.plan_id, r.updated_at, r.deleted_at
 FROM resources as r
-INNER JOIN plans as p ON r.plan_id = p.id
-LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE r.id = ?1 AND (p.user = ?2 OR pa.user = ?2)
+INNER JOIN plans as p ON r.plan_id = p.id AND p.deleted_at IS NULL
+LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+WHERE r.id = ?1 AND r.deleted_at IS NULL AND (p.user = ?2 OR pa.user = ?2)
 `
 
 type GetResourceParams struct {
@@ -81,27 +96,31 @@ func (q *Queries) GetResource(ctx context.Context, arg GetResourceParams) (Resou
 		&i.ResourceType,
 		&i.Content,
 		&i.PlanID,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getResourcesByPlan = `-- name: GetResourcesByPlan :many
 SELECT
-  r.id, r.title, r.resource_type, r.content, r.plan_id
+  r.id, r.title, r.resource_type, r.content, r.plan_id, r.updated_at, r.deleted_at
 FROM
   resources AS r
 WHERE
-  r.plan_id IN (
+  r.deleted_at IS NULL
+  AND r.plan_id IN (
     SELECT
       p.id
     FROM
       plans AS p
-      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
     WHERE
       p.id = ?1
       AND (
         p.user = ?2 OR pa.user = ?2
       )
+      AND p.deleted_at IS NULL
   )
 ORDER BY r.title ASC
 `
@@ -126,6 +145,82 @@ func (q *Queries) GetResourcesByPlan(ctx context.Context, arg GetResourcesByPlan
 			&i.ResourceType,
 			&i.Content,
 			&i.PlanID,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listResourcesByPlanSync = `-- name: ListResourcesByPlanSync :many
+SELECT
+  r.id, r.title, r.resource_type, r.content, r.plan_id, r.updated_at, r.deleted_at
+FROM
+  resources AS r
+WHERE
+  r.deleted_at IS NULL
+  AND r.plan_id = ?1
+  AND r.plan_id IN (
+    SELECT
+      p.id
+    FROM
+      plans AS p
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE
+      p.id = ?1
+      AND (
+        p.user = ?2 OR pa.user = ?2
+      )
+      AND p.deleted_at IS NULL
+  )
+AND (?3 = '' OR r.updated_at >= ?3)
+AND (?4 = '' OR (r.updated_at > ?4 OR (r.updated_at = ?4 AND r.id > ?5)))
+ORDER BY r.updated_at ASC, r.id ASC
+LIMIT ?6
+`
+
+type ListResourcesByPlanSyncParams struct {
+	PlanID       int64
+	UserID       string
+	UpdatedSince interface{}
+	CursorTs     interface{}
+	CursorID     int64
+	LimitCount   int64
+}
+
+func (q *Queries) ListResourcesByPlanSync(ctx context.Context, arg ListResourcesByPlanSyncParams) ([]Resource, error) {
+	rows, err := q.db.QueryContext(ctx, listResourcesByPlanSync,
+		arg.PlanID,
+		arg.UserID,
+		arg.UpdatedSince,
+		arg.CursorTs,
+		arg.CursorID,
+		arg.LimitCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Resource
+	for rows.Next() {
+		var i Resource
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.ResourceType,
+			&i.Content,
+			&i.PlanID,
+			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -142,11 +237,12 @@ func (q *Queries) GetResourcesByPlan(ctx context.Context, arg GetResourcesByPlan
 
 const updateResource = `-- name: UpdateResource :exec
 UPDATE resources 
-SET title = ?1, resource_type = ?2, content = ?3
+SET title = ?1, resource_type = ?2, content = ?3,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 WHERE id IN (SELECT r.id FROM resources as r
-             INNER JOIN plans as p ON r.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE r.id = ?4 AND (p.user = ?5 OR pa.user = ?5))
+             INNER JOIN plans as p ON r.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE r.id = ?4 AND r.deleted_at IS NULL AND (p.user = ?5 OR pa.user = ?5))
 `
 
 type UpdateResourceParams struct {
@@ -166,4 +262,39 @@ func (q *Queries) UpdateResource(ctx context.Context, arg UpdateResourceParams) 
 		arg.UserId,
 	)
 	return err
+}
+
+const updateResourceIfMatch = `-- name: UpdateResourceIfMatch :execrows
+UPDATE resources 
+SET title = ?1, resource_type = ?2, content = ?3,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE id IN (SELECT r.id FROM resources as r
+             INNER JOIN plans as p ON r.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE r.id = ?4 AND r.deleted_at IS NULL AND (p.user = ?5 OR pa.user = ?5))
+AND resources.updated_at = ?6
+`
+
+type UpdateResourceIfMatchParams struct {
+	Title         string
+	ResourceType  int64
+	Content       interface{}
+	ID            int64
+	UserId        string
+	BaseUpdatedAt string
+}
+
+func (q *Queries) UpdateResourceIfMatch(ctx context.Context, arg UpdateResourceIfMatchParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateResourceIfMatch,
+		arg.Title,
+		arg.ResourceType,
+		arg.Content,
+		arg.ID,
+		arg.UserId,
+		arg.BaseUpdatedAt,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

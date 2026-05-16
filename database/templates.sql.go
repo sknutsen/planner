@@ -9,18 +9,21 @@ import (
 	"context"
 )
 
-const createTemplate = `-- name: CreateTemplate :exec
+const createTemplate = `-- name: CreateTemplate :one
 INSERT INTO templates (
     plan_id,
     title,
     subtitle,
-    description
+    description,
+    updated_at
 ) VALUES (
     ?,
     ?,
     ?,
-    ?
+    ?,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
+RETURNING id, plan_id, title, subtitle, description, updated_at, deleted_at
 `
 
 type CreateTemplateParams struct {
@@ -30,22 +33,34 @@ type CreateTemplateParams struct {
 	Description interface{}
 }
 
-func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) error {
-	_, err := q.db.ExecContext(ctx, createTemplate,
+func (q *Queries) CreateTemplate(ctx context.Context, arg CreateTemplateParams) (Template, error) {
+	row := q.db.QueryRowContext(ctx, createTemplate,
 		arg.PlanID,
 		arg.Title,
 		arg.Subtitle,
 		arg.Description,
 	)
-	return err
+	var i Template
+	err := row.Scan(
+		&i.ID,
+		&i.PlanID,
+		&i.Title,
+		&i.Subtitle,
+		&i.Description,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
 const deleteTemplate = `-- name: DeleteTemplate :exec
-DELETE FROM templates
+UPDATE templates
+SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 WHERE id IN (SELECT t.id FROM templates as t
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE t.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE t.id = ?1 AND t.deleted_at IS NULL AND (p.user = ?2 OR pa.user = ?2))
 `
 
 type DeleteTemplateParams struct {
@@ -60,11 +75,11 @@ func (q *Queries) DeleteTemplate(ctx context.Context, arg DeleteTemplateParams) 
 
 const getTemplate = `-- name: GetTemplate :one
 SELECT 
-t.id, t.plan_id, t.title, t.subtitle, t.description 
+t.id, t.plan_id, t.title, t.subtitle, t.description, t.updated_at, t.deleted_at
 FROM templates as t
-INNER JOIN plans as p ON t.plan_id = p.id
-LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE t.id = ?1 AND (p.user = ?2 OR pa.user = ?2)
+INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+WHERE t.id = ?1 AND t.deleted_at IS NULL AND (p.user = ?2 OR pa.user = ?2)
 `
 
 type GetTemplateParams struct {
@@ -81,27 +96,31 @@ func (q *Queries) GetTemplate(ctx context.Context, arg GetTemplateParams) (Templ
 		&i.Title,
 		&i.Subtitle,
 		&i.Description,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getTemplatesByPlan = `-- name: GetTemplatesByPlan :many
 SELECT
-  t.id, t.plan_id, t.title, t.subtitle, t.description
+  t.id, t.plan_id, t.title, t.subtitle, t.description, t.updated_at, t.deleted_at
 FROM
   templates AS t
 WHERE
-  t.plan_id IN (
+  t.deleted_at IS NULL
+  AND t.plan_id IN (
     SELECT
       p.id
     FROM
       plans AS p
-      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
     WHERE
       p.id = ?1
       AND (
         p.user = ?2 OR pa.user = ?2
       )
+      AND p.deleted_at IS NULL
   )
 ORDER BY t.title ASC
 `
@@ -126,6 +145,82 @@ func (q *Queries) GetTemplatesByPlan(ctx context.Context, arg GetTemplatesByPlan
 			&i.Title,
 			&i.Subtitle,
 			&i.Description,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTemplatesByPlanSync = `-- name: ListTemplatesByPlanSync :many
+SELECT
+  t.id, t.plan_id, t.title, t.subtitle, t.description, t.updated_at, t.deleted_at
+FROM
+  templates AS t
+WHERE
+  t.deleted_at IS NULL
+  AND t.plan_id = ?1
+  AND t.plan_id IN (
+    SELECT
+      p.id
+    FROM
+      plans AS p
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE
+      p.id = ?1
+      AND (
+        p.user = ?2 OR pa.user = ?2
+      )
+      AND p.deleted_at IS NULL
+  )
+AND (?3 = '' OR t.updated_at >= ?3)
+AND (?4 = '' OR (t.updated_at > ?4 OR (t.updated_at = ?4 AND t.id > ?5)))
+ORDER BY t.updated_at ASC, t.id ASC
+LIMIT ?6
+`
+
+type ListTemplatesByPlanSyncParams struct {
+	PlanID       int64
+	UserID       string
+	UpdatedSince interface{}
+	CursorTs     interface{}
+	CursorID     int64
+	LimitCount   int64
+}
+
+func (q *Queries) ListTemplatesByPlanSync(ctx context.Context, arg ListTemplatesByPlanSyncParams) ([]Template, error) {
+	rows, err := q.db.QueryContext(ctx, listTemplatesByPlanSync,
+		arg.PlanID,
+		arg.UserID,
+		arg.UpdatedSince,
+		arg.CursorTs,
+		arg.CursorID,
+		arg.LimitCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Template
+	for rows.Next() {
+		var i Template
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.Title,
+			&i.Subtitle,
+			&i.Description,
+			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -142,11 +237,12 @@ func (q *Queries) GetTemplatesByPlan(ctx context.Context, arg GetTemplatesByPlan
 
 const updateTemplate = `-- name: UpdateTemplate :exec
 UPDATE templates 
-SET title = ?1, subtitle = ?2, description = ?3
+SET title = ?1, subtitle = ?2, description = ?3,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 WHERE id IN (SELECT t.id FROM templates as t
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE t.id = ?4 AND (p.user = ?5 OR pa.user = ?5))
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE t.id = ?4 AND t.deleted_at IS NULL AND (p.user = ?5 OR pa.user = ?5))
 `
 
 type UpdateTemplateParams struct {
@@ -166,4 +262,39 @@ func (q *Queries) UpdateTemplate(ctx context.Context, arg UpdateTemplateParams) 
 		arg.UserId,
 	)
 	return err
+}
+
+const updateTemplateIfMatch = `-- name: UpdateTemplateIfMatch :execrows
+UPDATE templates 
+SET title = ?1, subtitle = ?2, description = ?3,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE id IN (SELECT t.id FROM templates as t
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE t.id = ?4 AND t.deleted_at IS NULL AND (p.user = ?5 OR pa.user = ?5))
+AND templates.updated_at = ?6
+`
+
+type UpdateTemplateIfMatchParams struct {
+	Title         string
+	Subtitle      interface{}
+	Description   interface{}
+	ID            int64
+	UserId        string
+	BaseUpdatedAt string
+}
+
+func (q *Queries) UpdateTemplateIfMatch(ctx context.Context, arg UpdateTemplateIfMatchParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateTemplateIfMatch,
+		arg.Title,
+		arg.Subtitle,
+		arg.Description,
+		arg.ID,
+		arg.UserId,
+		arg.BaseUpdatedAt,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

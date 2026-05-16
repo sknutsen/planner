@@ -29,7 +29,8 @@ type TursoConfig struct {
 
 type AuthConfig struct {
 	Domain       string
-	Audience     string
+	Audience     string // AUTH0_AUDIENCE: Auth0 API identifier sent on /authorize for the web app (access token audience).
+	APIAudience  string // AUTH0_API_AUDIENCE: verifies Bearer JWTs on /api/v1 only.
 	ClientId     string
 	ClientSecret string
 	CallbackUrl  string

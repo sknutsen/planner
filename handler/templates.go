@@ -243,7 +243,7 @@ func (h *Handler) updateTemplate(c echo.Context, r models.UpdateTemplateRequest)
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
-		err = dq.CreateTemplate(ctx, database.CreateTemplateParams{
+		_, err = dq.CreateTemplate(ctx, database.CreateTemplateParams{
 			PlanID:      int64(planId),
 			Title:       r.Title,
 			Subtitle:    r.Subtitle,

@@ -25,7 +25,14 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 		},
 	}))
 
+	handler.RegisterSwagger(e)
+
 	e.Static(routes.Assets, "assets")
+
+	api := e.Group("/api/v1")
+	api.Use(mw.BearerJWT(&h.Authenticator, h.AuthConfig.APIAudience))
+	api.Use(mw.IdempotencyBuffer(h.DB))
+	h.RegisterAPIV1(api)
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(h.AuthConfig.ClientSecret))))
 
