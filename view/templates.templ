@@ -87,23 +87,23 @@ templ Template(state models.ClientState, template models.Template) {
 }
 
 script toggleTmplDescription(id int) {
-const desc = document.getElementById("template-" + id + "__description");
-const icon = document.getElementById("template-" + id + "__expand-icon");
-const isHidden = desc.classList.contains("hidden");
+  const desc = document.getElementById("template-" + id + "__description");
+  const icon = document.getElementById("template-" + id + "__expand-icon");
+  const isHidden = desc.classList.contains("hidden");
 
-if (isHidden) {
-mod.show(desc.id);
-icon.innerHTML = "expand_less"
-} else {
-mod.hide(desc.id);
-icon.innerHTML = "expand_more"
-}
+  if (isHidden) {
+    mod.show(desc.id);
+    icon.innerHTML = "expand_less"
+  } else {
+    mod.hide(desc.id);
+    icon.innerHTML = "expand_more"
+  }
 }
 
 script renderTmplDescription(id int, description string) {
-const desc = document.getElementById("template-" + id + "__description");
+  const desc = document.getElementById("template-" + id + "__description");
 
-// desc.innerHTML = md.render(description);
-// desc.innerHTML = marked.parse(description);
-desc.innerHTML = simplemde.markdown(description);
+  // desc.innerHTML = md.render(description);
+  // desc.innerHTML = marked.parse(description);
+  desc.innerHTML = simplemde.markdown(description);
 }

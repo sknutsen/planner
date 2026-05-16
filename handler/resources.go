@@ -230,7 +230,7 @@ func (h *Handler) UpdateResource(c echo.Context) error {
 			return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 		}
 
-		err = dq.CreateResource(ctx, database.CreateResourceParams{
+		_, err = dq.CreateResource(ctx, database.CreateResourceParams{
 			PlanID:       int64(planId),
 			Title:        request.Title,
 			ResourceType: int64(resourceType),

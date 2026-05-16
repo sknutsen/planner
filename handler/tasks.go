@@ -99,7 +99,7 @@ func (h *Handler) CopyTask(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting task. err: %s", err))
 		}
 
-		err = dq.CreateTask(ctx, database.CreateTaskParams{
+		_, err = dq.CreateTask(ctx, database.CreateTaskParams{
 			PlanID:      int64(task.PlanID),
 			Title:       request.Title,
 			Subtitle:    request.Subtitle,
@@ -144,13 +144,13 @@ func (h *Handler) UpdateTask(c echo.Context) error {
 			if err != nil {
 				return c.String(http.StatusBadRequest, fmt.Sprintf("id is not a number. err: %s", err))
 			}
-			err = dq.CreateTaskFromTemplate(ctx, database.CreateTaskFromTemplateParams{
+			_, err = dq.CreateTaskFromTemplate(ctx, database.CreateTaskFromTemplateParams{
 				TemplateId: int64(templateId),
 				Date:       request.Date,
 				UserId:     user.UserId,
 			})
 		} else {
-			err = dq.CreateTask(ctx, database.CreateTaskParams{
+			_, err = dq.CreateTask(ctx, database.CreateTaskParams{
 				PlanID:      int64(planId),
 				Title:       request.Title,
 				Subtitle:    request.Subtitle,

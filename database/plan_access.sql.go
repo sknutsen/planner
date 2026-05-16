@@ -12,10 +12,12 @@ import (
 const grantAccess = `-- name: GrantAccess :exec
 INSERT INTO plan_access (
     plan_id,
-    user
+    user,
+    updated_at
 ) VALUES (
     ?,
-    ?
+    ?,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
 `
 
@@ -30,9 +32,9 @@ func (q *Queries) GrantAccess(ctx context.Context, arg GrantAccessParams) error 
 }
 
 const listPlanAccess = `-- name: ListPlanAccess :many
-SELECT pa.id, pa.plan_id, pa.user FROM plan_access as pa
-INNER JOIN plans as p ON pa.plan_id = p.id
-WHERE p.id = ? AND p.user = ?
+SELECT pa.id, pa.plan_id, pa.user, pa.updated_at, pa.deleted_at FROM plan_access as pa
+INNER JOIN plans as p ON pa.plan_id = p.id AND p.deleted_at IS NULL
+WHERE p.id = ? AND p.user = ? AND pa.deleted_at IS NULL
 `
 
 type ListPlanAccessParams struct {
@@ -49,7 +51,77 @@ func (q *Queries) ListPlanAccess(ctx context.Context, arg ListPlanAccessParams) 
 	var items []PlanAccess
 	for rows.Next() {
 		var i PlanAccess
-		if err := rows.Scan(&i.ID, &i.PlanID, &i.User); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.User,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPlanAccessByPlanSync = `-- name: ListPlanAccessByPlanSync :many
+SELECT pa.id, pa.plan_id, pa.user, pa.updated_at, pa.deleted_at
+FROM plan_access AS pa
+INNER JOIN plans AS p ON pa.plan_id = p.id AND p.deleted_at IS NULL
+WHERE pa.plan_id = ?1
+  AND pa.deleted_at IS NULL
+  AND (
+    p.user = ?2
+    OR EXISTS (
+      SELECT 1 FROM plan_access AS px
+      WHERE px.plan_id = p.id AND px.user = ?2 AND px.deleted_at IS NULL
+    )
+  )
+AND (?3 = '' OR pa.updated_at >= ?3)
+AND (?4 = '' OR (pa.updated_at > ?4 OR (pa.updated_at = ?4 AND pa.id > ?5)))
+ORDER BY pa.updated_at ASC, pa.id ASC
+LIMIT ?6
+`
+
+type ListPlanAccessByPlanSyncParams struct {
+	PlanID       int64
+	UserID       string
+	UpdatedSince interface{}
+	CursorTs     interface{}
+	CursorID     int64
+	LimitCount   int64
+}
+
+func (q *Queries) ListPlanAccessByPlanSync(ctx context.Context, arg ListPlanAccessByPlanSyncParams) ([]PlanAccess, error) {
+	rows, err := q.db.QueryContext(ctx, listPlanAccessByPlanSync,
+		arg.PlanID,
+		arg.UserID,
+		arg.UpdatedSince,
+		arg.CursorTs,
+		arg.CursorID,
+		arg.LimitCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PlanAccess
+	for rows.Next() {
+		var i PlanAccess
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.User,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -64,8 +136,10 @@ func (q *Queries) ListPlanAccess(ctx context.Context, arg ListPlanAccessParams) 
 }
 
 const removeAccess = `-- name: RemoveAccess :exec
-DELETE FROM plan_access
-WHERE user = ?
+UPDATE plan_access
+SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE user = ? AND deleted_at IS NULL
 `
 
 func (q *Queries) RemoveAccess(ctx context.Context, user string) error {

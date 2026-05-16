@@ -46,6 +46,7 @@ func main() {
 		AuthConfig: handler.AuthConfig{
 			Domain:       os.Getenv("AUTH0_DOMAIN"),
 			Audience:     os.Getenv("AUTH0_AUDIENCE"),
+			APIAudience:  os.Getenv("AUTH0_API_AUDIENCE"),
 			ClientId:     os.Getenv("AUTH0_CLIENT_ID"),
 			ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
 			CallbackUrl:  callbackUrl,
