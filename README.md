@@ -9,20 +9,29 @@ Requirements: Go 1.25+ (see `go.mod`), a C compiler for CGO (`gcc` is enough), a
 
 The app loads `.env` from the working directory; missing `.env` only logs a warning.
 
+### Auth0 environment variables
+
+- **`AUTH0_AUDIENCE`**: Auth0 API identifier passed as the **`audience`** query parameter on **`/authorize`** during web login so the session access token (if used) is issued for that API. ID token verification still uses **`AUTH0_CLIENT_ID`** as required by OIDC.
+- **`AUTH0_API_AUDIENCE`**: **Only** used to verify **`Authorization: Bearer`** JWTs on **`/api/v1`**. Set to the API identifier your mobile/native clients use for access tokens.
+
+When only one API exists, these are often the **same value**; keeping both variables supports separate web vs mobile API identifiers when needed.
+
 ## Mobile JSON API (`/api/v1`)
 
-Native and non-browser clients should call the versioned API with an **Auth0 access token** for your API (**audience** must match `AUTH0_AUDIENCE`). Send `Authorization: Bearer <access_token>`. The subject claim is the same `sub` used as `UserProfile.UserId` in the web app.
+Native and non-browser clients should call the versioned API with an **Auth0 access token** for your API (**audience** must match `AUTH0_API_AUDIENCE`). Send `Authorization: Bearer <access_token>`. The subject claim is the same `sub` used as `UserProfile.UserId` in the web app.
 
-- **Sync**: list endpoints accept `updated_since`, `cursor_ts`, `cursor_id`, and `limit` (default 200, max 500). Responses may include `next_cursor` with `ts` and `id` for the next page.
-- **Idempotency**: for `POST`/`PATCH`/`DELETE` on tasks and plans, send `Idempotency-Key` (any unique string per logical request); retries return the same JSON body and status.
-- **Conflicts**: for `PATCH /plans/:planId` and `PATCH /tasks/:id`, include `base_updated_at` from the last read copy of the resource. If the row changed, the server responds with **409** and `error.current` holding the latest JSON.
+- **OpenAPI / Swagger UI**: [http://127.0.0.1:8081/swagger](http://127.0.0.1:8081/swagger) (adjust host/port). Raw spec: `/swagger/openapi.yaml`.
+- **Sync**: list endpoints accept `updated_since`, `next_cursor`, and `limit` (default 100, max 500). Responses include `next_cursor` when another page exists.
+- **Idempotency**: on mutating requests, optional `Idempotency-Key` replays the same successful JSON; a different request body with the same key returns **409** `IDEMPOTENCY_KEY_REUSE`.
+- **Conflicts**: on PATCH, send `If-Match: W/"<updated_at>"` or JSON `base_updated_at`; if the row changed, the server responds with **409** and `error.entity` with the current resource.
 
 Example:
 
 ```bash
-curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" http://127.0.0.1:8081/api/v1/me
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" http://127.0.0.1:8081/api/v1/plans
 ```
 
+## Docs
 
 - Echo - https://echo.labstack.com/docs
 - Templ - https://templ.guide/
