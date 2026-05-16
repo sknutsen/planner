@@ -9,14 +9,17 @@ import (
 	"context"
 )
 
-const createPlan = `-- name: CreatePlan :exec
+const createPlan = `-- name: CreatePlan :one
 INSERT INTO plans (
     name,
-    user
+    user,
+    updated_at
 ) VALUES (
     ?1,
-    ?2
+    ?2,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
+RETURNING id, name, user, updated_at, deleted_at
 `
 
 type CreatePlanParams struct {
@@ -24,15 +27,25 @@ type CreatePlanParams struct {
 	User string
 }
 
-func (q *Queries) CreatePlan(ctx context.Context, arg CreatePlanParams) error {
-	_, err := q.db.ExecContext(ctx, createPlan, arg.Name, arg.User)
-	return err
+func (q *Queries) CreatePlan(ctx context.Context, arg CreatePlanParams) (Plan, error) {
+	row := q.db.QueryRowContext(ctx, createPlan, arg.Name, arg.User)
+	var i Plan
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.User,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
 const deletePlan = `-- name: DeletePlan :exec
-DELETE FROM plans
-WHERE id IN (SELECT p.id FROM plans as p
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+UPDATE plans
+SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE plans.deleted_at IS NULL AND plans.id IN (SELECT p.id FROM plans as p
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
              WHERE p.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
 `
 
@@ -48,11 +61,11 @@ func (q *Queries) DeletePlan(ctx context.Context, arg DeletePlanParams) error {
 
 const getPlan = `-- name: GetPlan :one
 SELECT 
-id, name, user 
-FROM plans
-WHERE id IN (SELECT p.id FROM plans as p
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
+p.id, p.name, p.user, p.updated_at, p.deleted_at 
+FROM plans p
+WHERE p.deleted_at IS NULL AND p.id IN (SELECT p2.id FROM plans as p2
+             LEFT OUTER JOIN plan_access as pa ON p2.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE p2.id = ?1 AND (p2.user = ?2 OR pa.user = ?2) AND p2.deleted_at IS NULL)
 `
 
 type GetPlanParams struct {
@@ -63,17 +76,23 @@ type GetPlanParams struct {
 func (q *Queries) GetPlan(ctx context.Context, arg GetPlanParams) (Plan, error) {
 	row := q.db.QueryRowContext(ctx, getPlan, arg.ID, arg.UserId)
 	var i Plan
-	err := row.Scan(&i.ID, &i.Name, &i.User)
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.User,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
 	return i, err
 }
 
 const listPlans = `-- name: ListPlans :many
-SELECT 
-id, name, user 
-FROM plans
-WHERE id IN (SELECT p.id FROM plans as p
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE p.user = ?1 OR pa.user = ?1)
+SELECT DISTINCT
+p.id, p.name, p.user, p.updated_at, p.deleted_at
+FROM plans p
+LEFT OUTER JOIN plan_access pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+WHERE (p.user = ?1 OR pa.user = ?1)
+AND p.deleted_at IS NULL
 `
 
 func (q *Queries) ListPlans(ctx context.Context, userid string) ([]Plan, error) {
@@ -85,7 +104,69 @@ func (q *Queries) ListPlans(ctx context.Context, userid string) ([]Plan, error) 
 	var items []Plan
 	for rows.Next() {
 		var i Plan
-		if err := rows.Scan(&i.ID, &i.Name, &i.User); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.User,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listPlansSync = `-- name: ListPlansSync :many
+SELECT DISTINCT
+p.id, p.name, p.user, p.updated_at, p.deleted_at
+FROM plans p
+LEFT OUTER JOIN plan_access pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+WHERE (p.user = ?1 OR pa.user = ?1)
+AND p.deleted_at IS NULL
+AND (?2 = '' OR p.updated_at >= ?2)
+AND (?3 = '' OR (p.updated_at > ?3 OR (p.updated_at = ?3 AND p.id > ?4)))
+ORDER BY p.updated_at ASC, p.id ASC
+LIMIT ?5
+`
+
+type ListPlansSyncParams struct {
+	UserID       string
+	UpdatedSince interface{}
+	CursorTs     interface{}
+	CursorID     int64
+	LimitCount   int64
+}
+
+func (q *Queries) ListPlansSync(ctx context.Context, arg ListPlansSyncParams) ([]Plan, error) {
+	rows, err := q.db.QueryContext(ctx, listPlansSync,
+		arg.UserID,
+		arg.UpdatedSince,
+		arg.CursorTs,
+		arg.CursorID,
+		arg.LimitCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Plan
+	for rows.Next() {
+		var i Plan
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.User,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -101,9 +182,10 @@ func (q *Queries) ListPlans(ctx context.Context, userid string) ([]Plan, error) 
 
 const updatePlan = `-- name: UpdatePlan :exec
 UPDATE plans 
-SET name = ?1
-WHERE id IN (SELECT p.id FROM plans as p
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+SET name = ?1,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE plans.deleted_at IS NULL AND plans.id IN (SELECT p.id FROM plans as p
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
              WHERE p.id = ?2 AND (p.user = ?3 OR pa.user = ?3))
 `
 
@@ -116,4 +198,34 @@ type UpdatePlanParams struct {
 func (q *Queries) UpdatePlan(ctx context.Context, arg UpdatePlanParams) error {
 	_, err := q.db.ExecContext(ctx, updatePlan, arg.Name, arg.ID, arg.UserId)
 	return err
+}
+
+const updatePlanIfMatch = `-- name: UpdatePlanIfMatch :execrows
+UPDATE plans 
+SET name = ?1,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE plans.deleted_at IS NULL AND plans.id IN (SELECT p.id FROM plans as p
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE p.id = ?2 AND (p.user = ?3 OR pa.user = ?3))
+AND plans.updated_at = ?4
+`
+
+type UpdatePlanIfMatchParams struct {
+	Name          string
+	ID            int64
+	UserId        string
+	BaseUpdatedAt string
+}
+
+func (q *Queries) UpdatePlanIfMatch(ctx context.Context, arg UpdatePlanIfMatchParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updatePlanIfMatch,
+		arg.Name,
+		arg.ID,
+		arg.UserId,
+		arg.BaseUpdatedAt,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

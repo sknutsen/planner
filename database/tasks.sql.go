@@ -7,22 +7,26 @@ package database
 
 import (
 	"context"
+	"strings"
 )
 
-const createTask = `-- name: CreateTask :exec
+const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (
     plan_id,
     title,
     date,
     subtitle,
-    description
+    description,
+    updated_at
 ) VALUES (
     ?,
     ?,
     ?,
     ?,
-    ?
+    ?,
+    strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 )
+RETURNING id, plan_id, date, title, subtitle, description, is_complete, updated_at, deleted_at
 `
 
 type CreateTaskParams struct {
@@ -33,31 +37,45 @@ type CreateTaskParams struct {
 	Description interface{}
 }
 
-func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, createTask,
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, createTask,
 		arg.PlanID,
 		arg.Title,
 		arg.Date,
 		arg.Subtitle,
 		arg.Description,
 	)
-	return err
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.PlanID,
+		&i.Date,
+		&i.Title,
+		&i.Subtitle,
+		&i.Description,
+		&i.IsComplete,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
-const createTaskFromTemplate = `-- name: CreateTaskFromTemplate :exec
+const createTaskFromTemplate = `-- name: CreateTaskFromTemplate :one
 INSERT INTO tasks (
     plan_id,
     title,
     date,
     subtitle,
-    description
+    description,
+    updated_at
 ) 
-SELECT t.plan_id, t.title, ?1, t.subtitle, t.description
+SELECT t.plan_id, t.title, ?1, t.subtitle, t.description, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
 FROM templates as t
-WHERE t.id IN (SELECT t2.id FROM templates as t2
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-             WHERE t2.id = ?2 AND (p.user = ?3 OR pa.user = ?3))
+WHERE t.deleted_at IS NULL AND t.id IN (SELECT t2.id FROM templates as t2
+             INNER JOIN plans as p ON t2.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE t2.id = ?2 AND t2.deleted_at IS NULL AND (p.user = ?3 OR pa.user = ?3))
+RETURNING id, plan_id, date, title, subtitle, description, is_complete, updated_at, deleted_at
 `
 
 type CreateTaskFromTemplateParams struct {
@@ -66,16 +84,30 @@ type CreateTaskFromTemplateParams struct {
 	UserId     string
 }
 
-func (q *Queries) CreateTaskFromTemplate(ctx context.Context, arg CreateTaskFromTemplateParams) error {
-	_, err := q.db.ExecContext(ctx, createTaskFromTemplate, arg.Date, arg.TemplateId, arg.UserId)
-	return err
+func (q *Queries) CreateTaskFromTemplate(ctx context.Context, arg CreateTaskFromTemplateParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, createTaskFromTemplate, arg.Date, arg.TemplateId, arg.UserId)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.PlanID,
+		&i.Date,
+		&i.Title,
+		&i.Subtitle,
+		&i.Description,
+		&i.IsComplete,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
 const deleteTask = `-- name: DeleteTask :exec
-DELETE FROM tasks
-WHERE id IN (SELECT t.id FROM tasks as t
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+UPDATE tasks
+SET deleted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now'),
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE deleted_at IS NULL AND id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
              WHERE t.id = ?1 AND (p.user = ?2 OR pa.user = ?2))
 `
 
@@ -91,11 +123,11 @@ func (q *Queries) DeleteTask(ctx context.Context, arg DeleteTaskParams) error {
 
 const getTask = `-- name: GetTask :one
 SELECT 
-t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete 
+t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
 FROM tasks as t
-INNER JOIN plans as p ON t.plan_id = p.id
-LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
-WHERE t.id = ?1 AND (p.user = ?2 OR pa.user = ?2)
+INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+WHERE t.id = ?1 AND t.deleted_at IS NULL AND (p.user = ?2 OR pa.user = ?2)
 `
 
 type GetTaskParams struct {
@@ -114,25 +146,29 @@ func (q *Queries) GetTask(ctx context.Context, arg GetTaskParams) (Task, error) 
 		&i.Subtitle,
 		&i.Description,
 		&i.IsComplete,
+		&i.UpdatedAt,
+		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getTasksByDate = `-- name: GetTasksByDate :many
 SELECT
-  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
 FROM
   tasks AS t
 WHERE
-  t.date = ?1
+  t.deleted_at IS NULL
+  AND t.date = ?1
   AND t.plan_id IN (
     SELECT
       p.id
     FROM
       plans AS p
-      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
     WHERE
       p.id = ?2
+      AND p.deleted_at IS NULL
       AND (
         p.user = ?3 OR pa.user = ?3
       )
@@ -162,6 +198,8 @@ func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) 
 			&i.Subtitle,
 			&i.Description,
 			&i.IsComplete,
+			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -178,18 +216,20 @@ func (q *Queries) GetTasksByDate(ctx context.Context, arg GetTasksByDateParams) 
 
 const getTasksByPlan = `-- name: GetTasksByPlan :many
 SELECT
-  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
 FROM
   tasks AS t
 WHERE
-  t.plan_id IN (
+  t.deleted_at IS NULL
+  AND t.plan_id IN (
     SELECT
       p.id
     FROM
       plans AS p
-      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
     WHERE
       p.id = ?1
+      AND p.deleted_at IS NULL
       AND (
         p.user = ?2 OR pa.user = ?2
       )
@@ -219,6 +259,160 @@ func (q *Queries) GetTasksByPlan(ctx context.Context, arg GetTasksByPlanParams) 
 			&i.Subtitle,
 			&i.Description,
 			&i.IsComplete,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTasksByPlanAndDates = `-- name: ListTasksByPlanAndDates :many
+SELECT
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
+FROM
+  tasks AS t
+WHERE
+  t.deleted_at IS NULL
+  AND t.plan_id = ?1
+  AND t.date IN (/*SLICE:dates*/?)
+  AND t.plan_id IN (
+    SELECT
+      p.id
+    FROM
+      plans AS p
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE
+      p.id = ?1
+      AND p.deleted_at IS NULL
+      AND (
+        p.user = ?3 OR pa.user = ?3
+      )
+  )
+ORDER BY t.date ASC
+`
+
+type ListTasksByPlanAndDatesParams struct {
+	PlanID int64
+	Dates  []string
+	UserID string
+}
+
+func (q *Queries) ListTasksByPlanAndDates(ctx context.Context, arg ListTasksByPlanAndDatesParams) ([]Task, error) {
+	query := listTasksByPlanAndDates
+	var queryParams []interface{}
+	queryParams = append(queryParams, arg.PlanID)
+	if len(arg.Dates) > 0 {
+		for _, v := range arg.Dates {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:dates*/?", strings.Repeat(",?", len(arg.Dates))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:dates*/?", "NULL", 1)
+	}
+	queryParams = append(queryParams, arg.UserID)
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.Date,
+			&i.Title,
+			&i.Subtitle,
+			&i.Description,
+			&i.IsComplete,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTasksByPlanSync = `-- name: ListTasksByPlanSync :many
+SELECT
+  t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
+FROM
+  tasks AS t
+WHERE
+  t.deleted_at IS NULL
+  AND t.plan_id = ?1
+  AND t.plan_id IN (
+    SELECT
+      p.id
+    FROM
+      plans AS p
+      LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE
+      p.id = ?1
+      AND p.deleted_at IS NULL
+      AND (
+        p.user = ?2 OR pa.user = ?2
+      )
+  )
+AND (?3 = '' OR t.updated_at >= ?3)
+AND (?4 = '' OR (t.updated_at > ?4 OR (t.updated_at = ?4 AND t.id > ?5)))
+ORDER BY t.updated_at ASC, t.id ASC
+LIMIT ?6
+`
+
+type ListTasksByPlanSyncParams struct {
+	PlanID       int64
+	UserID       string
+	UpdatedSince interface{}
+	CursorTs     interface{}
+	CursorID     int64
+	LimitCount   int64
+}
+
+func (q *Queries) ListTasksByPlanSync(ctx context.Context, arg ListTasksByPlanSyncParams) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, listTasksByPlanSync,
+		arg.PlanID,
+		arg.UserID,
+		arg.UpdatedSince,
+		arg.CursorTs,
+		arg.CursorID,
+		arg.LimitCount,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.PlanID,
+			&i.Date,
+			&i.Title,
+			&i.Subtitle,
+			&i.Description,
+			&i.IsComplete,
+			&i.UpdatedAt,
+			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -235,10 +429,11 @@ func (q *Queries) GetTasksByPlan(ctx context.Context, arg GetTasksByPlanParams) 
 
 const setIsCompleteTask = `-- name: SetIsCompleteTask :exec
 UPDATE tasks 
-SET is_complete = ?1
-WHERE id IN (SELECT t.id FROM tasks as t
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+SET is_complete = ?1,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE deleted_at IS NULL AND id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
              WHERE t.id = ?2 AND (p.user = ?3 OR pa.user = ?3))
 `
 
@@ -255,10 +450,11 @@ func (q *Queries) SetIsCompleteTask(ctx context.Context, arg SetIsCompleteTaskPa
 
 const updateTask = `-- name: UpdateTask :exec
 UPDATE tasks 
-SET title = ?1, subtitle = ?2, date = ?3, description = ?4
-WHERE id IN (SELECT t.id FROM tasks as t
-             INNER JOIN plans as p ON t.plan_id = p.id
-             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id
+SET title = ?1, subtitle = ?2, date = ?3, description = ?4,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE deleted_at IS NULL AND id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
              WHERE t.id = ?5 AND (p.user = ?6 OR pa.user = ?6))
 `
 
@@ -281,4 +477,41 @@ func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
 		arg.UserId,
 	)
 	return err
+}
+
+const updateTaskIfMatch = `-- name: UpdateTaskIfMatch :execrows
+UPDATE tasks 
+SET title = ?1, subtitle = ?2, date = ?3, description = ?4,
+    updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+WHERE deleted_at IS NULL AND id IN (SELECT t.id FROM tasks as t
+             INNER JOIN plans as p ON t.plan_id = p.id AND p.deleted_at IS NULL
+             LEFT OUTER JOIN plan_access as pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+             WHERE t.id = ?5 AND (p.user = ?6 OR pa.user = ?6))
+AND tasks.updated_at = ?7
+`
+
+type UpdateTaskIfMatchParams struct {
+	Title         string
+	Subtitle      interface{}
+	Date          string
+	Description   interface{}
+	ID            int64
+	UserId        string
+	BaseUpdatedAt string
+}
+
+func (q *Queries) UpdateTaskIfMatch(ctx context.Context, arg UpdateTaskIfMatchParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, updateTaskIfMatch,
+		arg.Title,
+		arg.Subtitle,
+		arg.Date,
+		arg.Description,
+		arg.ID,
+		arg.UserId,
+		arg.BaseUpdatedAt,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

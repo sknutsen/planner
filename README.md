@@ -9,7 +9,20 @@ Requirements: Go 1.25+ (see `go.mod`), a C compiler for CGO (`gcc` is enough), a
 
 The app loads `.env` from the working directory; missing `.env` only logs a warning.
 
-## Docs
+## Mobile JSON API (`/api/v1`)
+
+Native and non-browser clients should call the versioned API with an **Auth0 access token** for your API (**audience** must match `AUTH0_AUDIENCE`). Send `Authorization: Bearer <access_token>`. The subject claim is the same `sub` used as `UserProfile.UserId` in the web app.
+
+- **Sync**: list endpoints accept `updated_since`, `cursor_ts`, `cursor_id`, and `limit` (default 200, max 500). Responses may include `next_cursor` with `ts` and `id` for the next page.
+- **Idempotency**: for `POST`/`PATCH`/`DELETE` on tasks and plans, send `Idempotency-Key` (any unique string per logical request); retries return the same JSON body and status.
+- **Conflicts**: for `PATCH /plans/:planId` and `PATCH /tasks/:id`, include `base_updated_at` from the last read copy of the resource. If the row changed, the server responds with **409** and `error.current` holding the latest JSON.
+
+Example:
+
+```bash
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" http://127.0.0.1:8081/api/v1/me
+```
+
 
 - Echo - https://echo.labstack.com/docs
 - Templ - https://templ.guide/

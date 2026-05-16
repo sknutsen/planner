@@ -51,7 +51,7 @@ func (h *Handler) UpdatePlan(c echo.Context) error {
 	dq := database.New(h.DB)
 
 	if request.Id == "" {
-		err = dq.CreatePlan(ctx, database.CreatePlanParams{
+		_, err = dq.CreatePlan(ctx, database.CreatePlanParams{
 			Name: request.Name,
 			User: user.UserId,
 		})

@@ -4,16 +4,34 @@
 
 package database
 
+import (
+	"database/sql"
+)
+
+type IdempotencyKey struct {
+	ID           int64
+	UserID       string
+	KeyHash      string
+	ResponseBody string
+	StatusCode   int64
+	CreatedAt    string
+	RequestHash  string
+}
+
 type Plan struct {
-	ID   int64
-	Name string
-	User string
+	ID        int64
+	Name      string
+	User      string
+	UpdatedAt string
+	DeletedAt sql.NullString
 }
 
 type PlanAccess struct {
-	ID     int64
-	PlanID int64
-	User   string
+	ID        int64
+	PlanID    int64
+	User      string
+	UpdatedAt string
+	DeletedAt sql.NullString
 }
 
 type Resource struct {
@@ -22,6 +40,8 @@ type Resource struct {
 	ResourceType int64
 	Content      interface{}
 	PlanID       int64
+	UpdatedAt    string
+	DeletedAt    sql.NullString
 }
 
 type Task struct {
@@ -32,6 +52,8 @@ type Task struct {
 	Subtitle    interface{}
 	Description interface{}
 	IsComplete  int64
+	UpdatedAt   string
+	DeletedAt   sql.NullString
 }
 
 type Template struct {
@@ -40,4 +62,6 @@ type Template struct {
 	Title       string
 	Subtitle    interface{}
 	Description interface{}
+	UpdatedAt   string
+	DeletedAt   sql.NullString
 }
