@@ -169,7 +169,7 @@ func MainLayout(state models.ClientState) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script type=\"module\">\n\t\timport * as module from \"/assets/bundle.js\";\n\n\t\tmod = module;\n\t</script><script type=\"text/javascript\">\n\t\tvar mod = {};\n\t\tvar simplemde = new SimpleMDE({});\n\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script type=\"module\">\n\t\t    import * as module from \"/assets/bundle.js\";\n\n\t\t    mod = module;\n\t    </script><script type=\"text/javascript\">\n\t\t    var mod = {};\n\t\t    var simplemde = new SimpleMDE({});\n\t    </script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

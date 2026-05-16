@@ -478,35 +478,35 @@ func Resource(state models.ClientState, resource models.Resource) templ.Componen
 
 func toggleContent(id int) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_toggleContent_0389`,
-		Function: `function __templ_toggleContent_0389(id){const desc = document.getElementById("resource-" + id + "__content");
-const icon = document.getElementById("resource-" + id + "__expand-icon");
-const isHidden = desc.classList.contains("hidden");
+		Name: `__templ_toggleContent_fd07`,
+		Function: `function __templ_toggleContent_fd07(id){const desc = document.getElementById("resource-" + id + "__content");
+  const icon = document.getElementById("resource-" + id + "__expand-icon");
+  const isHidden = desc.classList.contains("hidden");
 
-if (isHidden) {
-mod.show(desc.id);
-icon.innerHTML = "expand_less"
-} else {
-mod.hide(desc.id);
-icon.innerHTML = "expand_more"
-}
+  if (isHidden) {
+    mod.show(desc.id);
+    icon.innerHTML = "expand_less"
+  } else {
+    mod.hide(desc.id);
+    icon.innerHTML = "expand_more"
+  }
 }`,
-		Call:       templ.SafeScript(`__templ_toggleContent_0389`, id),
-		CallInline: templ.SafeScriptInline(`__templ_toggleContent_0389`, id),
+		Call:       templ.SafeScript(`__templ_toggleContent_fd07`, id),
+		CallInline: templ.SafeScriptInline(`__templ_toggleContent_fd07`, id),
 	}
 }
 
 func renderContent(id int, description string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_renderContent_6779`,
-		Function: `function __templ_renderContent_6779(id, description){const desc = document.getElementById("resource-" + id + "__content");
+		Name: `__templ_renderContent_d84e`,
+		Function: `function __templ_renderContent_d84e(id, description){const desc = document.getElementById("resource-" + id + "__content");
 
-// desc.innerHTML = md.render(description);
-// desc.innerHTML = marked.parse(description);
-desc.innerHTML = simplemde.markdown(description);
+  // desc.innerHTML = md.render(description);
+  // desc.innerHTML = marked.parse(description);
+  desc.innerHTML = simplemde.markdown(description);
 }`,
-		Call:       templ.SafeScript(`__templ_renderContent_6779`, id, description),
-		CallInline: templ.SafeScriptInline(`__templ_renderContent_6779`, id, description),
+		Call:       templ.SafeScript(`__templ_renderContent_d84e`, id, description),
+		CallInline: templ.SafeScriptInline(`__templ_renderContent_d84e`, id, description),
 	}
 }
 

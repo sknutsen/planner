@@ -62,14 +62,14 @@ templ MainLayout(state models.ClientState) {
 			@Nav(state)
 			{ children... }
 			<script type="module">
-		import * as module from "/assets/bundle.js";
+		    import * as module from "/assets/bundle.js";
 
-		mod = module;
-	</script>
+		    mod = module;
+	    </script>
 			<script type="text/javascript">
-		var mod = {};
-		var simplemde = new SimpleMDE({});
-	</script>
+		    var mod = {};
+		    var simplemde = new SimpleMDE({});
+	    </script>
 		</body>
 	</html>
 }
