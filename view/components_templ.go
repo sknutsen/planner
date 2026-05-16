@@ -555,24 +555,24 @@ func mdEditor(id string, name string, value string) templ.Component {
 
 func planChanged(baseRoute string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_planChanged_dd6f`,
-		Function: `function __templ_planChanged_dd6f(baseRoute){window.open(baseRoute + "/" + event.target.value, "_self");
+		Name: `__templ_planChanged_feae`,
+		Function: `function __templ_planChanged_feae(baseRoute){window.open(baseRoute + "/" + event.target.value, "_self");
 }`,
-		Call:       templ.SafeScript(`__templ_planChanged_dd6f`, baseRoute),
-		CallInline: templ.SafeScriptInline(`__templ_planChanged_dd6f`, baseRoute),
+		Call:       templ.SafeScript(`__templ_planChanged_feae`, baseRoute),
+		CallInline: templ.SafeScriptInline(`__templ_planChanged_feae`, baseRoute),
 	}
 }
 
 func renderMDE(id string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_renderMDE_6af0`,
-		Function: `function __templ_renderMDE_6af0(id){const editor = new MarkdownEditor(id, {
-	placeholder: 'Write your markdown...',
-	toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'blockquote', 'link', 'preview'],
+		Name: `__templ_renderMDE_9b5d`,
+		Function: `function __templ_renderMDE_9b5d(id){const editor = new MarkdownEditor(id, {
+	    placeholder: 'Write your markdown...',
+	    toolbar: ['heading', 'bold', 'italic', 'strikethrough', 'ul', 'ol', 'blockquote', 'link', 'preview'],
     });
 }`,
-		Call:       templ.SafeScript(`__templ_renderMDE_6af0`, id),
-		CallInline: templ.SafeScriptInline(`__templ_renderMDE_6af0`, id),
+		Call:       templ.SafeScript(`__templ_renderMDE_9b5d`, id),
+		CallInline: templ.SafeScriptInline(`__templ_renderMDE_9b5d`, id),
 	}
 }
 
