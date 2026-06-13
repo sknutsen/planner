@@ -280,12 +280,17 @@ SELECT
   t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
 FROM
   tasks AS t
-INNER JOIN plans AS p ON t.plan_id = p.id AND p.deleted_at IS NULL
-LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
 WHERE
   t.deleted_at IS NULL
   AND t.plan_id = ?1
-  AND (p.user = ?2 OR pa.user = ?2)
+  AND EXISTS (
+    SELECT 1
+    FROM plans AS p
+    LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE p.id = ?1
+      AND p.deleted_at IS NULL
+      AND (p.user = ?2 OR pa.user = ?2)
+  )
   AND t.date IN (/*SLICE:dates*/?)
 ORDER BY t.date ASC
 `

@@ -81,12 +81,17 @@ SELECT
   t.id, t.plan_id, t.date, t.title, t.subtitle, t.description, t.is_complete, t.updated_at, t.deleted_at
 FROM
   tasks AS t
-INNER JOIN plans AS p ON t.plan_id = p.id AND p.deleted_at IS NULL
-LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
 WHERE
   t.deleted_at IS NULL
   AND t.plan_id = @plan_id
-  AND (p.user = @user_id OR pa.user = @user_id)
+  AND EXISTS (
+    SELECT 1
+    FROM plans AS p
+    LEFT OUTER JOIN plan_access AS pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
+    WHERE p.id = @plan_id
+      AND p.deleted_at IS NULL
+      AND (p.user = @user_id OR pa.user = @user_id)
+  )
   AND t.date IN (sqlc.slice('dates'))
 ORDER BY t.date ASC;
 

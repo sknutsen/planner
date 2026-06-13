@@ -365,6 +365,39 @@ func TestIdempotencyQueries(t *testing.T) {
 	}
 }
 
+func TestListTasksByPlanAndDatesNoDuplicatesWithMultipleAccessRows(t *testing.T) {
+	db := openTestDB(t)
+	q := New(db)
+	ctx := context.Background()
+
+	plan, err := q.CreatePlan(ctx, CreatePlanParams{Name: "Shared plan", User: ownerSub})
+	if err != nil {
+		t.Fatalf("CreatePlan: %v", err)
+	}
+	for _, user := range []string{guestSub, "auth0|guest2", "auth0|guest3"} {
+		if err := q.GrantAccess(ctx, GrantAccessParams{PlanID: plan.ID, User: user}); err != nil {
+			t.Fatalf("GrantAccess %s: %v", user, err)
+		}
+	}
+	if _, err := q.CreateTask(ctx, CreateTaskParams{
+		PlanID: plan.ID, Title: "Solo task", Date: "2026-06-13",
+	}); err != nil {
+		t.Fatalf("CreateTask: %v", err)
+	}
+
+	rows, err := q.ListTasksByPlanAndDates(ctx, ListTasksByPlanAndDatesParams{
+		PlanID: plan.ID,
+		UserID: ownerSub,
+		Dates:  []string{"2026-06-13"},
+	})
+	if err != nil {
+		t.Fatalf("ListTasksByPlanAndDates: %v", err)
+	}
+	if len(rows) != 1 {
+		t.Fatalf("ListTasksByPlanAndDates: got %d tasks, want 1 (duplicates from plan_access join)", len(rows))
+	}
+}
+
 func TestSyncQueriesAcceptNilOptionalFilters(t *testing.T) {
 	db := openTestDB(t)
 	q := New(db)
