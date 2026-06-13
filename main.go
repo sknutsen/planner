@@ -4,7 +4,9 @@ package main
 import (
 	"encoding/gob"
 	"fmt"
+	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -14,6 +16,8 @@ import (
 )
 
 func main() {
+	setupLogging()
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Printf("Could not load .env file. Err: %s\n", err)
@@ -75,4 +79,17 @@ func main() {
 	router.Setup(e, h)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", h.Port)))
+}
+
+func setupLogging() {
+	level := slog.LevelInfo
+	switch strings.ToLower(strings.TrimSpace(os.Getenv("LOG_LEVEL"))) {
+	case "debug":
+		level = slog.LevelDebug
+	case "warn", "warning":
+		level = slog.LevelWarn
+	case "error":
+		level = slog.LevelError
+	}
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})))
 }

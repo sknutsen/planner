@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -33,12 +34,14 @@ func BearerJWT(a *auth.Authenticator, audience string) echo.MiddlewareFunc {
 			token := strings.TrimSpace(raw[len("Bearer "):])
 			idt, err := verifier.Verify(c.Request().Context(), token)
 			if err != nil {
+				slog.Debug("jwt verification failed", "path", c.Request().URL.Path, "err", err)
 				return apijson.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "Invalid token")
 			}
 			var claims struct {
 				Sub string `json:"sub"`
 			}
 			if err := idt.Claims(&claims); err != nil || claims.Sub == "" {
+				slog.Debug("jwt claims invalid", "path", c.Request().URL.Path, "err", err)
 				return apijson.Error(c, http.StatusUnauthorized, "UNAUTHORIZED", "Invalid claims")
 			}
 			c.Set(CtxAPIUserID, claims.Sub)

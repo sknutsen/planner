@@ -96,7 +96,7 @@ func (h *Handler) APIListResources(c echo.Context) error {
 		LimitCount:   limit + 1,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list resources.")
+		return apijson.ServerError(c, "Could not list resources.", err)
 	}
 
 	next := ""
@@ -143,7 +143,7 @@ func (h *Handler) APICreateResource(c echo.Context) error {
 		Content:      content,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not create resource.")
+		return apijson.ServerError(c, "Could not create resource.", err)
 	}
 	return c.JSON(http.StatusCreated, resourceToDTO(r))
 }
@@ -164,7 +164,7 @@ func (h *Handler) APIGetResource(c echo.Context) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return apijson.Error(c, http.StatusNotFound, "NOT_FOUND", "Resource not found.")
 		}
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load resource.")
+		return apijson.ServerError(c, "Could not load resource.", err)
 	}
 	return c.JSON(http.StatusOK, resourceToDTO(r))
 }
@@ -211,7 +211,7 @@ func (h *Handler) APIPatchResource(c echo.Context) error {
 			BaseUpdatedAt: base,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update resource.")
+			return apijson.ServerError(c, "Could not update resource.", err)
 		}
 		if n == 0 {
 			cur, gerr := dq.GetResource(ctx, database.GetResourceParams{ID: id, UserId: uid})
@@ -228,12 +228,12 @@ func (h *Handler) APIPatchResource(c echo.Context) error {
 			ID:           id,
 			UserId:       uid,
 		}); err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update resource.")
+			return apijson.ServerError(c, "Could not update resource.", err)
 		}
 	}
 	r, err := dq.GetResource(ctx, database.GetResourceParams{ID: id, UserId: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load resource.")
+		return apijson.ServerError(c, "Could not load resource.", err)
 	}
 	return c.JSON(http.StatusOK, resourceToDTO(r))
 }
@@ -250,7 +250,7 @@ func (h *Handler) APIDeleteResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	dq := database.New(h.DB)
 	if err := dq.DeleteResource(ctx, database.DeleteResourceParams{ID: id, UserId: uid}); err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not delete resource.")
+		return apijson.ServerError(c, "Could not delete resource.", err)
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -312,7 +312,7 @@ func (h *Handler) APIListTemplates(c echo.Context) error {
 		LimitCount:   limit + 1,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list templates.")
+		return apijson.ServerError(c, "Could not list templates.", err)
 	}
 	next := ""
 	if len(rows) > int(limit) {
@@ -354,7 +354,7 @@ func (h *Handler) APICreateTemplate(c echo.Context) error {
 		Description: body.Description,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not create template.")
+		return apijson.ServerError(c, "Could not create template.", err)
 	}
 	return c.JSON(http.StatusCreated, templateToDTO(t))
 }
@@ -375,7 +375,7 @@ func (h *Handler) APIGetTemplate(c echo.Context) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return apijson.Error(c, http.StatusNotFound, "NOT_FOUND", "Template not found.")
 		}
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load template.")
+		return apijson.ServerError(c, "Could not load template.", err)
 	}
 	return c.JSON(http.StatusOK, templateToDTO(t))
 }
@@ -418,7 +418,7 @@ func (h *Handler) APIPatchTemplate(c echo.Context) error {
 			BaseUpdatedAt: base,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update template.")
+			return apijson.ServerError(c, "Could not update template.", err)
 		}
 		if n == 0 {
 			cur, gerr := dq.GetTemplate(ctx, database.GetTemplateParams{ID: id, UserId: uid})
@@ -435,12 +435,12 @@ func (h *Handler) APIPatchTemplate(c echo.Context) error {
 			ID:          id,
 			UserId:      uid,
 		}); err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update template.")
+			return apijson.ServerError(c, "Could not update template.", err)
 		}
 	}
 	t, err := dq.GetTemplate(ctx, database.GetTemplateParams{ID: id, UserId: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load template.")
+		return apijson.ServerError(c, "Could not load template.", err)
 	}
 	return c.JSON(http.StatusOK, templateToDTO(t))
 }
@@ -457,7 +457,7 @@ func (h *Handler) APIDeleteTemplate(c echo.Context) error {
 	ctx := c.Request().Context()
 	dq := database.New(h.DB)
 	if err := dq.DeleteTemplate(ctx, database.DeleteTemplateParams{ID: id, UserId: uid}); err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not delete template.")
+		return apijson.ServerError(c, "Could not delete template.", err)
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -515,7 +515,7 @@ func (h *Handler) APIListPlanAccess(c echo.Context) error {
 		LimitCount:   limit + 1,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list plan access rows.")
+		return apijson.ServerError(c, "Could not list plan access rows.", err)
 	}
 	next := ""
 	if len(rows) > int(limit) {
