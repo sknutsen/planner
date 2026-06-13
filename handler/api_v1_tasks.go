@@ -60,7 +60,7 @@ func (h *Handler) APIListTasks(c echo.Context) error {
 			UserId: uid,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list tasks.")
+			return apijson.ServerError(c, "Could not list tasks.", err)
 		}
 		out := make([]taskDTO, 0, len(tasks))
 		for _, t := range tasks {
@@ -92,7 +92,7 @@ func (h *Handler) APIListTasks(c echo.Context) error {
 		LimitCount:   limit + 1,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list tasks.")
+		return apijson.ServerError(c, "Could not list tasks.", err)
 	}
 	next := ""
 	if len(rows) > int(limit) {
@@ -130,7 +130,7 @@ func (h *Handler) APIListTasksWeek(c echo.Context) error {
 		Dates:  dates,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list week tasks.")
+		return apijson.ServerError(c, "Could not list week tasks.", err)
 	}
 	out := make([]taskDTO, 0, len(tasks))
 	for _, t := range tasks {
@@ -172,7 +172,7 @@ func (h *Handler) APICreateTask(c echo.Context) error {
 			if errors.Is(err, sql.ErrNoRows) {
 				return apijson.Error(c, http.StatusBadRequest, "BAD_REQUEST", "Template not found or inaccessible.")
 			}
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not create task from template.")
+			return apijson.ServerError(c, "Could not create task from template.", err)
 		}
 		return c.JSON(http.StatusCreated, taskToDTO(t))
 	}
@@ -184,7 +184,7 @@ func (h *Handler) APICreateTask(c echo.Context) error {
 		Description: body.Description,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not create task.")
+		return apijson.ServerError(c, "Could not create task.", err)
 	}
 	return c.JSON(http.StatusCreated, taskToDTO(t))
 }
@@ -205,7 +205,7 @@ func (h *Handler) APIGetTask(c echo.Context) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return apijson.Error(c, http.StatusNotFound, "NOT_FOUND", "Task not found.")
 		}
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load task.")
+		return apijson.ServerError(c, "Could not load task.", err)
 	}
 	return c.JSON(http.StatusOK, taskToDTO(t))
 }
@@ -253,7 +253,7 @@ func (h *Handler) APIPatchTask(c echo.Context) error {
 			BaseUpdatedAt: base,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update task.")
+			return apijson.ServerError(c, "Could not update task.", err)
 		}
 		if n == 0 {
 			cur, gerr := dq.GetTask(ctx, database.GetTaskParams{ID: id, UserId: uid})
@@ -272,12 +272,12 @@ func (h *Handler) APIPatchTask(c echo.Context) error {
 			UserId:      uid,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update task.")
+			return apijson.ServerError(c, "Could not update task.", err)
 		}
 	}
 	t, err := dq.GetTask(ctx, database.GetTaskParams{ID: id, UserId: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load task.")
+		return apijson.ServerError(c, "Could not load task.", err)
 	}
 	return c.JSON(http.StatusOK, taskToDTO(t))
 }
@@ -294,7 +294,7 @@ func (h *Handler) APIDeleteTask(c echo.Context) error {
 	ctx := c.Request().Context()
 	dq := database.New(h.DB)
 	if err := dq.DeleteTask(ctx, database.DeleteTaskParams{ID: id, UserId: uid}); err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not delete task.")
+		return apijson.ServerError(c, "Could not delete task.", err)
 	}
 	return c.NoContent(http.StatusNoContent)
 }
@@ -334,7 +334,7 @@ func (h *Handler) APIPatchTaskComplete(c echo.Context) error {
 			if errors.Is(err, sql.ErrNoRows) {
 				return apijson.Error(c, http.StatusNotFound, "NOT_FOUND", "Task not found.")
 			}
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load task.")
+			return apijson.ServerError(c, "Could not load task.", err)
 		}
 		if cur.UpdatedAt != base {
 			return apijson.Conflict(c, taskToDTO(cur))
@@ -345,11 +345,11 @@ func (h *Handler) APIPatchTaskComplete(c echo.Context) error {
 		ID:         id,
 		UserId:     uid,
 	}); err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update task.")
+		return apijson.ServerError(c, "Could not update task.", err)
 	}
 	t, err := dq.GetTask(ctx, database.GetTaskParams{ID: id, UserId: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load task.")
+		return apijson.ServerError(c, "Could not load task.", err)
 	}
 	return c.JSON(http.StatusOK, taskToDTO(t))
 }

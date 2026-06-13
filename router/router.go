@@ -1,9 +1,8 @@
 package router
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -15,12 +14,40 @@ import (
 )
 
 func Setup(e *echo.Echo, h *handler.Handler) {
+	setupHTTPErrorHandler(e)
+
+	e.Use(middleware.RequestID())
+	e.Use(middlewareRecover())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogStatus: true,
-		LogURI:    true,
-		LogMethod: true,
+		LogStatus:   true,
+		LogURI:      true,
+		LogMethod:   true,
+		LogLatency:  true,
+		LogError:    true,
+		LogRemoteIP: true,
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			fmt.Printf("%v %v %v status: %v error: %v\n", v.StartTime.Format(time.RFC822), v.Method, v.URI, v.Status, v.Error)
+			attrs := []any{
+				"method", v.Method,
+				"path", v.URI,
+				"status", v.Status,
+				"latency", v.Latency.String(),
+				"remote_ip", v.RemoteIP,
+			}
+			if rid := c.Response().Header().Get(echo.HeaderXRequestID); rid != "" {
+				attrs = append(attrs, "request_id", rid)
+			}
+			if v.Error != nil {
+				attrs = append(attrs, "err", v.Error)
+			}
+
+			switch {
+			case v.Status >= http.StatusInternalServerError:
+				slog.Error("request", attrs...)
+			case v.Status >= http.StatusBadRequest:
+				slog.Warn("request", attrs...)
+			default:
+				slog.Info("request", attrs...)
+			}
 			return nil
 		},
 	}))

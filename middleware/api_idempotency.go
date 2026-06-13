@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"io"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -62,7 +63,7 @@ func IdempotencyBuffer(db database.DBTX) echo.MiddlewareFunc {
 				return werr
 			}
 			if !errors.Is(err, sql.ErrNoRows) {
-				return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Idempotency lookup failed.")
+				return apijson.ServerError(c, "Idempotency lookup failed.", err)
 			}
 
 			rw := &captureWriter{ResponseWriter: c.Response().Writer}
@@ -97,6 +98,13 @@ func IdempotencyBuffer(db database.DBTX) echo.MiddlewareFunc {
 					// Another request completed the same idempotent call; response already sent to client.
 					return nil
 				}
+			} else if insErr != nil {
+				slog.Error("idempotency cache write failed",
+					"path", c.Request().URL.Path,
+					"method", method,
+					"user", userID,
+					"err", insErr,
+				)
 			}
 			return nil
 		}

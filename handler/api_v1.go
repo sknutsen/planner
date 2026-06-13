@@ -132,7 +132,7 @@ func (h *Handler) APIListPlans(c echo.Context) error {
 		LimitCount:   limit + 1,
 	})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not list plans.")
+		return apijson.ServerError(c, "Could not list plans.", err)
 	}
 
 	next := ""
@@ -166,7 +166,7 @@ func (h *Handler) APICreatePlan(c echo.Context) error {
 	dq := database.New(h.DB)
 	p, err := dq.CreatePlan(ctx, database.CreatePlanParams{Name: body.Name, User: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not create plan.")
+		return apijson.ServerError(c, "Could not create plan.", err)
 	}
 	return c.JSON(http.StatusCreated, planToDTO(p))
 }
@@ -187,7 +187,7 @@ func (h *Handler) APIGetPlan(c echo.Context) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return apijson.Error(c, http.StatusNotFound, "NOT_FOUND", "Plan not found.")
 		}
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load plan.")
+		return apijson.ServerError(c, "Could not load plan.", err)
 	}
 	return c.JSON(http.StatusOK, planToDTO(p))
 }
@@ -226,7 +226,7 @@ func (h *Handler) APIPatchPlan(c echo.Context) error {
 			BaseUpdatedAt: base,
 		})
 		if err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update plan.")
+			return apijson.ServerError(c, "Could not update plan.", err)
 		}
 		if n == 0 {
 			cur, gerr := dq.GetPlan(ctx, database.GetPlanParams{ID: id, UserId: uid})
@@ -237,12 +237,12 @@ func (h *Handler) APIPatchPlan(c echo.Context) error {
 		}
 	} else {
 		if err := dq.UpdatePlan(ctx, database.UpdatePlanParams{Name: body.Name, ID: id, UserId: uid}); err != nil {
-			return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not update plan.")
+			return apijson.ServerError(c, "Could not update plan.", err)
 		}
 	}
 	p, err := dq.GetPlan(ctx, database.GetPlanParams{ID: id, UserId: uid})
 	if err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not load plan.")
+		return apijson.ServerError(c, "Could not load plan.", err)
 	}
 	return c.JSON(http.StatusOK, planToDTO(p))
 }
@@ -259,7 +259,7 @@ func (h *Handler) APIDeletePlan(c echo.Context) error {
 	ctx := c.Request().Context()
 	dq := database.New(h.DB)
 	if err := dq.DeletePlan(ctx, database.DeletePlanParams{ID: id, UserId: uid}); err != nil {
-		return apijson.Error(c, http.StatusInternalServerError, "SERVER_ERROR", "Could not delete plan.")
+		return apijson.ServerError(c, "Could not delete plan.", err)
 	}
 	return c.NoContent(http.StatusNoContent)
 }
