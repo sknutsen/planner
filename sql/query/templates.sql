@@ -49,8 +49,8 @@ WHERE
       )
       AND p.deleted_at IS NULL
   )
-AND (@updated_since = '' OR t.updated_at >= @updated_since)
-AND (@cursor_ts = '' OR (t.updated_at > @cursor_ts OR (t.updated_at = @cursor_ts AND t.id > @cursor_id)))
+AND (COALESCE(@updated_since, '') = '' OR t.updated_at >= @updated_since)
+AND (COALESCE(@cursor_ts, '') = '' OR (t.updated_at > @cursor_ts OR (t.updated_at = @cursor_ts AND t.id > @cursor_id)))
 ORDER BY t.updated_at ASC, t.id ASC
 LIMIT @limit_count;
 

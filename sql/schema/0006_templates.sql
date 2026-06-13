@@ -11,5 +11,5 @@ CREATE TABLE templates (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE resources;
+DROP TABLE templates;
 -- +goose StatementEnd

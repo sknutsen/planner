@@ -21,8 +21,8 @@ FROM plans p
 LEFT OUTER JOIN plan_access pa ON p.id = pa.plan_id AND pa.deleted_at IS NULL
 WHERE (p.user = @user_id OR pa.user = @user_id)
 AND p.deleted_at IS NULL
-AND (@updated_since = '' OR p.updated_at >= @updated_since)
-AND (@cursor_ts = '' OR (p.updated_at > @cursor_ts OR (p.updated_at = @cursor_ts AND p.id > @cursor_id)))
+AND (COALESCE(@updated_since, '') = '' OR p.updated_at >= @updated_since)
+AND (COALESCE(@cursor_ts, '') = '' OR (p.updated_at > @cursor_ts OR (p.updated_at = @cursor_ts AND p.id > @cursor_id)))
 ORDER BY p.updated_at ASC, p.id ASC
 LIMIT @limit_count;
 

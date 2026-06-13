@@ -16,8 +16,8 @@ WHERE pa.plan_id = @plan_id
       WHERE px.plan_id = p.id AND px.user = @user_id AND px.deleted_at IS NULL
     )
   )
-AND (@updated_since = '' OR pa.updated_at >= @updated_since)
-AND (@cursor_ts = '' OR (pa.updated_at > @cursor_ts OR (pa.updated_at = @cursor_ts AND pa.id > @cursor_id)))
+AND (COALESCE(@updated_since, '') = '' OR pa.updated_at >= @updated_since)
+AND (COALESCE(@cursor_ts, '') = '' OR (pa.updated_at > @cursor_ts OR (pa.updated_at = @cursor_ts AND pa.id > @cursor_id)))
 ORDER BY pa.updated_at ASC, pa.id ASC
 LIMIT @limit_count;
 

@@ -1,7 +1,7 @@
 # App HTTP port the templ dev proxy forwards to (default 8081; override if .env PORT differs).
 DEV_APP_PORT ?= 8081
 
-.PHONY: help dev build test sql goose-up zj live/templ live/server live/sync_assets
+.PHONY: help dev build test sql sql-verify goose-up zj live/templ live/server live/sync_assets
 
 .DEFAULT_GOAL := help
 
@@ -42,6 +42,10 @@ zj: ## Open zellij with layout that runs `make dev` in a pane
 
 sql: ## Regenerate database package from sql/ (requires sqlc)
 	sqlc generate
+
+sql-verify: sql ## Validate SQL with sqlc vet and run database query integration tests
+	sqlc vet
+	CGO_ENABLED=0 go test ./database/...
 
 goose-up: ## Apply SQL migrations with goose (requires goose, Turso driver env)
 	GOOSE_DRIVER=turso GOOSE_MIGRATION_DIR=./sql/schema/ goose up

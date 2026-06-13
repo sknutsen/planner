@@ -70,6 +70,7 @@
           gotools
           go-tools
           (templ system)
+          sqlc
         ];
       };
     });
