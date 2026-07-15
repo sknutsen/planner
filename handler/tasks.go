@@ -237,6 +237,69 @@ func (h *Handler) ToggleIsCompleteTask(c echo.Context) error {
 	return h.Modal(c)
 }
 
+func (h *Handler) RescheduleTask(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return echo.ErrBadRequest
+	}
+
+	taskId, err := strconv.Atoi(id)
+	if err != nil {
+		return err
+	}
+
+	var request models.RescheduleTaskRequest
+	if err := c.Bind(&request); err != nil {
+		return c.String(http.StatusBadRequest, fmt.Sprintf("bad request. err: %s", err))
+	}
+
+	if request.Date == "" {
+		return c.String(http.StatusBadRequest, "date is required")
+	}
+
+	if _, err := lib.StringToDate(request.Date); err != nil {
+		return c.String(http.StatusBadRequest, "invalid date format")
+	}
+
+	user, err := userProfileFromContext(c)
+	if err != nil {
+		println(err.Error())
+	}
+
+	ctx := c.Request().Context()
+	dq := database.New(h.DB)
+
+	task, err := dq.GetTask(ctx, database.GetTaskParams{
+		ID:     int64(taskId),
+		UserId: user.UserId,
+	})
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed getting task. err: %s", err))
+	}
+
+	currentDate := lib.StripDateString(task.Date)
+	if currentDate == request.Date {
+		c.Response().Header().Add("HX-Trigger", "updatedTask")
+		return c.NoContent(http.StatusOK)
+	}
+
+	err = dq.UpdateTask(ctx, database.UpdateTaskParams{
+		ID:          int64(taskId),
+		Title:       task.Title,
+		Subtitle:    lib.AsString(task.Subtitle),
+		Description: lib.AsString(task.Description),
+		Date:        request.Date,
+		UserId:      user.UserId,
+	})
+	if err != nil {
+		return c.String(http.StatusInternalServerError, fmt.Sprintf("Failed rescheduling task. err: %s", err))
+	}
+
+	c.Response().Header().Add("HX-Trigger", "updatedTask")
+
+	return c.NoContent(http.StatusOK)
+}
+
 func (h *Handler) DeleteTask(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {

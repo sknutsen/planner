@@ -81,13 +81,20 @@ templ TaskFromTemplate(state models.ClientState, task models.Task, templates []m
 	}
 }
 
-templ TaskPreview(task models.Task, hideDescription bool, hideDate bool) {
+templ TaskPreview(task models.Task, hideDescription bool, hideDate bool, draggable bool) {
 	<div
 		id={ fmt.Sprintf("task-%d", task.Id) }
 		class={ templ.KV("task-complete", task.IsComplete),
 	templ.KV("task-incomplete", !task.IsComplete), "task-preview surface-02" }
+		data-task-id={ fmt.Sprint(task.Id) }
+		data-date={ task.Date }
 	>
 		<div class="task-preview__header">
+			if draggable {
+				<button class="task-preview__drag-handle" type="button" draggable="true" title="Drag to reschedule">
+					<span class="material-symbols-outlined">drag_indicator</span>
+				</button>
+			}
 			<button
 				class={ templ.KV("task-complete highlight", task.IsComplete), templ.KV("task-incomplete",
 			!task.IsComplete) }
@@ -130,7 +137,7 @@ templ TaskPreview(task models.Task, hideDescription bool, hideDate bool) {
 
 templ ListTasks(tasks []models.Task, hideDescription bool, hideDate bool) {
 	for _, t := range tasks {
-		@TaskPreview(t, hideDescription, hideDate)
+		@TaskPreview(t, hideDescription, hideDate, false)
 	}
 }
 

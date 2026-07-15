@@ -13,6 +13,7 @@ const (
 	create   string = "/create"
 	delete   string = "/delete"
 	edit     string = "/edit"
+	reschedule string = "/reschedule"
 	update   string = "/update"
 
 	// paths
@@ -64,6 +65,7 @@ const (
 	TaskCreateTemplate string = TaskCreate + template
 	TaskDelete         string = Task + delete
 	TaskEdit           string = Task + edit
+	TaskReschedule     string = Task + reschedule
 	TaskUpdate         string = task + update
 
 	Templates              string = "/templates"
