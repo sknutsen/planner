@@ -16,6 +16,12 @@
 		overflow: auto;
 	}
 
+	.day-preview__tasks--drag-over {
+		outline: 2px dashed var(--highlight-color);
+		background-color: var(--sfc-24-color);
+		border-radius: 8px;
+	}
+
 	.day-preview__header {
 		--elevation: 3;
 		position: relative;

@@ -24,6 +24,10 @@ type UpdateTaskRequest struct {
 	Template    string `json:"template"`
 }
 
+type RescheduleTaskRequest struct {
+	Date string `json:"date"`
+}
+
 func TasksFromDBModels(m []database.Task) []Task {
 	tasks := []Task{}
 

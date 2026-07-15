@@ -9,3 +9,5 @@ export function hide(elemId) {
 
   elem.classList.add("hidden");
 }
+
+export { initTaskDragDrop } from "./js/dnd.js";

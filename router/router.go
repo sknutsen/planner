@@ -102,6 +102,7 @@ func Setup(e *echo.Echo, h *handler.Handler) {
 	e.GET(routes.TaskCreateTemplate, h.CreateTaskFromTemplate, mw.IsAuthenticated)
 	e.GET(routes.TaskDelete, h.DeleteTask, mw.IsAuthenticated)
 	e.GET(routes.TaskEdit, h.EditTask, mw.IsAuthenticated)
+	e.POST(routes.TaskReschedule, h.RescheduleTask, mw.IsAuthenticated)
 	e.POST(routes.TaskUpdate, h.UpdateTask, mw.IsAuthenticated)
 
 	e.GET(routes.Templates, h.Templates, mw.IsAuthenticated)

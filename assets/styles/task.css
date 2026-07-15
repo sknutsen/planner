@@ -10,6 +10,32 @@
 		justify-content: space-between;
 		align-items: center;
 
+		.task-preview__drag-handle {
+			box-shadow: none;
+			border: none;
+			background-color: transparent;
+			border-radius: 8px;
+			padding: 0;
+			height: 38px;
+			width: 24px;
+			flex-shrink: 0;
+			cursor: grab;
+			color: var(--sfc-48-color, gray);
+
+			span {
+				font-size: 1.2rem;
+			}
+		}
+
+		.task-preview__drag-handle:hover {
+			background-color: var(--sfc-24-color);
+			cursor: grab;
+		}
+
+		.task-preview__drag-handle:active {
+			cursor: grabbing;
+		}
+
 		.task-preview__identifier {
 			display: flex;
 			flex-direction: column;
@@ -98,4 +124,8 @@
 	.task-preview__description {
 		transition: all 0.5s ease-in;
 	}
+}
+
+.task-preview--dragging {
+	opacity: 0.5;
 }
