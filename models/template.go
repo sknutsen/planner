@@ -1,6 +1,9 @@
 package models
 
-import "github.com/sknutsen/planner/database"
+import (
+	"github.com/sknutsen/planner/database"
+	"github.com/sknutsen/planner/lib"
+)
 
 type Template struct {
 	Id          int
@@ -35,7 +38,7 @@ func TemplateFromDBModel(m database.Template) Template {
 	return Template{
 		Id:          int(m.ID),
 		Title:       m.Title,
-		Subtitle:    m.Subtitle.(string),
-		Description: m.Description.(string),
+		Subtitle:    lib.AsString(m.Subtitle),
+		Description: lib.AsString(m.Description),
 	}
 }
