@@ -60,12 +60,7 @@ templ TaskFromTemplate(state models.ClientState, task models.Task, templates []m
 			<input type="number" class="hidden" name="id" value={ fmt.Sprint(task.Id) }/>
 			<input type="number" class="hidden" name="plan_id" value={ fmt.Sprint(state.SelectedPlanId) }/>
 			<input type="date" name="date" value={ task.Date }/>
-			<select name="template">
-				<option selected>select a template</option>
-				for _, t := range templates {
-					<option value={ fmt.Sprint(t.Id) }>{ t.Title }</option>
-				}
-			</select>
+			@templateSelector(templates)
 			<div class="button-group">
 				<button
 					type="submit"
@@ -79,6 +74,57 @@ templ TaskFromTemplate(state models.ClientState, task models.Task, templates []m
 			</div>
 		</form>
 	}
+}
+
+templ templateSelector(templates []models.Template) {
+	<div id="template-selector" class="template-selector">
+		<input type="hidden" name="template" id="template-selector__value" value=""/>
+		<button
+			type="button"
+			id="template-selector__toggle"
+			class="template-selector__toggle"
+			aria-haspopup="listbox"
+			aria-expanded="false"
+			aria-controls="template-selector__list"
+			onclick={ toggleTemplateSelector() }
+		>
+			<span class="template-selector__toggle-label">
+				<span class="template-selector__placeholder">Select a template</span>
+			</span>
+			<span class="material-symbols-outlined template-selector__chevron">expand_more</span>
+		</button>
+		<div id="template-selector__list" class="template-selector__list hidden" role="listbox">
+			if len(templates) == 0 {
+				<div class="template-selector__empty">No templates</div>
+			}
+			for _, t := range templates {
+				<div
+					class="template-selector__option"
+					role="option"
+					aria-selected="false"
+					data-template-id={ fmt.Sprint(t.Id) }
+					onclick={ selectTemplate(fmt.Sprint(t.Id)) }
+				>
+					@templateSelectorLabel(t.Title, t.Subtitle)
+				</div>
+			}
+		</div>
+	</div>
+	@initTemplateSelector()
+}
+
+templ templateSelectorLabel(title string, subtitle string) {
+	<div class="template-selector__label">
+		if !lib.IsNullOrEmpty(title) {
+			<span class="template-selector__title">{ title }</span>
+		}
+		if !lib.IsNullOrEmpty(subtitle) {
+			<span class="template-selector__subtitle">{ subtitle }</span>
+		}
+		if lib.IsNullOrEmpty(title) && lib.IsNullOrEmpty(subtitle) {
+			<span class="template-selector__untitled">Untitled template</span>
+		}
+	</div>
 }
 
 templ TaskPreview(task models.Task, hideDescription bool, hideDate bool, draggable bool) {
@@ -161,4 +207,88 @@ script renderDescription(id int, description string) {
   // desc.innerHTML = md.render(description);
   // desc.innerHTML = marked.parse(description);
   desc.innerHTML = simplemde.markdown(description);
+}
+
+script toggleTemplateSelector() {
+  const toggle = document.getElementById("template-selector__toggle");
+  const list = document.getElementById("template-selector__list");
+  const chevron = toggle && toggle.querySelector(".template-selector__chevron");
+  if (!toggle || !list) {
+    return;
+  }
+
+  const open = list.classList.contains("hidden");
+  list.classList.toggle("hidden", !open);
+  toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  if (chevron) {
+    chevron.textContent = open ? "expand_less" : "expand_more";
+  }
+}
+
+script selectTemplate(id string) {
+  const list = document.getElementById("template-selector__list");
+  const value = document.getElementById("template-selector__value");
+  const toggle = document.getElementById("template-selector__toggle");
+  if (!list || !value || !toggle) {
+    return;
+  }
+
+  const option = list.querySelector('[data-template-id="' + id + '"]');
+  if (!option) {
+    return;
+  }
+
+  value.value = id;
+  const label = option.querySelector(".template-selector__label");
+  const slot = toggle.querySelector(".template-selector__toggle-label");
+  if (label && slot) {
+    slot.replaceChildren(label.cloneNode(true));
+  }
+
+  list.querySelectorAll('[role="option"]').forEach((el) => {
+    el.setAttribute("aria-selected", el === option ? "true" : "false");
+  });
+
+  list.classList.add("hidden");
+  toggle.setAttribute("aria-expanded", "false");
+  const chevron = toggle.querySelector(".template-selector__chevron");
+  if (chevron) {
+    chevron.textContent = "expand_more";
+  }
+}
+
+script initTemplateSelector() {
+  if (window.__templateSelectorBound) {
+    return;
+  }
+  window.__templateSelectorBound = true;
+
+  function closeTemplateSelector() {
+    const list = document.getElementById("template-selector__list");
+    const toggle = document.getElementById("template-selector__toggle");
+    if (list) {
+      list.classList.add("hidden");
+    }
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", "false");
+      const chevron = toggle.querySelector(".template-selector__chevron");
+      if (chevron) {
+        chevron.textContent = "expand_more";
+      }
+    }
+  }
+
+  document.addEventListener("click", function (e) {
+    const selector = document.getElementById("template-selector");
+    if (!selector || selector.contains(e.target)) {
+      return;
+    }
+    closeTemplateSelector();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+      closeTemplateSelector();
+    }
+  });
 }
